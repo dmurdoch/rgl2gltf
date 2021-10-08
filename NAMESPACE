@@ -1,0 +1,4 @@
+exportPattern("^[[:alpha:]]+")
+
+importFrom("jsonlite", "read_json")
+S3method("print", "gltf")

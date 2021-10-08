@@ -1,0 +1,12 @@
+Package: rgl2gltf
+Type: Package
+Title: Read and write .gltf and .glb files
+Version: 0.1.0
+Author: Duncan Murdoch
+Maintainer: Duncan Murdoch <murdoch.duncan@gmail.com>
+Description: GLtf is a format for 3D models.  This package adds
+ read and write functions to it.
+License: GPL-2
+Encoding: UTF-8
+Imports: 
+    jsonlite
