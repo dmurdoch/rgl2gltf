@@ -9,4 +9,4 @@ Description: GLtf is a format for 3D models.  This package adds
 License: GPL-2
 Encoding: UTF-8
 Imports: 
-    jsonlite
+    jsonlite, rgl

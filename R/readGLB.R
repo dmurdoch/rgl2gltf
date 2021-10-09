@@ -49,7 +49,6 @@ readGLB <- function(con, verbose = FALSE, ...) {
   on.exit(unlink(jsonfile), add = TRUE)
   binfile <- tempfile(fileext=".bin")
   writeBin(bin$Data, binfile)
-  on.exit(unlink(binfile), add = TRUE)
 
-  readGLtf(jsonfile, defaultbin = binfile)
+  readglTF(jsonfile, defaultbin = binfile)
 }

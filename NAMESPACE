@@ -1,4 +1,9 @@
-exportPattern("^[[:alpha:]]+")
+export(readglTF, readGLB)
 
 importFrom("jsonlite", "read_json")
+importFrom("rgl", "as.mesh3d", "mesh3d",
+           "rotationMatrix", "scaleMatrix", "translationMatrix",
+           "rotate3d", "shapelist3d")
+
 S3method("print", "gltf")
+S3method("as.mesh3d", "gltf")
