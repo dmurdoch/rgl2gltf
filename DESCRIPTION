@@ -10,3 +10,5 @@ License: GPL-2
 Encoding: UTF-8
 Imports: 
     jsonlite, rgl
+URL: https://github.com/dmurdoch/rgl2gltf
+BugReports: https://github.com/dmurdoch/rgl2gltf/issues
