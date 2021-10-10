@@ -1,4 +1,4 @@
-export(readglTF, readGLB, as.gltf)
+export(readglTF, readGLB, as.gltf, writeglTF, writeGLB)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.mesh3d", "mesh3d",

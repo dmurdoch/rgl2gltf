@@ -6,7 +6,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
       uri <- buffer$uri
       if (is.null(uri))
         uri <- attr(x, "defaultbin")
-      bufferdata <- rawConnection(readBin(uri, "raw", n = buffer$byteLength))
+      bufferdata <- rawConnection(readBin(uri, "raw", n = unlist(buffer$byteLength)))
       x$buffers[[buf+1]]$bufferdata <<- bufferdata
     }
     bufferdata
@@ -15,7 +15,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
   readBufferview <- function(bufv) {
     bufferview <- x$bufferViews[[bufv+1]]
     class(bufferview) <- "gltfBufferview"
-    bufferview$bufferdata <- readBuffer(bufferview$buffer)
+    bufferview$bufferdata <- readBuffer(unlist(bufferview$buffer))
     bufferview
   }
 
@@ -37,22 +37,22 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
               MAT2 = 4, MAT3 = 9, MAT4 = 16)
     accessor <- x$accessors[[acc+1]]
     class(accessor) <- "gltfAccessor"
-    view <- readBufferview(accessor$bufferView)
+    view <- readBufferview(unlist(accessor$bufferView))
     con <- view$bufferdata
     ctype <- as.character(accessor$componentType)
-    atype <- accessor$type
+    atype <- unlist(accessor$type)
     type <- types[ctype]
     len <- lens[atype]
     size <- sizes[ctype]
     signed <- signeds[ctype]
-    count <- accessor$count
+    count <- unlist(accessor$count)
     if (is.null(view$byteStride)) {
       skip <- 0
     } else
       skip <- len*size - view$byteStride
-    if (is.null(byteOffset <- accessor$byteOffset))
+    if (is.null(byteOffset <- unlist(accessor$byteOffset)))
       byteOffset <- 0
-    start <- view$byteOffset + byteOffset
+    start <- unlist(view$byteOffset) + byteOffset
 
     if (skip == 0) {
       seek(con, start)
@@ -112,10 +112,10 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
       if (!is.null(image$bufferView)) {
         filename <- tempfile(fileext = ".png")
         view <- readBufferview(image$bufferView)
-        if (is.null(offset <- view$byteOffset))
+        if (is.null(offset <- unlist(view$byteOffset)))
           offset <- 0
         seek(view$bufferdata, offset)
-        data <- readBin(view$bufferdata, "raw", view$byteLength)
+        data <- readBin(view$bufferdata, "raw", unlist(view$byteLength))
         writeBin(data, filename)
         result$texture <- filename
       }
@@ -136,7 +136,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
         result$alpha <- col[4]
       }
       if (!is.null(texture <- pbrm$baseColorTexture)) {
-        result <- c(result, getTexture(texture$index),
+        result <- c(result, getTexture(unlist(texture$index)),
                     list(gltftexCoord = texture$texCoord))
       }
     }
@@ -153,7 +153,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     class(node) <- "gltfNode"
     transform <- getTransform(node, parentTransform)
     if (!is.null(node$mesh)) {
-      inmesh <- x$meshes[[node$mesh+1]]
+      inmesh <- x$meshes[[unlist(node$mesh) + 1]]
       class(inmesh) <- "gltfMesh"
       if (verbose && !is.null(inmesh$name))
         cat(inmesh$name, "\n")
@@ -164,14 +164,15 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
           print(prim)
           browser()
         }
-        mat <- getMaterial(prim$material)
+        mat <- getMaterial(unlist(prim$material))
         normals <- NULL
         positions <- NULL
         texcoords <- NULL
-        for (a in seq_along(prim$attributes)) {
-          attr <- prim$attributes[a]
-          values <- readAccessor(attr[[1]])
-          switch (names(attr),
+        attributes <- unlist(prim$attributes)
+        for (a in seq_along(attributes)) {
+          attr <- attributes[[a]]
+          values <- readAccessor(attr[1])
+          switch (names(attributes)[a],
                   NORMAL = normals <- values,
                   POSITION = positions <- values
           )
@@ -179,16 +180,16 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
             if (is.null(coord <- mat$gltftexCoord))
               coord <- 0
             mat$gltftexCoord <- NULL
-            if (names(attr) == paste0("TEXCOORD_", coord))
+            if (names(attributes)[a] == paste0("TEXCOORD_", coord))
               texcoords <- cbind(values[,1], -values[,2])
           }
         }
         if (is.null(prim$indices))
           indices <- seq_len(nrow(positions))
         else
-          indices <- readAccessor(prim$indices) + 1
+          indices <- readAccessor(unlist(prim$indices)) + 1
 
-        if (is.null(mode <- prim$mode))
+        if (is.null(mode <- unlist(prim$mode)))
           mode <- 4
         ninds <- length(indices)
         newmesh <- switch(as.character(mode),
@@ -240,7 +241,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     }
 
     for (child in unlist(node$children))
-      processNode(child, transform)
+      processNode(unlist(child), transform)
   }
 
   on.exit({
@@ -252,7 +253,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
   if (missing(scene)) {
     scene <- 0
     if (!is.null(x$scene))
-      scene <- x$scene
+      scene <- unlist(x$scene)
   }
   if (scene + 1 > length(x$scenes))
     stop("scene ", scene, " not found.")
@@ -261,7 +262,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
   nextmesh <- 1
   nodes <- x$scenes[[scene+1]]$nodes
   for (n in nodes) {
-    processNode(n, parentTransform = diag(4))
+    processNode(unlist(n), parentTransform = diag(4))
   }
   shapelist3d(outmeshes)
 }

@@ -36,7 +36,7 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
 
   writeBuffer <- function(values) {
     buffer <- getBuffer()
-    result <- buffer$byteLength
+    result <- unlist(buffer$byteLength)
     seek(buffer$bufferdata, result)
     writeBin(values, buffer$bufferdata, size = 4, endian = "little")
     buffer$byteLength <- seek(buffer$bufferdata, NA)
@@ -111,7 +111,7 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     indices <- as.integer(inds)
     if (length(indices)) {
       indices <- addAccessor(indices - 1L)
-      primitive <- list(attributes = attributes,
+      primitive <- list(attributes = as.list(attributes),
                         material = material,
                         mode = mode,
                         indices = indices
@@ -180,6 +180,10 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     close(result$buffers[[1]]$bufferdata)
     result$buffers[[1]]$bufferdata <- NULL
   }
+
+  if (is.null(result$asset))
+    result$asset <- list(version = "2.0",
+                         generator = paste("rgl2gltf version ", packageVersion("rgl2gltf")))
 
   structure(result, class = "gltf")
 }
