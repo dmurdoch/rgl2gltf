@@ -100,12 +100,59 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     parentTransform %*% transform
   }
 
+  getTexture <- function(n) {
+    texture <- x$textures[[n+1]]
+    class(texture) <- "gltfTexture"
+    result <- list()
+    if (!is.null(texture$source)) {
+      image <- x$images[[texture$source + 1]]
+      class(image) <- "gltfImage"
+      if (!is.null(image$mimeType) && image$mimeType != "image/png")
+        warning("Image ", texture$source, " type ", image$mimeType, " not supported.")
+      if (!is.null(image$bufferView)) {
+        filename <- tempfile(fileext = ".png")
+        view <- readBufferview(image$bufferView)
+        seek(view$bufferdata, 0)
+        data <- readBin(view$bufferdata, "raw", view$byteLength)
+        writeBin(data, filename)
+        result$texture <- filename
+      }
+    }
+    result
+  }
+
+  getMaterial <- function(n) {
+    if (is.null(n))
+      material <- list()
+    else {
+      material <- x$materials[[n+1]]
+    class(material) <- "gltfMaterial"
+    result <- list(color = "white", alpha = 1)
+    if (!is.null(pbrm <- material$pbrMetallicRoughness)) {
+      if (!is.null(col <- unlist(pbrm$baseColorFactor))) {
+        result$color <- rgb(col[1], col[2], col[3])
+        result$alpha <- col[4]
+      }
+      if (!is.null(texture <- pbrm$baseColorTexture)) {
+        result <- c(result, getTexture(texture$index),
+                    list(gltftexCoord = texture$texCoord))
+      }
+    }
+    if (!is.null(col <- unlist(material$emissiveFactor)))
+      result$emission <- rgb(col[1], col[2], col[3])
+    else
+      result$emission <- "black"
+    }
+    result
+  }
+
   processNode <- function(n, parentTransform) {
     node <- x$nodes[[n + 1]]
     class(node) <- "gltfNode"
     transform <- getTransform(node, parentTransform)
     if (!is.null(node$mesh)) {
       inmesh <- x$meshes[[node$mesh+1]]
+      class(inmesh) <- "gltfMesh"
       if (verbose && !is.null(inmesh$name))
         cat(inmesh$name, "\n")
       for (p in seq_along(inmesh$primitives)) {
@@ -115,8 +162,10 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
           print(prim)
           browser()
         }
+        mat <- getMaterial(prim$material)
         normals <- NULL
         positions <- NULL
+        texcoords <- NULL
         for (a in seq_along(prim$attributes)) {
           attr <- prim$attributes[a]
           values <- readAccessor(attr[[1]])
@@ -124,49 +173,64 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
                   NORMAL = normals <- values,
                   POSITION = positions <- values
           )
+          if (!is.null(mat$texture)) {
+            if (is.null(coord <- mat$gltftexCoord))
+              coord <- 0
+            mat$gltftexCoord <- NULL
+            if (names(attr) == paste0("TEXCOORD_", coord))
+              texcoords <- cbind(values[,1], -values[,2])
+          }
         }
         if (is.null(prim$indices))
           indices <- seq_len(nrow(positions))
         else
           indices <- readAccessor(prim$indices) + 1
+
         if (is.null(mode <- prim$mode))
           mode <- 4
         ninds <- length(indices)
         newmesh <- switch(as.character(mode),
           "0" = mesh3d(x = positions,    # points
-                            normals = normals,
-                            points = indices,
-                            material = list(color = "black")),
+                       normals = normals,
+                       texcoords = texcoords,
+                       points = indices,
+                       material = mat),
           "1" = mesh3d(x = positions,    # segments
-                            normals = normals,
-                            segments = matrix(indices, nrow = 2),
-                            material = list(color = "black")),
+                       normals = normals,
+                       texcoords = texcoords,
+                       segments = matrix(indices, nrow = 2),
+                       material = mat),
           "2" = mesh3d(x = positions,    # loop
-                            normals = normals,
-                            segments = rbind(indices,
-                                             c(indices[-1], indices[1])),
-                            material = list(color = "black")),
+                       normals = normals,
+                       texcoords = texcoords,
+                       segments = rbind(indices,
+                                        c(indices[-1], indices[1])),
+                       material = mat),
           "3" = mesh3d(x = positions,    # strip
-                            normals = normals,
-                            segments = rbind(indices[-length(indices)],
-                                             indices[-1]),
-                            material = list(color = "black")),
+                       normals = normals,
+                       texcoords = texcoords,
+                       segments = rbind(indices[-length(indices)],
+                                        indices[-1]),
+                       material = mat),
           "4" = mesh3d(x = positions,    # triangles
-                            normals = normals,
-                            triangles = matrix(indices, nrow = 3),
-                            material = list(color = "white")),
+                       normals = normals,
+                       texcoords = texcoords,
+                       triangles = matrix(indices, nrow = 3),
+                       material = mat),
           "5" = mesh3d(x = positions,    # triangle strip
                        normals = normals,
+                       texcoords = texcoords,
                        triangles = rbind(indices[-c(ninds, ninds-1)],
                                          indices[-c(1, ninds)],
                                          indices[-c(1,2)]),
-                       material = list(color = "white")),
+                       material = mat),
           "6" = mesh3d(x = positions,    # triangle fan
                        normals = normals,
+                       texcoords = texcoords,
                        triangles = rbind(indices[1],
                                          indices[-c(1, ninds)],
                                          indices[-c(1,2)]),
-                       material = list(color = "white")))
+                       material = mat))
         newmesh <- rotate3d(newmesh, matrix = t(transform))
         outmeshes[[nextmesh]] <<- newmesh
         nextmesh <<- nextmesh + 1

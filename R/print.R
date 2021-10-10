@@ -79,14 +79,23 @@ catprimitives <- function(obj, string) {
   }
 }
 
+cattextureinfo <- function(obj, string) {
+  if (length(obj)) {
+    cat(string)
+    catstring(obj$index,    "        index: %s\n")
+    catstring(obj$texCoord, "        texCoord: %s\n")
+    catother(obj)
+  }
+}
+
 catmetallic <- function(obj, string) {
   if (length(obj)) {
     cat(string)
     catstring(obj$baseColorFactor, "      baseColorFactor: %s\n")
-    cattexture(obj$baseColorTexture, "      baseColorTexture:\n")
+    cattextureinfo(obj$baseColorTexture, "      baseColorTexture:\n")
     catstring(obj$metallicFactor, "      metallicFactor: %s\n")
     catstring(obj$roughnessFactor, "      roughnessFactor: %s\n")
-    cattexture(obj$metallicRoughnessTexture, "      metallicRoughnessTexture:\n")
+    cattextureinfo(obj$metallicRoughnessTexture, "      metallicRoughnessTexture:\n")
     catother(obj)
   }
 }
@@ -113,10 +122,8 @@ catortho <- function(ortho, string) {
   }
 }
 
-
-
 catindices <- catvalues <-
-  catnormal <- catocclusion <- cattexture <- function(obj, string) {
+  catnormal <- catocclusion <- function(obj, string) {
     if (!is.null(obj))
       cat(string, "      not implemented\n")
   }
@@ -211,7 +218,7 @@ print.gltfMaterial <- function(x, ...) {
   catmetallic(x$pbrMetallicRoughness, "    pbrMetallicRoughness:\n")
   catnormal(x$normalTexture, "    normalTexture:\n")
   catocclusion(x$occlusionTexture, "    occlusionTexture:\n")
-  cattexture(x$emissiveTexture, "    emissiveTexture:\n")
+  cattextureinfo(x$emissiveTexture, "    emissiveTexture:\n")
   catstring(x$emissiveFactor, "    emissiveFactor: %s\n")
   catstring(x$alphaMode, "    alphaMode: %s\n")
   catstring(x$alphaCutoff, "    alphaCutoff: %s\n")
@@ -223,8 +230,25 @@ print.gltfMaterial <- function(x, ...) {
   invisible(x)
 }
 
+print.gltfTexture <- function(x, ...) {
+  catstring(x$sampler, "    sampler: %s\n")
+  catstring(x$source,  "    source: %s\n")
+  catother(x)
+  catstring(setdiff(names(x), c(other, "sampler", "source")),
+            "    Other texture fields:  %s.\n")
+}
+
+print.gltfImage <- function(x, ...) {
+  catstring(x$uri,           "    uri: %s\n")
+  catstring(x$mimeType,      "    mimeType: %s\n")
+  catstring(x$bufferView,    "    bufferView: %s\n")
+  catother(x)
+  catstring(setdiff(names(x), c(other, "uri", "mimeType", "bufferView")),
+            "    Other image fields:  %s.\n")
+}
+
 print.gltf <- function(x, verbose = FALSE, ...) {
-  knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials")
+  knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
   if (!is.logical(verbose)) {
     verbosefields <- verbose
     verbose <- TRUE
@@ -300,7 +324,7 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         print(view)
       }
     } else
-      cat("Bufferviews (", length(x$bufferviews), ")\n")
+      cat("Bufferviews (", length(x$bufferViews), ")\n")
   }
 
   if (length(x$meshes)) {
@@ -353,6 +377,32 @@ print.gltf <- function(x, verbose = FALSE, ...) {
       }
     } else
       cat("Materials (", length(x$materials), ")\n")
+  }
+
+  if (length(x$textures)) {
+    if ("textures" %in% verbosefields) {
+      cat("Textures:\n")
+      for (i in seq_along(x$textures)) {
+        catstring(i-1, "  Texture %s:\n")
+        texture <- x$textures[[i]]
+        class(texture) <- "gltfTexture"
+        print(texture)
+      }
+    } else
+      cat("Textures (", length(x$textures), ")\n")
+  }
+
+  if (length(x$images)) {
+    if ("images" %in% verbosefields) {
+      cat("Images:\n")
+      for (i in seq_along(x$images)) {
+        catstring(i-1, "  Image %s:\n")
+        image <- x$images[[i]]
+        class(image) <- "gltfImage"
+        print(image)
+      }
+    } else
+      cat("Images (", length(x$images), ")\n")
   }
 
   catstring(setdiff(names(x), knowntoplevel),
