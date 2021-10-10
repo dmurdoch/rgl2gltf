@@ -132,7 +132,7 @@ print.gltfAccessor <- function(x, ...) {
   catstring(x$bufferView, "    bufferView: %s\n")
   catstring(x$byteOffset, "    byteOffset: %s\n")
   catcomptype(x$componentType, "    componentType: %s\n")
-  catstring(x$normalized, "    normalied: %s\n")
+  catstring(x$normalized, "    normalized: %s\n")
   catstring(x$count,      "    count: %s\n")
   catstring(x$type,       "    type: %s\n")
   catstring(x$max,        "    max: %s\n")

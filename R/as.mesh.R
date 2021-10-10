@@ -112,7 +112,9 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
       if (!is.null(image$bufferView)) {
         filename <- tempfile(fileext = ".png")
         view <- readBufferview(image$bufferView)
-        seek(view$bufferdata, 0)
+        if (is.null(offset <- view$byteOffset))
+          offset <- 0
+        seek(view$bufferdata, offset)
         data <- readBin(view$bufferdata, "raw", view$byteLength)
         writeBin(data, filename)
         result$texture <- filename
