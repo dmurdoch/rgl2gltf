@@ -35,7 +35,7 @@ catmode <- function(mode, string) {
   modes <- c("0 (points)", "1 (lines)", "2 (line_loop)", "3 (line_strip)",
              "4 (triangles)", "5 (triangle_strip)", "6 (triangle_fan)")
   if (length(mode))
-    catstring(modes[unlist(mode)+1], string)
+    catstring(modes[mode+1], string)
 }
 
 catcomptype <- function(ctype, string) {

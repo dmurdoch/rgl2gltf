@@ -6,6 +6,7 @@ as.gltf <- function(x, ...) {
 
 as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir(), ...) {
 
+  typeUnsignedInt <- 5125
   typeDouble <- 5126
 
   targetArray <- 34962
@@ -34,20 +35,24 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     result$buffers[[1]]
   }
 
-  writeBuffer <- function(values) {
+  writeBuffer <- function(values, type) {
     buffer <- getBuffer()
-    result <- unlist(buffer$byteLength)
+    result <- buffer$byteLength
     seek(buffer$bufferdata, result)
+    if (type == typeDouble)
+      values <- as.numeric(values)
+    else if (type == typeUnsignedInt)
+      values <- as.integer(values)
     writeBin(values, buffer$bufferdata, size = 4, endian = "little")
     buffer$byteLength <- seek(buffer$bufferdata, NA)
     result$buffers[[1]] <<- buffer
     result
   }
 
-  addBufferView <- function(values) {
+  addBufferView <- function(values, type) {
     buffer <- 0
     byteLength <- 4*length(values)
-    byteOffset <- writeBuffer(values)
+    byteOffset <- writeBuffer(values, type)
     target <- if (is.integer(values)) targetElementArray else
                                       targetArray
     bufferview <- list(buffer = buffer,
@@ -58,19 +63,43 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     length(result$bufferViews) - 1
   }
 
+  getType <- function(x) {
+    if (is.integer(x))
+      typeUnsignedInt
+    else if (is.numeric(x))
+      typeDouble
+    else
+      stop('Unrecognized type')
+  }
+
+  toSingle <- function(x) {
+    con <- rawConnection(raw(), "r+b")
+    on.exit(close(con))
+    writeBin(x, con, size = 4)
+    seek(con, 0)
+    readBin(con, "double", n = length(x), size=4)
+  }
+
+  minS <- function(x) min(toSingle(x))
+  maxS <- function(x) max(toSingle(x))
+
   addAccessor <- function(coords) {
-    bufferView <- addBufferView(as.numeric(coords))
-    componentType <- typeDouble
+    componentType <- getType(coords)
+    if (componentType == typeDouble) {
+      min <- minS  # These will only last for one call!
+      max <- maxS
+    }
+    bufferView <- addBufferView(c(coords), componentType)
     if (is.matrix(coords)) {
       count <- ncol(coords)
       type <- paste0("VEC", nrow(coords))
-      max <- apply(coords, 1, max)
-      min <- apply(coords, 1, min)
+      max <- I(apply(coords, 1, max))
+      min <- I(apply(coords, 1, min))
     } else {
       count <- length(coords)
       type <- "SCALAR"
-      max <- max(coords)
-      min <- min(coords)
+      max <- I(max(coords))
+      min <- I(min(coords))
     }
     accessor <- list(bufferView = bufferView,
                      componentType = componentType,
@@ -82,18 +111,35 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     length(result$accessors) - 1
   }
 
+  is.multicolored <- function(mat)
+    length(unique(mat$color)) > 1 || length(unique(mat$alpha)) > 1
+
+  writeColors <- function(mat) {
+    # We know we're multicolored already
+    n <- max(length(mat$color), length(mat$alpha))
+    if (length(mat$color))
+      col <- col2rgb(rep_len(mat$color, n))/255
+    else
+      col <- matrix(1, nrow = 3, ncol = n)
+    if (length(mat$alpha) && any(mat$alpha != 1))
+      col <- rbind(col, rep_len(mat$alpha, n))
+    writeVectors(col)
+  }
+
   addMaterial <- function(mat) {
     material <- list()
     pbrMetallicRoughness <- list()
     col <- c(1,1,1,1)
-    if (!is.null(mat$color))
-      col[1:3] <- col2rgb(mat$color)/255
-    if (!is.null(mat$alpha))
-      col[4] <- mat$alpha
-    if (any(col != 1))
-      pbrMetallicRoughness$baseColorFactor <- col
+    if (!is.multicolored(mat)) {
+      if (!is.null(mat$color))
+        col[1:3] <- col2rgb(mat$color)/255
+      if (!is.null(mat$alpha))
+        col[4] <- mat$alpha
+      if (any(col != 1))
+        pbrMetallicRoughness$baseColorFactor <- col
+    }
     if (!is.null(mat$emission))
-      material$emissiveFactor <- col2rgb(mat$emission)/255
+      material$emissiveFactor <- c(col2rgb(mat$emission)/255)
     if (length(pbrMetallicRoughness))
       material$pbrMetallicRoughness <- pbrMetallicRoughness
     result$materials <<- c(result$materials, list(material))
@@ -111,7 +157,7 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     indices <- as.integer(inds)
     if (length(indices)) {
       indices <- addAccessor(indices - 1L)
-      primitive <- list(attributes = as.list(attributes),
+      primitive <- list(attributes = attributes,
                         material = material,
                         mode = mode,
                         indices = indices
@@ -147,15 +193,26 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
 
   addToScene <- function(scene, node) {
     sceneobj <- result$scenes[[scene + 1]]
-    sceneobj$nodes <- c(sceneobj$nodes, node)
+    sceneobj$nodes <- I(c(sceneobj$nodes, node))
     result$scenes[[scene + 1]] <<- sceneobj
+  }
+
+  euclidean <- function(x) {
+    if (!is.null(x))
+      if (any(is.na(x))) {
+        warning("Cannot write NA values")
+        NULL
+      } else
+        asEuclidean2(x)
   }
 
   x <- cleanVertices(x)  # Remove any NA, NaN or Inf values
 
-  attributes <- c(POSITION = writeVectors(x$vb),
-                  NORMAL = writeVectors(x$normals),
-                  TEXCOORD_0 = writeVectors(x$texCoords))
+  attributes <- as.list(c(POSITION = writeVectors(euclidean(x$vb)),
+                     NORMAL = writeVectors(euclidean(x$normals)),
+                     TEXCOORD_0 = writeVectors(x$texCoords),
+                     COLOR_0 = if (is.multicolored(x$material)) writeColors(x$material)
+                       ))
 
   material <- addMaterial(x$material)
 

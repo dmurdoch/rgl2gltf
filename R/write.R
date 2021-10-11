@@ -1,5 +1,8 @@
 writeglTF <- function(x, path) {
-  jsonlite::write_json(unclass(x), path, auto_unbox = TRUE)
+  jsonlite::write_json(unclass(x), path,
+                       auto_unbox = TRUE,
+                       digits = NA)
+  invisible(NULL)
 }
 
 writeGLB <- function(x, con) {
@@ -40,4 +43,5 @@ writeGLB <- function(x, con) {
     size <- size + writeChunk(buffer, typebin)
   seek(con, 8)
   writeBin(as.integer(size), con, size = 4, endian = "little")
+  invisible(NULL)
 }
