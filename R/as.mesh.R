@@ -3,10 +3,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     buffer <- x$buffers[[buf+1]]
     bufferdata <- buffer$bufferdata
     if (is.null(bufferdata)) {
-      uri <- buffer$uri
-      if (is.null(uri))
-        uri <- attr(x, "defaultbin")
-      bufferdata <- rawConnection(readBin(uri, "raw", n = buffer$byteLength))
+      bufferdata <- rawConnection(attr(x, "defaultbin"))
       x$buffers[[buf+1]]$bufferdata <<- bufferdata
     }
     bufferdata
@@ -162,6 +159,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
         class(prim) <- "gltfPrimitive"
         if (!is.null(prim$targets)) {
           print(prim)
+          # What are prim targets????
           browser()
         }
         mat <- getMaterial(prim$material)
@@ -268,5 +266,5 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
   for (n in nodes) {
     processNode(n, parentTransform = diag(4))
   }
-  shapelist3d(outmeshes)
+  shapelist3d(outmeshes, plot = FALSE)
 }

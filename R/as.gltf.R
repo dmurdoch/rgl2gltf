@@ -28,7 +28,8 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     }
     buffer <- result$buffers[[1]]
     if (is.null(buffer$bufferdata)) {
-      buffer$bufferdata <- file(filename, open = "wb")
+      filename <- buffer$uri
+      buffer$bufferdata <- file(filename, open = "ab")
       result$buffers[[1]] <<- buffer
     }
 
@@ -243,4 +244,13 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
                          generator = paste("rgl2gltf version ", packageVersion("rgl2gltf")))
 
   structure(result, class = "gltf")
+}
+
+as.gltf.shapelist3d <- function(x, result = list(), newScene = FALSE, dir = tempdir(), ...) {
+  for (i in seq_along(x)) {
+    result <- as.gltf(x[[i]], result,
+                      newScene = newScene && (i == 1),
+                      dir = dir)
+  }
+  result
 }

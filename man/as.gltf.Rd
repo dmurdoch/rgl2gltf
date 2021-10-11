@@ -31,6 +31,9 @@ Where to write the binary buffer file.
 Other parameters.
 }
 }
+\details{
+\code{as.gltf} is a generic function.
+}
 \value{
 A \code{"gltf"} object.
 }
