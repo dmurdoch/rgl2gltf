@@ -19,13 +19,11 @@ library(rgl2gltf)
 
 gltf <- readGLB("https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true")
 mesh <- as.mesh3d(gltf)
-open3d()
+open3d(windowRect = c(0, 0, 500, 400))
 #> glX 
 #>   1
 shade3d(mesh)
-rglwidget()
-#> Warning in snapshot3d(scene = x, width = width, height = height): webshot = TRUE
-#> requires the webshot2 package; using rgl.snapshot() instead
+snapshot3d(webshot = FALSE, filename = "man/figures/engine.png")
 ```
 
-![](/var/folders/d6/s97fjjxd3_9353x_lwb692100000gn/T//RtmpJrnSek/filed4e367723f9.png)<!-- -->
+![](man/figures/engine.png)
