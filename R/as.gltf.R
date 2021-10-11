@@ -6,6 +6,8 @@ as.gltf <- function(x, ...) {
 
 as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir(), ...) {
 
+  typeUnsignedByte <- 5121
+  typeUnsignedShort <- 5123
   typeUnsignedInt <- 5125
   typeDouble <- 5126
 
@@ -36,30 +38,33 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     result$buffers[[1]]
   }
 
-  writeBuffer <- function(values, type) {
+  writeBuffer <- function(values, type, size) {
     buffer <- getBuffer()
-    result <- buffer$byteLength
-    seek(buffer$bufferdata, result)
+    byteOffset <- buffer$byteLength
+    seek(buffer$bufferdata, byteOffset)
+    byteOffset <- bitwAnd(byteOffset + size - 1, bitwNot(size - 1))
+    if (byteOffset > buffer$byteLength) {
+      writeBin(raw(byteOffset - buffer$byteLength),
+               buffer$bufferdata)
+      buffer$byteLength <- byteOffset
+    }
     if (type == typeDouble)
       values <- as.numeric(values)
     else if (type == typeUnsignedInt)
       values <- as.integer(values)
-    writeBin(values, buffer$bufferdata, size = 4, endian = "little")
+    writeBin(values, buffer$bufferdata, size = size, endian = "little")
     buffer$byteLength <- seek(buffer$bufferdata, NA)
     result$buffers[[1]] <<- buffer
-    result
+    byteOffset
   }
 
-  addBufferView <- function(values, type) {
-    buffer <- 0
-    byteLength <- 4*length(values)
-    byteOffset <- writeBuffer(values, type)
-    target <- if (is.integer(values)) targetElementArray else
-                                      targetArray
-    bufferview <- list(buffer = buffer,
-                       byteLength = byteLength,
-                       byteOffset = byteOffset,
-                       target = target)
+  addBufferView <- function(values, type, size, target = NULL) {
+    bufferview <- list()
+    bufferview$buffer <- 0
+    bufferview$byteLength <- size*length(values)
+    bufferview$byteOffset <- writeBuffer(values, type, size)
+    if (!is.null(target))
+      bufferview$target <- target
     result$bufferViews <<- c(result$bufferViews, list(bufferview))
     length(result$bufferViews) - 1
   }
@@ -84,13 +89,27 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
   minS <- function(x) min(toSingle(x))
   maxS <- function(x) max(toSingle(x))
 
-  addAccessor <- function(coords) {
+  addAccessor <- function(coords, target = NULL) {
     componentType <- getType(coords)
     if (componentType == typeDouble) {
       min <- minS  # These will only last for one call!
       max <- maxS
+      size <- 4
+    } else {
+      r <- range(coords)
+      if (r[1] < 0) {
+        size <- 4
+        warning("values appear to be signed integer!")
+      } else if (r[2] < 2^8) {
+        size <- 1
+        componentType <- typeUnsignedByte
+      } else if (r[2] < 2^16) {
+        size <- 2
+        componentType <- typeUnsignedShort
+      }
     }
-    bufferView <- addBufferView(c(coords), componentType)
+    bufferView <- addBufferView(c(coords), componentType,
+                                size = size, target = target)
     if (is.matrix(coords)) {
       count <- ncol(coords)
       type <- paste0("VEC", nrow(coords))
@@ -141,15 +160,55 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     }
     if (!is.null(mat$emission))
       material$emissiveFactor <- c(col2rgb(mat$emission)/255)
+    if (!is.null(mat$texture))
+      pbrMetallicRoughness$baseColorTexture <- addTexture(mat)
     if (length(pbrMetallicRoughness))
       material$pbrMetallicRoughness <- pbrMetallicRoughness
     result$materials <<- c(result$materials, list(material))
     length(result$materials) - 1
   }
 
+  addTexture <- function(mat) {
+    texture <- list()
+    texture$source <- addImage(mat)
+    texture$sampler <- addSampler(mat)
+    texture$name <- basename(mat$texture)
+    result$textures <<- c(result$textures, list(texture))
+    list(index = length(result$textures) - 1)
+  }
+
+  addImage <- function(mat) {
+    image <- list()
+    bytes <- readBin(mat$texture, "raw", file.size(mat$texture))
+    image$bufferView <- addBufferView(bytes, typeUnsignedInt, size = 1)
+    image$mimeType <- "image/png"
+    image$name <- basename(mat$texture)
+    result$images <<- c(result$images, list(image))
+    length(result$images) - 1
+  }
+
+  getFilter <- function(filter) {
+    if (!is.null(filter))
+      c("nearest" = 9728, "linear" = 9729,
+        "nearest.mipmap.nearest" = 9984,
+        "linear.mipmap.nearest" = 9985,
+        "nearest.mipmap.linear" = 9986,
+        "linear.mipmap.linear" = 9987)[filter]
+  }
+
+  addSampler <- function(mat) {
+    sampler <- list()
+    sampler$magFilter <- getFilter(mat$texmagfilter)
+    sampler$minFilter <- getFilter(mat$texminfilter)
+    if (length(sampler)) {
+      result$samplers <<- c(result$samplers, list(sampler))
+      length(result$samplers) - 1
+    }
+  }
+
   writeVectors <- function(coords) {
     if (!is.null(coords)) {
-      addAccessor(coords)
+      addAccessor(coords, targetArray)
     } else
       NULL
   }
@@ -157,7 +216,7 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
   addPrimitive <- function(inds, mode) {
     indices <- as.integer(inds)
     if (length(indices)) {
-      indices <- addAccessor(indices - 1L)
+      indices <- addAccessor(indices - 1L, targetElementArray)
       primitive <- list(attributes = attributes,
                         material = material,
                         mode = mode,
@@ -208,10 +267,11 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
   }
 
   x <- cleanVertices(x)  # Remove any NA, NaN or Inf values
-
+  if (!is.null(texcoords <- x$texcoords))
+    texcoords[2,] <- -texcoords[2,]
   attributes <- as.list(c(POSITION = writeVectors(euclidean(x$vb)),
                      NORMAL = writeVectors(euclidean(x$normals)),
-                     TEXCOORD_0 = writeVectors(x$texCoords),
+                     TEXCOORD_0 = writeVectors(texcoords),
                      COLOR_0 = if (is.multicolored(x$material)) writeColors(x$material)
                        ))
 
