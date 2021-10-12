@@ -25,12 +25,55 @@ as.gltf.mesh3d <- function(x, ...) {
                   quads = x$ib, ...)
 }
 
+as.gltf.rglpoints <- function(x, ...)
+  as.gltf.default(x = x$vertices,
+                  material = x$material,
+                  points = seq_len(nrow(x$vertices)), ...)
+
+as.gltf.rgllinestrip <- function(x, ...) {
+  n <- nrow(x$vertices)
+  as.gltf.default(x = x$vertices,
+                  material = x$material,
+                  segments = rbind(seq_len(n-1),
+                                   seq_len(n-1)+1),
+                  ...)
+}
+
+as.gltf.rgllines <- function(x, ...)
+  as.gltf.default(x = x$vertices,
+                  material = x$material,
+                  segments = matrix(seq_len(nrow(x$vertices)), nrow = 2),
+                  ...)
+
+as.gltf.rgltriangles <- function(x, ...)
+  as.gltf.default(x = x$vertices,
+                  normals = x$normals,
+                  texcoords = x$texcoords,
+                  material = x$material,
+                  triangles = matrix(seq_len(nrow(x$vertices)), nrow = 3),
+                  ...)
+
+as.gltf.rglquads <- function(x, ...)
+  as.gltf.default(x = x$vertices,
+                  normals = x$normals,
+                  texcoords = x$texcoords,
+                  material = x$material,
+                  quads = inds <- matrix(seq_len(nrow(x$vertices)), nrow = 4),
+                  ...)
+
 as.gltf.rglobject <- function(x, ..., previous = list()) {
-  m <- as.mesh3d(x)
-  if (is.null(m))
-    warning("Objects of type ", x$type, " are not yet supported.",
-          call. = FALSE)
-  else previous <- as.gltf(m, ..., previous = previous)
+  # Some objects can't be converted
+  if (x$type %in% c("light")) {
+    # do nothing
+  } else {
+    # Not a type we know how to handle yet; try to convert to a mesh first
+    m <- as.mesh3d(x)
+    if (is.null(m))
+      warning("Objects of type ", x$type, " are not yet supported.",
+            call. = FALSE)
+    else
+      previous <- as.gltf(m, ...,previous = previous, verbose = verbose)
+  }
   previous
 }
 
