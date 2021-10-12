@@ -3,7 +3,12 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     buffer <- x$buffers[[buf+1]]
     bufferdata <- buffer$bufferdata
     if (is.null(bufferdata)) {
-      bufferdata <- rawConnection(attr(x, "defaultbin"))
+      if (!is.null(buffer$uri))
+        bufferdata <- file(buffer$uri, "rb")
+      else if (!is.null(defaultbin <- attr(x, "defaultbin")))
+        bufferdata <- rawConnection(defaultbin)
+      else
+        stop("buffer data not found for buffer ", buf)
       x$buffers[[buf+1]]$bufferdata <<- bufferdata
     }
     bufferdata

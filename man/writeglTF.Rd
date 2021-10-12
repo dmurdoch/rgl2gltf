@@ -39,5 +39,5 @@ Duncan Murdoch
 }
 \examples{
 filename <- tempfile(fileext = ".glb")
-writeGLB(as.gltf(cube3d(col = "red")), filename)
+writeGLB(as.gltf(rgl::cube3d(col = "red")), filename)
 }
