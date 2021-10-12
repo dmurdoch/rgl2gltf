@@ -11,6 +11,14 @@ khronos.org](https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html)
 It is currently in very early development. Please add issues or pull
 requests if something important to you is missing.
 
+A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf>
+
+To install, run
+
+``` r
+remotes::install_github("dmurdoch/rgl2gltf")
+```
+
 Sample code:
 
 ``` r

@@ -1,0 +1,11 @@
+url: https://dmurdoch.github.io/rgl2gltf/dev/
+development:
+  mode: devel
+authors: 
+  Duncan Murdoch:
+    href: https://github.com/dmurdoch
+figures:
+  fig.width: 5
+  other.parameters:
+    rgl:
+      fig.asp: 1

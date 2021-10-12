@@ -1,13 +1,14 @@
 export(readglTF, readGLB, as.gltf, writeglTF, writeGLB)
 
 importFrom("jsonlite", "read_json")
-importFrom("rgl", "asEuclidean2", "as.mesh3d", "mesh3d",
+importFrom("rgl", "asEuclidean2", "as.mesh3d", "mesh3d", "plot3d",
            "rotationMatrix", "scaleMatrix", "translationMatrix",
            "rotate3d", "shapelist3d")
 importFrom("grDevices", "col2rgb", "rgb")
 importFrom("utils", "packageVersion")
 
 S3method("print", "gltf")
+S3method("plot3d", "gltf")
 S3method("as.mesh3d", "gltf")
 S3method("as.gltf", "mesh3d")
 S3method("as.gltf", "shapelist3d")
