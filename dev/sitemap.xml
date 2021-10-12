@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/authors.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/authors.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/index.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/index.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/reference/as.gltf.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/as.gltf.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/reference/index.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/reference/readGLB.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/readGLB.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/reference/readglTF.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/readglTF.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/dev/reference/writeglTF.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/writeglTF.html</loc>
   </url>
 </urlset>
