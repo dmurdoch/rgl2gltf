@@ -46,4 +46,7 @@ samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/ma
 # Get one of them:  a 2 cylinder engine
 
 gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
+
+if (interactive())
+  rgl::plot3d(gltf)
 }

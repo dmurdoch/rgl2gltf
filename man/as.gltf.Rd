@@ -47,5 +47,5 @@ Duncan Murdoch
 \examples{
 cube <- rgl::cube3d(col = "red")
 gltf <- as.gltf(cube)
-rgl::as.mesh3d(gltf)
+rgl::plot3d(gltf)
 }
