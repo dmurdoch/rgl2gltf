@@ -108,6 +108,16 @@ has been extracted from a GLB file.</p></td>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cameras ( 1 )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Accessors ( 102 )</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Materials ( 34 )</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">gltf</span> <span class="op">&lt;-</span> <span class="fu">readglTF</span><span class="op">(</span><span class="va">filename</span><span class="op">)</span></span>
+<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in">  <span class="co"># gltf files contain references to other files using</span></span>
+<span class="r-in">  <span class="co"># relative paths, so we can only use them from their</span></span>
+<span class="r-in">  <span class="co"># own directory</span></span>
+<span class="r-in">  <span class="va">olddir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html">dirname</a></span><span class="op">(</span><span class="va">filename</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu">rgl</span><span class="fu">::</span><span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/plot3d.html">plot3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="va">olddir</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -88,6 +88,9 @@ information.</p>
 <span class="r-in"><span class="co"># Get one of them:  a 2 cylinder engine</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">gltf</span> <span class="op">&lt;-</span> <span class="fu">readGLB</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">samples</span>, <span class="st">"/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu">rgl</span><span class="fu">::</span><span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/plot3d.html">plot3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span></span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
