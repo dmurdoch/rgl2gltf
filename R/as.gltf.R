@@ -2,9 +2,56 @@ as.gltf <- function(x, ...) {
   UseMethod("as.gltf")
 }
 
+euclidean <- function(x, transpose = TRUE) {
+  if (!is.null(x))
+    if (any(is.na(x))) {
+      warning("Cannot write NA values")
+      NULL
+    } else if (transpose)
+      t(asEuclidean2(x))
+  else asEuclidean(x)
+}
+
 # Convert a mesh3d object to glTF JSON and associated files
 
-as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir(), ...) {
+as.gltf.mesh3d <- function(x, ...) {
+  as.gltf.default(vertices = x$vb,
+                  material = x$material,
+                  normals = euclidean(x$normals, TRUE),
+                  texcoords = if (!is.null(x$texcoords)) t(x$texcoords),
+                  points = x$ip,
+                  segments = x$is,
+                  triangles = x$it,
+                  quads = x$ib, ...)
+}
+
+as.gltf.rglobject <- function(x, ..., previous = list()) {
+  m <- as.mesh3d(x)
+  if (is.null(m))
+    warning("Objects of type ", x$type, " are not yet supported.",
+          call. = FALSE)
+  else previous <- as.gltf(m, ..., previous = previous)
+  previous
+}
+
+as.gltf.rglscene <- function(x, ..., previous = list(), newScene = FALSE) {
+  for (i in seq_along(x$objects))
+    previous <- as.gltf(x$objects[[i]], previous = previous,
+                        newScene = newScene && i == 1)
+  previous
+}
+
+as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
+                            material = NULL,
+                            normals = NULL,
+                            texcoords = NULL,
+                            points = NULL, segments = NULL,
+                            triangles = NULL,
+                            quads = NULL,
+                            ...,
+                            previous = list(),
+                            newScene = FALSE,
+                            dir = tempdir()) {
 
   typeUnsignedByte <- 5121
   typeUnsignedShort <- 5123
@@ -17,10 +64,6 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
   modePoints <- 0
   modeSegments <- 1
   modeTriangles <- 4
-
-
-  cleanVertices <- function(x)
-    x
 
   getBuffer <- function() {
     if (is.null(result$buffers)) {
@@ -218,7 +261,7 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     if (length(indices)) {
       indices <- addAccessor(indices - 1L, targetElementArray)
       primitive <- list(attributes = attributes,
-                        material = material,
+                        material = matnum,
                         mode = mode,
                         indices = indices
                        )
@@ -257,30 +300,32 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
     result$scenes[[scene + 1]] <<- sceneobj
   }
 
-  euclidean <- function(x) {
-    if (!is.null(x))
-      if (any(is.na(x))) {
-        warning("Cannot write NA values")
-        NULL
-      } else
-        asEuclidean2(x)
-  }
+  tnonnull <- function(x)
+    if(!is.null(x)) t(x)
 
-  x <- cleanVertices(x)  # Remove any NA, NaN or Inf values
-  if (!is.null(texcoords <- x$texcoords))
-    texcoords[2,] <- -texcoords[2,]
-  attributes <- as.list(c(POSITION = writeVectors(euclidean(x$vb)),
-                     NORMAL = writeVectors(euclidean(x$normals)),
-                     TEXCOORD_0 = writeVectors(texcoords),
-                     COLOR_0 = if (is.multicolored(x$material)) writeColors(x$material)
+  result <- previous
+
+  if (missing(vertices)) {
+    xyz <- xyz.coords(x, y, z, recycle = TRUE)
+    vertices <- rbind(xyz$x, xyz$y, xyz$z)
+  } else
+    vertices <- asEuclidean2(vertices)
+
+  if (!is.null(texcoords))
+    texcoords[,2] <- -texcoords[,2]
+
+  attributes <- as.list(c(POSITION = writeVectors(vertices),
+                     NORMAL = writeVectors(tnonnull(normals)),
+                     TEXCOORD_0 = writeVectors(tnonnull(texcoords)),
+                     COLOR_0 = if (is.multicolored(material)) writeColors(material)
                        ))
 
-  material <- addMaterial(x$material)
+  matnum <- addMaterial(material)
 
-  primitives <- c(addPrimitive(x$ip, modePoints),
-                  addPrimitive(x$is, modeSegments),
-                  addPrimitive(x$it, modeTriangles),
-                  addPrimitive(cbind(x$ib[1:3,], x$ib[c(1,3,4),]),
+  primitives <- c(addPrimitive(points, modePoints),
+                  addPrimitive(segments, modeSegments),
+                  addPrimitive(triangles, modeTriangles),
+                  addPrimitive(cbind(quads[1:3,], quads[c(1,3,4),]),
                                modeTriangles))
 
   mesh <- addMesh(primitives)
@@ -306,11 +351,12 @@ as.gltf.mesh3d <- function(x, result = list(), newScene = FALSE, dir = tempdir()
   structure(result, class = "gltf")
 }
 
-as.gltf.shapelist3d <- function(x, result = list(), newScene = FALSE, dir = tempdir(), ...) {
+as.gltf.shapelist3d <- function(x, previous = list(), newScene = FALSE, ...) {
   for (i in seq_along(x)) {
-    result <- as.gltf(x[[i]], result,
+    previous <- as.gltf(x[[i]],
+                      previous = previous,
                       newScene = newScene && (i == 1),
-                      dir = dir)
+                      ...)
   }
-  result
+  previous
 }
