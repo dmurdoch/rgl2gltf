@@ -1,7 +1,7 @@
-url: https://dmurdoch.github.io/rgl2gltf/dev/
+url: https://dmurdoch.github.io/rgl2gltf/
 development:
   mode: devel
-authors: 
+authors:
   Duncan Murdoch:
     href: https://github.com/dmurdoch
 figures:

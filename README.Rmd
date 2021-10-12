@@ -30,7 +30,7 @@ This package contains functions to read and write `.gltf` and `.glb` files conta
 It is currently in very early development.  Please add issues or pull requests if something 
 important to you is missing.
 
-A `pkgdown` website is here:  https://dmurdoch.github.io/rgl2gltf
+A `pkgdown` website is here:  https://dmurdoch.github.io/rgl2gltf/dev
 
 To install, run
 
