@@ -250,6 +250,13 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       pbrMetallicRoughness$baseColorTexture <- addTexture(mat)
     if (length(pbrMetallicRoughness))
       material$pbrMetallicRoughness <- pbrMetallicRoughness
+
+    # Some properties have already been handled
+    mat$color <- mat$alpha <- mat$emission <- mat$texture <- NULL
+    # Include the rest as an extension
+    material$extensions <- list(RGL_material_properties = mat)
+    result$extensionsUsed <<- union(result$extensionsUsed,
+                                    "RGL_material_properties")
     result$materials <<- c(result$materials, list(material))
     length(result$materials) - 1
   }
