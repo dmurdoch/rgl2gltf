@@ -12,3 +12,7 @@ Imports:
     jsonlite, rgl, grDevices
 URL: https://github.com/dmurdoch/rgl2gltf
 BugReports: https://github.com/dmurdoch/rgl2gltf/issues
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
