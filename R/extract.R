@@ -1,6 +1,7 @@
 
-extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE) {
-  on.exit(closeBuffers(gltf))
+extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE, closeConnections = TRUE) {
+  if (closeConnections)
+    on.exit(closeBuffers(gltf))
 
   texture <- gltf$textures[[index + 1]]
   if (is.null(texture))
@@ -23,6 +24,9 @@ extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE
       writeBin(data, outfile)
       if (verbose)
         cat("Extracted ", mime, " file ", outfile)
+      if (!closeConnections)
+        attr(outfile, "gltf") <- gltf
+      attr(outfile, "mimeType") <- mime
       invisible(outfile)
     }
   }

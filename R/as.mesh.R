@@ -83,31 +83,6 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     parentTransform %*% transform
   }
 
-  getTexture <- function(n) {
-    texture <- x$textures[[n+1]]
-    class(texture) <- "gltfTexture"
-    result <- list()
-    if (!is.null(texture$source)) {
-      image <- x$images[[texture$source + 1]]
-      class(image) <- "gltfImage"
-      if (!is.null(image$mimeType) && image$mimeType != "image/png")
-        warning("Image ", texture$source, " type ", image$mimeType, " not supported.")
-      if (!is.null(image$bufferView)) {
-        filename <- tempfile(fileext = ".png")
-        read <- readBufferview(image$bufferView, x)
-        x <<- read[[2]]
-        view <- read[[1]]
-        if (is.null(offset <- view$byteOffset))
-          offset <- 0
-        seek(view$bufferdata, offset)
-        data <- readBin(view$bufferdata, "raw", view$byteLength)
-        writeBin(data, filename)
-        result$texture <- filename
-      }
-    }
-    result
-  }
-
   getMaterial <- function(n) {
     if (is.null(n))
       material <- list()
@@ -121,7 +96,15 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
         result$alpha <- col[4]
       }
       if (!is.null(texture <- pbrm$baseColorTexture)) {
-        result <- c(result, getTexture(texture$index),
+        texturefile <- extractTexture(x, texture$index,
+                                      verbose = FALSE,
+                                      closeConnections = FALSE)
+        x <<- attr(texturefile, "gltf")
+        mime <- attr(texturefile, "mimeType")
+        if (!is.null(mime) && mime != "image/png")
+          warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
+        attributes(texturefile) <- NULL
+        result <- c(result, texture = texturefile,
                     list(gltftexCoord = texture$texCoord))
       }
     }
