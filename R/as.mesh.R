@@ -115,7 +115,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     else
       result$emission <- "black"
     }
-    if (!is.null(ext <- material$extensions)
+    if (!is.null(ext <- material$extras)
         && !is.null(props <- ext$RGL_material_properties)) {
       result[names(props)] <- props
     } else
