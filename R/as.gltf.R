@@ -72,7 +72,7 @@ as.gltf.rglobject <- function(x, ..., previous = list()) {
       warning("Objects of type ", x$type, " are not yet supported.",
             call. = FALSE)
     else
-      previous <- as.gltf(m, ...,previous = previous, verbose = verbose)
+      previous <- as.gltf(m, ..., previous = previous)
   }
   previous
 }
