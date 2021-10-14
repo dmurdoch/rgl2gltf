@@ -1,25 +1,4 @@
 as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
-  readBuffer <- function(buf) {
-    buffer <- x$buffers[[buf+1]]
-    bufferdata <- buffer$bufferdata
-    if (is.null(bufferdata)) {
-      if (!is.null(buffer$uri))
-        bufferdata <- file(buffer$uri, "rb")
-      else if (!is.null(defaultbin <- attr(x, "defaultbin")))
-        bufferdata <- rawConnection(defaultbin)
-      else
-        stop("buffer data not found for buffer ", buf)
-      x$buffers[[buf+1]]$bufferdata <<- bufferdata
-    }
-    bufferdata
-  }
-
-  readBufferview <- function(bufv) {
-    bufferview <- x$bufferViews[[bufv+1]]
-    class(bufferview) <- "gltfBufferview"
-    bufferview$bufferdata <- readBuffer(bufferview$buffer)
-    bufferview
-  }
 
   readAccessor <- function(acc) {
     typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
@@ -39,7 +18,9 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
               MAT2 = 4, MAT3 = 9, MAT4 = 16)
     accessor <- x$accessors[[acc+1]]
     class(accessor) <- "gltfAccessor"
-    view <- readBufferview(accessor$bufferView)
+    read <- readBufferview(accessor$bufferView, x)
+    x <<- read[[2]]
+    view <- read[[1]]
     con <- view$bufferdata
     ctype <- as.character(accessor$componentType)
     atype <- accessor$type
@@ -113,7 +94,9 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
         warning("Image ", texture$source, " type ", image$mimeType, " not supported.")
       if (!is.null(image$bufferView)) {
         filename <- tempfile(fileext = ".png")
-        view <- readBufferview(image$bufferView)
+        read <- readBufferview(image$bufferView, x)
+        x <<- read[[2]]
+        view <- read[[1]]
         if (is.null(offset <- view$byteOffset))
           offset <- 0
         seek(view$bufferdata, offset)
@@ -256,11 +239,7 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
       processNode(child, transform)
   }
 
-  on.exit({
-    for (i in seq_along(x$buffers))
-      if (!is.null(con <- x$buffers[[i]]$bufferdata))
-        close(con)
-  })
+  on.exit(closeBuffers(x))
 
   if (missing(scene)) {
     scene <- 0
