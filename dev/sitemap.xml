@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/articles/shininess.html</loc>
+  </url>
+  <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/authors.html</loc>
   </url>
   <url>
@@ -8,6 +14,9 @@
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/as.gltf.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/extractTexture.html</loc>
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/index.html</loc>
