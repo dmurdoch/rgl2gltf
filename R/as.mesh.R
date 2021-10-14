@@ -18,6 +18,8 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
               MAT2 = 4, MAT3 = 9, MAT4 = 16)
     accessor <- x$accessors[[acc+1]]
     class(accessor) <- "gltfAccessor"
+    if (!is.null(accessor$sparse))
+      warning("sparse accessors are not supported.")
     read <- readBufferview(accessor$bufferView, x)
     x <<- read[[2]]
     view <- read[[1]]

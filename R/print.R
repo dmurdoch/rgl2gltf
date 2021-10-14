@@ -122,11 +122,30 @@ catortho <- function(ortho, string) {
   }
 }
 
-catindices <- catvalues <-
-  catnormal <- catocclusion <- function(obj, string) {
-    if (!is.null(obj))
-      cat(string, "      not implemented\n")
+catnormal <- function(normal, string) {
+  if (length(normal)) {
+    cat(string)
+    catstring(normal$index, "      index: %s\n")
+    catstring(normal$texCoord, "      texCoord: %s\n")
+    catstring(normal$scale,        "      scale: %s\n")
+    catother(normal)
   }
+}
+
+catocclusion <- function(occlusion, string) {
+  if (length(occlusion)) {
+    cat(string)
+    catstring(occlusion$index, "      index: %s\n")
+    catstring(occlusion$texCoord, "      texCoord: %s\n")
+    catstring(occlusion$strength,        "      strength: %s\n")
+    catother(occlusion)
+  }
+}
+
+catindices <- catvalues <- function(obj, string) {
+  if (!is.null(obj))
+    cat(string, "      not implemented\n")
+}
 
 print.gltfAccessor <- function(x, ...) {
   catstring(x$bufferView, "    bufferView: %s\n")
