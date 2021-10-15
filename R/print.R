@@ -189,11 +189,20 @@ print.gltfPrimitive <- function(x, ...) {
 }
 
 print.gltfNode <- function(x, ...) {
-  catmatrix(x$matrix, "    Matrix:\n")
+  catstring(x$camera,   "    Camera:   %s\n")
   catstring(x$children, "    Children: %s\n")
-  catstring(x$mesh, "    Mesh: %s\n")
+  catstring(x$skin,     "    Skin:     %s\n")
+  catmatrix(x$matrix,   "    Matrix:\n")
+  catstring(x$mesh,     "    Mesh:     %s\n")
+  catstring(x$rotation, "    Rotation: %s\n")
+  catstring(x$scale,    "    Scale:    %s\n")
+  catstring(x$translation, "    Translation: %s\n")
+  catstring(x$weights,  "    Weights:  %s\n")
   catother(x)
-  catstring(setdiff(names(x), c("children", "matrix", "mesh", other)),
+  catstring(setdiff(names(x), c("camera", "children", "skin",
+                                "matrix", "mesh", "rotation",
+                                "scale", "translation",
+                                "weights", other)),
             "  Other node fields:  %s.\n")
   invisible(x)
 }
