@@ -1,3 +1,2 @@
-plot3d.gltf <- function(x, ...) {
-  rgl::shade3d(as.mesh3d(x, ...))
-}
+plot3d.gltf <- function(x, scene = x$scene, ...)
+  plot3d(as.rglscene(x, scene = scene))

@@ -1,7 +1,10 @@
-export(extractTexture, readglTF, readGLB, as.gltf, writeglTF, writeGLB)
+export(extractTexture, readglTF, readGLB, as.gltf, as.rglscene, writeglTF, writeGLB)
 
 importFrom("jsonlite", "read_json")
-importFrom("rgl", "asEuclidean", "asEuclidean2", "as.mesh3d", "mesh3d", "plot3d",
+importFrom("rgl",
+           "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
+           "getr3dDefaults",
+           "as.mesh3d", "mesh3d", "plot3d", "rgl.primitive",
            "rotationMatrix", "scaleMatrix", "translationMatrix",
            "rotate3d", "shapelist3d")
 importFrom("grDevices", "col2rgb", "rgb", "xyz.coords")
@@ -23,3 +26,5 @@ S3method("as.gltf", "rglquads")
 
 S3method("as.gltf", "rglobject")
 S3method("as.gltf", "rglscene")
+
+S3method("as.rglscene", "gltf")
