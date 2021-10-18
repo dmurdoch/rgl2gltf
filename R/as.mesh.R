@@ -1,4 +1,4 @@
-as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
+as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
   readAccessor <- function(acc) {
     typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
@@ -127,11 +127,9 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
     node <- x$nodes[[n + 1]]
     class(node) <- "gltfNode"
     transform <- getTransform(node, parentTransform)
-    if (!is.null(node$mesh)) {
+    if (!is.null(node$mesh) && n %in% convertNodes) {
       inmesh <- x$meshes[[node$mesh+1]]
       class(inmesh) <- "gltfMesh"
-      if (verbose && !is.null(inmesh$name))
-        cat(inmesh$name, "\n")
       for (p in seq_along(inmesh$primitives)) {
         prim <- inmesh$primitives[[p]]
         class(prim) <- "gltfPrimitive"
@@ -220,17 +218,23 @@ as.mesh3d.gltf <- function(x, scene, verbose = FALSE, ...) {
       }
     }
 
-    for (child in unlist(node$children))
+    children <- unlist(node$children)
+
+    if (n %in% convertNodes)
+      convertNodes <<- union(convertNodes, children)
+
+    for (child in children)
       processNode(child, transform)
   }
 
   on.exit(closeBuffers(x))
 
-  if (missing(scene)) {
+  if (is.null(scene))
     scene <- 0
-    if (!is.null(x$scene))
-      scene <- x$scene
-  }
+
+  if (is.null(convertNodes <- nodes))
+    convertNodes <- seq_along(x$nodes) - 1
+
   if (scene + 1 > length(x$scenes))
     stop("scene ", scene, " not found.")
 

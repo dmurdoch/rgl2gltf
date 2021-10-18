@@ -1,7 +1,8 @@
-export(extractTexture, readglTF, readGLB, as.gltf, as.rglscene, writeglTF, writeGLB)
+export(extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
+       plot3d, writeglTF, writeGLB)
 
 importFrom("jsonlite", "read_json")
-importFrom("rgl",
+importFrom("rgl", "as.rglscene",
            "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
            "getr3dDefaults",
            "as.mesh3d", "mesh3d", "plot3d", "rgl.primitive",

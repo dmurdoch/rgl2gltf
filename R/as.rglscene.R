@@ -14,11 +14,7 @@ getDefaults <- function(class, value, default) {
   result
 }
 
-as.rglscene <- function(x, ...) {
-  UseMethod("as.rglscene")
-}
-
-as.rglscene.gltf <- function(x, scene = x$scene, ...) {
+as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
   matdiff <- function(mat) {
     for (m in names(mat)) {
@@ -341,10 +337,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, ...) {
     mesh <- x$meshes[[m+1]]
     class(mesh) <- "gltfMesh"
 
-    for (p in seq_along(mesh$primitives)) {
-      printit <<- m == 23 && p == 1
+    for (p in seq_along(mesh$primitives))
       processPrimitive(mesh$primitives[[p]], transform)
-    }
   }
 
   processCamera <- function(cam, subscene) {
@@ -370,15 +364,23 @@ as.rglscene.gltf <- function(x, scene = x$scene, ...) {
 
     transform <- getTransform(node, parentTransform)
 
-    if (!is.null(m <- node$mesh))
+    if (!is.null(m <- node$mesh) && n %in% convertNodes)
       processMesh(m, transform)
 
-    for (child in unlist(node$children))
+    children <- unlist(node$children)
+
+    if (n %in% convertNodes)
+      convertNodes <<- union(convertNodes, children)
+
+    for (child in children)
       processNode(child, transform)
   }
 
   if (is.null(scene))
     scene <- 0
+
+  if (is.null(convertNodes <- nodes))
+    convertNodes <- seq_along(x$nodes) - 1
 
   sc <- x$scenes[[scene + 1]]
   if (is.null(sc))
