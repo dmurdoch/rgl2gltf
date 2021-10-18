@@ -275,14 +275,33 @@ print.gltfImage <- function(x, ...) {
             "    Other image fields:  %s.\n")
 }
 
-print.gltf <- function(x, verbose = FALSE, ...) {
+print.gltf <- function(x, verbose = FALSE, names = FALSE, ...) {
+
+  shownames <- function(sec) {
+    if (!is.null(x[[sec]]) && sec %in% namefields) {
+      section <- x[[sec]]
+      for (i in seq_along(section)) {
+        if (!is.null(name <- section[[i]]$name))
+          cat(sprintf("  %d: %s\n", i - 1, name))
+      }
+    }
+  }
+
   knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
   if (!is.logical(verbose)) {
-    verbosefields <- verbose
+    verbosefields <- match.arg(verbose, knowntoplevel, several.ok = TRUE)
     verbose <- TRUE
   } else {
     if (verbose) verbosefields <- knowntoplevel
     else verbosefields <- NULL
+  }
+
+  if (!is.logical(names)) {
+    namefields <- match.arg(names, knowntoplevel, several.ok = TRUE)
+    names <- TRUE
+  } else {
+    if (names) namefields <- knowntoplevel
+    else namefields <- NULL
   }
 
   if (!is.null(x$asset)) {
@@ -313,8 +332,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(scene) <- "gltfScene"
         print(scene)
       }
-    } else
+    } else {
       cat("Scenes (", length(x$scenes), ")\n")
+      shownames("scenes")
+    }
   }
   if (length(x$nodes)) {
     if ("nodes" %in% verbosefields) {
@@ -325,8 +346,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(node) <- "gltfNode"
         print(node)
       }
-    } else
+    } else {
       cat("Nodes (", length(x$nodes), ")\n")
+      shownames("nodes")
+    }
   }
 
   if (length(x$buffers)) {
@@ -338,8 +361,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(buffer) <- "gltfBuffer"
         print(buffer)
       }
-    } else
+    } else {
       cat("Buffers (", length(x$buffers), ")\n")
+      shownames("buffers")
+    }
   }
 
   if (length(x$bufferViews)) {
@@ -351,8 +376,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(view) <- "gltfBufferview"
         print(view)
       }
-    } else
+    } else {
       cat("Bufferviews (", length(x$bufferViews), ")\n")
+      shownames("bufferViews")
+    }
   }
 
   if (length(x$meshes)) {
@@ -364,8 +391,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(mesh) <- "gltfMesh"
         print(mesh)
       }
-    } else
+    } else {
       cat("Meshes (", length(x$meshes), ")\n")
+      shownames("meshes")
+    }
   }
 
   if (length(x$cameras)) {
@@ -377,8 +406,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(camera) <- "gltfCamera"
         print(camera)
       }
-    } else
+    } else {
       cat("Cameras (", length(x$cameras), ")\n")
+      shownames("cameras")
+    }
   }
 
   if (length(x$accessors)) {
@@ -390,8 +421,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(acc) <- "gltfAccessor"
         print(acc)
       }
-    } else
+    } else {
       cat("Accessors (", length(x$accessors), ")\n")
+      shownames("accessors")
+    }
   }
 
   if (length(x$materials)) {
@@ -403,8 +436,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(mat) <- "gltfMaterial"
         print(mat)
       }
-    } else
+    } else {
       cat("Materials (", length(x$materials), ")\n")
+      shownames("materials")
+    }
   }
 
   if (length(x$textures)) {
@@ -416,8 +451,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(texture) <- "gltfTexture"
         print(texture)
       }
-    } else
+    } else {
       cat("Textures (", length(x$textures), ")\n")
+      shownames("textures")
+    }
   }
 
   if (length(x$images)) {
@@ -429,8 +466,10 @@ print.gltf <- function(x, verbose = FALSE, ...) {
         class(image) <- "gltfImage"
         print(image)
       }
-    } else
+    } else {
       cat("Images (", length(x$images), ")\n")
+      shownames("images")
+    }
   }
 
   catstring(setdiff(names(x), knowntoplevel),
