@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.1</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.2</span>
       </span>
     </div>
 
@@ -91,7 +91,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmurdoch/rgl2gltf" class="external-link">rgl2gltf</a></span><span class="op">)</span>
 
 <span class="va">gltf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/readGLB.html">readGLB</a></span><span class="op">(</span><span class="st">"https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"</span><span class="op">)</span>
-<span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/as.mesh3d.default.html" class="external-link">as.mesh3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span>
+<span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/imports.html">as.mesh3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span>
 <span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/open3d.html" class="external-link">open3d</a></span><span class="op">(</span>windowRect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">500</span>, <span class="fl">400</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; glX </span>
 <span class="co">#&gt;   1</span>
