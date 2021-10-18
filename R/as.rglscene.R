@@ -341,26 +341,49 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       processPrimitive(mesh$primitives[[p]], transform)
   }
 
-  processCamera <- function(cam, subscene) {
+  processPerspective <- function(persp) {
+    par3d <- rootSubscene$par3d
+    viewport <- par3d$viewport
+    if (!is.null(ar <- persp$aspectRatio)) {
+      viewport["width"] <- viewport["height"] * ar
+      par3d$viewport <- viewport
+      windowRect <- par3d$windowRect
+      windowRect["width"] <- windowRect["width"] * ar
+      par3d$windowRect <- windowRect
+    }
+
+    if (!is.null(fov <- persp$yfov))
+      par3d$FOV <- fov*180/pi
+
+    rootSubscene$par3d <<- par3d
+
+    # We ignore znear and zfar
+  }
+
+  processOrthographic <- function(ortho) {
+    # We ignore all the parameters here, and just set
+    # up an orthographic FOV
+
+    rootSubscene$par3d$FOV <<- 0
+
+  }
+
+  processCamera <- function(cam) {
     camera <- x$cameras[[cam + 1]]
     class(camera) <- "gltfCamera"
 
-    if (camera$type == "orthographic") {
-
-    }
-    subscene
+    if (camera$type == "orthographic")
+      processOrthographic(camera$orthographic)
+    else if (camera$type == "perspective")
+      processPerspective(camera$perspective)
   }
 
   processNode <- function(n, parentTransform) {
     node <- x$nodes[[n + 1]]
     class(node) <- "gltfNode"
-#
-#     if (is.null(node$camera))
-#       subscene$par3d$userMatrix <- subscene$par3d$userMatrix %*% getTransform(node)
-#     else {
-#       subscene$par3d$userProjection <- getTransform(node)
-#       subscene <- processCamera(node$camera, subscene)
-#     }
+
+    if (!is.null(node$camera))
+      processCamera(node$camera)
 
     transform <- getTransform(node, parentTransform)
 
@@ -398,7 +421,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   nodes <- sc$nodes
 
   for (n in nodes)
-    rootSubscene <- processNode(n, parentTransform = diag(4))
+    processNode(n, parentTransform = diag(4))
 
   rglscene$rootSubscene <- rootSubscene
 
