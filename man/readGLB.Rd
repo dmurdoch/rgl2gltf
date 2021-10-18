@@ -43,10 +43,10 @@ Duncan Murdoch
 
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
 
-# Get one of them:  a 2 cylinder engine
+# Get one of them:  an avocado
 
-gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
+gltf <- readGLB(paste0(samples, "/Avocado/glTF-Binary/Avocado.glb?raw=true"))
 
-if (interactive() && !rgl::in_pkgdown_example())
+if (interactive() || rgl::in_pkgdown_example())
   rgl::plot3d(gltf)
 }
