@@ -20,9 +20,13 @@ as.gltf(x, ...)
                             points = NULL, segments = NULL,
                             triangles = NULL,
                             quads = NULL,
+                            transform = NULL,
+                            extras = NULL,
                             ...,
+                            rglscene = list(),
                             previous = list(),
                             newScene = FALSE,
+                            parentNode = NULL,
                             dir = tempdir())
 
 \S3method{as.gltf}{mesh3d}(x, ...)
@@ -44,9 +48,15 @@ to make coordinates.  Any reasonable way of defining the coordinates is acceptab
   \item{triangles}{3 x n matrix of indices of vertices to draw
   as triangles}
   \item{quads}{4 x n matrix of indices of vertices to draw as quads},
+  \item{transform}{4 x 4 matrix associated with this object
+  (e.g. a subscene)}
+  \item{extras}{A list to attach as \code{extras} component to
+  the result}
   \item{\dots}{
 Other parameters passed to the default method.
 }
+  \item{rglscene}{The RGL scene this came from, e.g. to look
+  up defaults}
   \item{previous}{
 Optionally a previously produced \code{"gltf"} object;
 the new geometry will be added to it.
@@ -54,6 +64,9 @@ the new geometry will be added to it.
 \item{newScene}{logical; if \code{TRUE}, add a new
 scene to \code{previous}, otherwise try to add to the existing
 scene.}
+\item{parentNode}{If not \code{NULL}, add the new object
+as a child of this node, otherwise add to the first node of the
+default scene.}
   \item{dir}{
 Where to write the binary buffer file.
 }

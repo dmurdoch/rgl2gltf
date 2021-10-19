@@ -61,6 +61,61 @@ as.gltf.rglquads <- function(x, ...)
                   quads = inds <- matrix(seq_len(nrow(x$vertices)), nrow = 4),
                   ...)
 
+as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentNode = NULL, ...) {
+  transform <- x$par3d$userMatrix
+  scale <- x$par3d$scale
+  transform <- transform %*% scaleMatrix(scale[1], scale[2], scale[3])
+  previous <- as.gltf.default(vertices = NULL,
+                  transform = transform,
+                  previous = previous,
+                  parentNode = parentNode,
+                  extras = list(RGL_obj = x), ...)
+  thisNode <- length(previous$nodes) - 1
+  for (i in seq_along(x$objects)) {
+    previous <- as.gltf(rglscene$objects[[as.character(x$objects[i])]], previous = previous,
+                        newScene = FALSE,
+                        rglscene = rglscene,
+                        parentNode = thisNode)
+  }
+  for (i in seq_along(x$subscenes))
+    previous <- as.gltf(x$subscenes[[i]],
+                        previous = previous,
+                        rglscene = rglscene,
+                        parentNode = thisNode)
+  previous
+}
+
+as.gltf.rglbackground <- function(x, ...) {
+  as.gltf(vertices = NULL, extras = list(RGL_obj = x), ...)
+}
+
+as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = list(), ...) {
+  if (!is.null(parentNode) && !is.null(parent <- previous$nodes[[parentNode + 1]])) {
+    class(parent) <- "gltfNode"
+    subscene <- parent$extras$RGL_obj
+    bbox <- subscene$par3d$bbox
+    cube <- cube3d()
+    cube <- scale3d(translate3d(cube, 1, 1, 1), 0.5, 0.5, 0.5)
+    cube <- scale3d(cube, bbox[2]-bbox[1], bbox[4]-bbox[3], bbox[6]-bbox[5])
+    cube <- translate3d(cube, bbox[1], bbox[3], bbox[5])
+    indices <- cbind(cube$ib[1:2,], cube$ib[2:3,], cube$ib[3:4], cube$ib[c(4, 1),])
+    ind1 <- apply(indices, 2, sort)
+    keep <- !duplicated(t(ind1))
+    indices <- indices[,keep]
+    vertices <- cube$vb
+  } else {
+    indices <- NULL
+    vertices <- NULL
+  }
+  as.gltf(vertices = vertices,
+          segments = indices,
+          # extras = list(RGL_obj = x),
+          parentNode = parentNode,
+          previous = previous,
+          extras = list(RGL_obj = x),
+          ...)
+}
+
 as.gltf.rglobject <- function(x, ..., previous = list()) {
   # Some objects can't be converted
   if (x$type %in% c("light")) {
@@ -78,9 +133,7 @@ as.gltf.rglobject <- function(x, ..., previous = list()) {
 }
 
 as.gltf.rglscene <- function(x, ..., previous = list(), newScene = FALSE) {
-  for (i in seq_along(x$objects))
-    previous <- as.gltf(x$objects[[i]], previous = previous,
-                        newScene = newScene && i == 1)
+  previous <- as.gltf(x$rootSubscene, previous = previous, newScene = newScene, rglscene = x)
   previous
 }
 
@@ -91,9 +144,13 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                             points = NULL, segments = NULL,
                             triangles = NULL,
                             quads = NULL,
+                            transform = NULL,
+                            extras = NULL,
                             ...,
+                            rglscene = list(),
                             previous = list(),
                             newScene = FALSE,
+                            parentNode = NULL,
                             dir = tempdir()) {
 
   typeUnsignedByte <- 5121
@@ -233,7 +290,10 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   }
 
   addMaterial <- function(mat) {
-    material <- list()
+    newmat <- defaultMaterial
+    newmat[names(mat)] <- mat
+    mat <- newmat
+
     pbrMetallicRoughness <- list()
     col <- c(1,1,1,1)
     if (!is.multicolored(mat)) {
@@ -318,13 +378,19 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   }
 
   addMesh <- function(primitives) {
-    mesh <- list(primitives = primitives)
-    result$meshes <<- c(result$meshes, list(mesh))
-    length(result$meshes) - 1
+    if (length(primitives)) {
+      mesh <- list(primitives = primitives)
+      result$meshes <<- c(result$meshes, list(mesh))
+      length(result$meshes) - 1
+    }
   }
 
-  addNode <- function(mesh) {
-    node <- list(mesh = mesh)
+  addNode <- function(mesh = NULL, matrix = NULL, extras = NULL) {
+    node <- list()
+    node$mesh <- mesh
+    node$matrix <- matrix
+    if (!is.null(extras))
+      node$extras <- extras
     result$nodes <<- c(result$nodes, list(node))
     length(result$nodes) - 1
   }
@@ -348,16 +414,28 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     result$scenes[[scene + 1]] <<- sceneobj
   }
 
+  addChild <- function(parent, node) {
+    parentobj <- result$nodes[[parent + 1]]
+    parentobj$children <- I(c(parentobj$children, node))
+    result$nodes[[parent + 1]] <<- parentobj
+  }
+
   tnonnull <- function(x)
     if(!is.null(x)) t(x)
 
   result <- previous
+  if (!missing(rglscene))
+    defaultMaterial <- rglscene$material
+  else
+    defaultMaterial <- material3d()
 
   if (missing(vertices)) {
     xyz <- xyz.coords(x, y, z, recycle = TRUE)
     vertices <- rbind(xyz$x, xyz$y, xyz$z)
-  } else
+  } else if (length(vertices))
     vertices <- asEuclidean2(vertices)
+  else
+    vertices <- NULL
 
   if (!is.null(texcoords))
     texcoords[,2] <- -texcoords[,2]
@@ -377,13 +455,16 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                                modeTriangles))
 
   mesh <- addMesh(primitives)
-  node <- addNode(mesh)
-  if (newScene)
-    scene <- addScene()
-  else
-    scene <- defaultScene()
+  node <- addNode(mesh, matrix = transform, extras = extras)
+  if (is.null(parentNode)) {
+    if (newScene)
+      scene <- addScene()
+    else
+      scene <- defaultScene()
 
-  addToScene(scene, node)
+    addToScene(scene, node)
+  } else
+    addChild(parentNode, node)
 
   if (!is.null(result$buffers) &&
       !is.null(result$buffers[[1]]) &&

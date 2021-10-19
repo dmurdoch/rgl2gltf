@@ -155,17 +155,31 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     parentTransform %*% transform
   }
 
-  getId <- function() {
+  saveTranslation <- function(oldid, newid) {
+    idTranslations <<- c(idTranslations, newid)
+    names(idTranslations)[length(idTranslations)] <<- oldid
+  }
+
+  applyidTranslations <- function(sub) {
+    if (!is.null(idTranslations))
+      sub$par3d$listeners <- idTranslations[as.character(sub$par3d$listeners)]
+    sub
+  }
+
+  getId <- function(oldid) {
     lastid <<- lastid + 1
+    if (!is.null(oldid))
+      saveTranslation(oldid, lastid)
     lastid
   }
 
   newObj <- function(xyz, material = NULL, normals = NULL,
                            texcoords = NULL,
                            type, flags = NULL, attribs = NULL,
-                           indices = indices) {
+                           indices = indices,
+                           oldid = NULL) {
 
-    result <- list(id=getId(), type=type)
+    result <- list(id=getId(oldid), type=type)
 
     if (!(type %in% c("light", "clipplanes"))) {
       result$material <- matdiff(material)
@@ -207,7 +221,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   }
 
   newSubscene <- function(parent) {
-    result <- structure(list(id = getId(),
+    result <- structure(list(id = getId(NULL),
                    par3d = list()),
               class = c("rglsubscene", "rglobject"))
     if (missing(parent)) { # i.e. root
@@ -327,7 +341,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
                                                   indices[-c(1, ninds)],
                                                   indices[-c(1,2)]),
                                   material = mat))
-    rootSubscene$objects <<- c(rootSubscene$objects, newobj$id)
+    activeSubscene$objects <<- c(activeSubscene$objects, newobj$id)
     objects <- c(rglscene$objects, list(newobj))
     names(objects)[length(objects)] <- newobj$id
     rglscene$objects <<- objects
@@ -342,7 +356,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   }
 
   processPerspective <- function(persp) {
-    par3d <- rootSubscene$par3d
+    par3d <- activeSubscene$par3d
     viewport <- par3d$viewport
     if (!is.null(ar <- persp$aspectRatio)) {
       viewport["width"] <- viewport["height"] * ar
@@ -355,7 +369,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     if (!is.null(fov <- persp$yfov))
       par3d$FOV <- fov*180/pi
 
-    rootSubscene$par3d <<- par3d
+    activeSubscene$par3d <<- par3d
 
     # We ignore znear and zfar
   }
@@ -364,7 +378,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     # We ignore all the parameters here, and just set
     # up an orthographic FOV
 
-    rootSubscene$par3d$FOV <<- 0
+    activeSubscene$par3d$FOV <<- 0
 
   }
 
@@ -378,6 +392,27 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       processPerspective(camera$perspective)
   }
 
+  # Special nodes have extras$RGL_obj containing
+  # the rglobject value.  They may also have
+  # a mesh and other attributes like a normal mode;
+  # rgl2gltf ignores those, but other software (e.g. blender)
+  # could use it to approximate the special.
+
+  processSpecial <- function(node, parentTransform) {
+    newobj <- node$extras$RGL_obj
+    newobj$id <- getId(newobj$id)
+    activeSubscene$objects <<- c(activeSubscene$objects, newobj$id)
+    objects <- c(rglscene$objects, list(newobj))
+    names(objects)[length(objects)] <- newobj$id
+    rglscene$objects <<- objects
+  }
+
+  processSubscene <- function(node, parentTransform) {
+    newobj <- node$extras$RGL_obj
+    newobj$id <- getId(newobj$id)
+    activeSubscene <<- newobj
+  }
+
   processNode <- function(n, parentTransform) {
     node <- x$nodes[[n + 1]]
     class(node) <- "gltfNode"
@@ -387,16 +422,40 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
     transform <- getTransform(node, parentTransform)
 
-    if (!is.null(m <- node$mesh) && n %in% convertNodes)
-      processMesh(m, transform)
-
     children <- unlist(node$children)
 
-    if (n %in% convertNodes)
+    if (n %in% convertNodes) {
+      isSpecial <- !is.null(node$extras) && !is.null(node$extras$RGL_obj)
+      isSubscene <- isSpecial && node$extras$RGL_obj$type == "subscene"
+      if (isSubscene) {
+        saveActive <- activeSubscene
+        processSubscene(node, parentTransform)
+        transform <- diag(4)
+      } else if (isSpecial) {
+        processSpecial(node, parentTransform)
+      } else {
+        if (is.null(activeSubscene))
+          activeSubscene <<- newSubscene()
+        if (!is.null(m <- node$mesh))
+          processMesh(m, transform)
+      }
+
       convertNodes <<- union(convertNodes, children)
+    } else
+      isSubscene <- FALSE
 
     for (child in children)
       processNode(child, transform)
+
+    if (isSubscene)
+      activeSubscene <- applyidTranslations(activeSubscene)
+
+    if (isSubscene && !is.null(saveActive)) {
+      subscenes <- c(saveActive$subscenes, list(activeSubscene))
+      names(subscenes)[length(subscenes)] <- activeSubscene$id
+      saveActive$subscenes <- subscenes
+      activeSubscene <<- saveActive
+    }
   }
 
   if (is.null(scene))
@@ -414,16 +473,24 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   lastid <- 0
   rglscene <- list()
 
-  rootSubscene <- newSubscene()
+  activeSubscene <- NULL
 
-  defaultmaterial <- list()
+  if (!is.null(x$materials))
+    rglscene$material <- defaultmaterial <- getMaterial(0)
+  else
+    defaultmaterial <- list()
 
   nodes <- sc$nodes
+
+  if (length(nodes) > 1)
+    activeSubscene <- newSubscene()
+
+  idTranslations <- NULL  # translations of id values
 
   for (n in nodes)
     processNode(n, parentTransform = diag(4))
 
-  rglscene$rootSubscene <- rootSubscene
+  rglscene$rootSubscene <- applyidTranslations(activeSubscene)
 
   structure(rglscene, class = "rglscene")
 }

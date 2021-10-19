@@ -1,2 +1,2 @@
-plot3d.gltf <- function(x, scene = x$scene, ...)
-  plot3d(as.rglscene(x, scene = scene))
+plot3d.gltf <- function(x, scene = x$scene, decorate = FALSE, ...)
+  plot3d(as.rglscene(x, scene = scene), decorate = decorate, ...)
