@@ -483,10 +483,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
   activeSubscene <- NULL
 
-  if (!is.null(x$materials))
-    rglscene$material <- defaultmaterial <- getMaterial(0)
-  else
-    defaultmaterial <- list()
+  defaultmaterial <- list()
 
   nodes <- sc$nodes
 
