@@ -14,7 +14,47 @@ euclidean <- function(x, transpose = TRUE) {
 
 # Convert a mesh3d object to glTF JSON and associated files
 
+dot <- function(v, w) sum(v*w)
+
+cross <- function(v, w) c( v[2]*w[3] - v[3]*w[2],
+                  v[3]*w[1] - v[1]*w[3],
+                  v[1]*w[2] - v[2]*w[1] )
+
+addFaceNormals <- function(x) {
+  x <- as.tmesh3d(x)
+
+  vertices <- asEuclidean2(x$vb)
+  normals <- NA*vertices
+  texcoords <- x$texcoords
+  it <- x$it
+  for (i in seq_len(ncol(x$it))) {
+    normal <- cross(vertices[,it[2,i]] - vertices[,it[1,i]],
+                                  vertices[,it[3,i]] - vertices[,it[2,i]])
+    normal <- normal/sqrt(dot(normal, normal))
+    for (j in 1:3) {
+      if (is.na(normals[1, it[j, i]]))
+        normals[, it[j, i]] <- normal
+      else if (!isTRUE(all.equal(normal, normals[, it[j, i]]))) {
+        # duplicate the vertex
+        vertices <- cbind(vertices, vertices[,it[j, i]])
+        normals <- cbind(normals, normal)
+        if (!is.null(texcoords))
+          texcoords <- cbind(texcoords, texcoords[,it[j, i]])
+        it[j, i] <- ncol(vertices)
+      }
+    }
+  }
+  x$vb <- asHomogeneous2(vertices)
+  x$normals <- asHomogeneous2(normals)
+  if (!is.null(texcoords))
+    x$texcoords <- texcoords
+  x$it <- it
+  x
+}
+
 as.gltf.mesh3d <- function(x, ...) {
+  if (is.null(x$normals) && (!is.null(x$it) || !is.null(x$ib)))
+    x <- addFaceNormals(x)
   as.gltf.default(vertices = x$vb,
                   material = x$material,
                   normals = euclidean(x$normals, TRUE),

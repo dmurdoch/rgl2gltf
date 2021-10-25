@@ -4,6 +4,7 @@ export(extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.rglscene",
            "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
+           "as.tmesh3d",
            "cube3d", "getr3dDefaults",
            "as.mesh3d", "material3d", "mesh3d", "plot3d", "rgl.primitive",
            "rotationMatrix", "scale3d", "scaleMatrix",
