@@ -398,8 +398,16 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   # rgl2gltf ignores those, but other software (e.g. blender)
   # could use it to approximate the special.
 
+  restoreRGLclass <- function(obj) {
+    if (!is.null(obj)) {
+      class(obj) <- c(obj$class1, obj$class2)
+      obj$class1 <- obj$class2 <- NULL
+    }
+    obj
+  }
+
   processSpecial <- function(node, parentTransform) {
-    newobj <- node$extras$RGL_obj
+    newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
     activeSubscene$objects <<- c(activeSubscene$objects, newobj$id)
     objects <- c(rglscene$objects, list(newobj))
@@ -408,7 +416,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   }
 
   processSubscene <- function(node, parentTransform) {
-    newobj <- node$extras$RGL_obj
+    newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
     activeSubscene <<- newobj
   }

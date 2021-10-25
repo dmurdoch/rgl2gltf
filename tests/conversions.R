@@ -16,7 +16,7 @@ s1 <- as.rglscene(g1)
 plot3d(s1)
 plot3d(g1)
 
-# Still missing some types:  bboxdeco, text, sprites
+# Still missing some types:  sprites
 # Has bogus new window, due to calling plot3d.rglscene
 # add = TRUE puts it in the wrong place
 
@@ -24,3 +24,7 @@ g2 <- as.gltf(x)
 s2 <- as.rglscene(g2)
 plot3d(g2)
 
+example(plot3d)
+s3 <- scene3d()
+g3 <- as.gltf(s3)
+plot3d(g3)

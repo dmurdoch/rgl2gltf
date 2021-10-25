@@ -69,7 +69,7 @@ as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentN
                   transform = transform,
                   previous = previous,
                   parentNode = parentNode,
-                  extras = list(RGL_obj = x), ...)
+                  extras = asRGLobj(x), ...)
   thisNode <- length(previous$nodes) - 1
   for (i in seq_along(x$objects)) {
     previous <- as.gltf(rglscene$objects[[as.character(x$objects[i])]], previous = previous,
@@ -86,7 +86,7 @@ as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentN
 }
 
 as.gltf.rglbackground <- function(x, ...) {
-  as.gltf(vertices = NULL, extras = list(RGL_obj = x), ...)
+  as.gltf(vertices = NULL, extras = asRGLobj(x), ...)
 }
 
 as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = list(), ...) {
@@ -109,11 +109,27 @@ as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = list(), ...) {
   }
   as.gltf(vertices = vertices,
           segments = indices,
-          # extras = list(RGL_obj = x),
           parentNode = parentNode,
           previous = previous,
-          extras = list(RGL_obj = x),
+          extras = asRGLobj(x),
           ...)
+}
+
+asRGLobj <- function(x) {
+  x <- c(unclass(x), class=class(x))
+  list(RGL_obj = x)
+}
+
+as.gltf.rgltext <- function(x, ...) {
+  if (!is.null(x$material) && isTRUE(x$material$floating))
+    as.gltf.default(extras = asRGLobj(x),
+                    ...)
+  else
+    as.gltf.default(x = x$vertices,
+                  material = x$material,
+                  points = seq_len(nrow(x$vertices)),
+                  extras = asRGLobj(x),
+                  ...)
 }
 
 as.gltf.rglobject <- function(x, ..., previous = list()) {
@@ -258,6 +274,8 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       type <- paste0("VEC", nrow(coords))
       max <- I(apply(coords, 1, max))
       min <- I(apply(coords, 1, min))
+      if (any(is.na(min)))
+        browser()
     } else {
       count <- length(coords)
       type <- "SCALAR"
@@ -293,6 +311,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     newmat <- defaultMaterial
     newmat[names(mat)] <- mat
     mat <- newmat
+    material <- list()
 
     pbrMetallicRoughness <- list()
     col <- c(1,1,1,1)
@@ -388,7 +407,8 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   addNode <- function(mesh = NULL, matrix = NULL, extras = NULL) {
     node <- list()
     node$mesh <- mesh
-    node$matrix <- matrix
+    if (!is.null(matrix))
+      node$matrix <- as.numeric(matrix)
     if (!is.null(extras))
       node$extras <- extras
     result$nodes <<- c(result$nodes, list(node))
@@ -430,8 +450,11 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     defaultMaterial <- material3d()
 
   if (missing(vertices)) {
-    xyz <- xyz.coords(x, y, z, recycle = TRUE)
-    vertices <- rbind(xyz$x, xyz$y, xyz$z)
+    if (!missing(x)) {
+      xyz <- xyz.coords(x, y, z, recycle = TRUE)
+      vertices <- rbind(xyz$x, xyz$y, xyz$z)
+    } else
+      vertices <- NULL
   } else if (length(vertices))
     vertices <- asEuclidean2(vertices)
   else
