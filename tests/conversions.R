@@ -24,7 +24,7 @@ g2 <- as.gltf(x)
 s2 <- as.rglscene(g2)
 plot3d(g2)
 
-example(plot3d)
+example(plot3d, package="rgl")
 s3 <- scene3d()
 g3 <- as.gltf(s3)
 plot3d(g3)
