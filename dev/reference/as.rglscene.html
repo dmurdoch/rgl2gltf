@@ -19,7 +19,7 @@ would produce, or a "mesh3d" object.'><meta name="robots" content="noindex"><!--
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.3</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@ would produce, or a "mesh3d" object.'><meta name="robots" content="noindex"><!--
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/dmurdoch/rgl2gltf/">
+  <a href="https://github.com/dmurdoch/rgl2gltf/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -59,7 +59,7 @@ would produce, or a "mesh3d" object.'><meta name="robots" content="noindex"><!--
 
     <div class="ref-description">
     <p>These methods convert a <code>"gltf"</code> object to
-a <code>"rglscene"</code> object, similar to what <code><a href="https://dmurdoch.github.io/rgl/dev/reference/scene3d.html">scene3d</a></code>
+a <code>"rglscene"</code> object, similar to what <code><a href="https://dmurdoch.github.io/rgl/dev/reference/scene3d.html" class="external-link">scene3d</a></code>
 would produce, or a <code>"mesh3d"</code> object.</p>
     </div>
 
@@ -68,21 +68,26 @@ would produce, or a <code>"mesh3d"</code> object.</p>
 <span class="co"># S3 method for gltf</span>
 <span class="fu"><a href="imports.html">as.mesh3d</a></span><span class="op">(</span><span class="va">x</span>, scene <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">scene</span>, nodes <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments"><colgroup><col class="name"><col class="desc"></colgroup><tr><th>x</th>
-      <td><p>The <code>"gltf"</code> object to convert.</p></td>
-    </tr><tr><th>scene</th>
-      <td><p>Which scene to convert?  If <code>NULL</code> (e.g.
-<code>x</code> doesn't define a default scene), scene 0 will be used.</p></td>
-    </tr><tr><th>nodes</th>
-      <td><p>Which nodes to convert? If <code>NULL</code>, all
+    <div id="ref-sections">
+    <div id="arguments">
+    <h2>Arguments</h2>
+    <p></p>
+<dl><dt>x</dt><dd><p>The <code>"gltf"</code> object to convert.</p></dd>
+</dl><p></p>
+<dl><dt>scene</dt><dd><p>Which scene to convert?  If <code>NULL</code> (e.g.
+<code>x</code> doesn't define a default scene), scene 0 will be used.</p></dd>
+</dl><p></p>
+<dl><dt>nodes</dt><dd><p>Which nodes to convert? If <code>NULL</code>, all
   nodes used in the scene will be converted, otherwise only
-  the listed ones and their children.</p></td>
-    </tr><tr><th>...</th>
-      <td><p>Currently unused.</p></td>
-    </tr></table><h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
+  the listed ones and their children.</p></dd>
+</dl><p></p>
+<dl><dt>...</dt><dd><p>Currently unused.</p></dd>
+</dl></div>
+    <div id="value">
+    <h2>Value</h2>
     <p>An <code>"rglscene"</code> object.</p>
+    </div>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
