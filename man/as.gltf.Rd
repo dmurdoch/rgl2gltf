@@ -1,6 +1,7 @@
 \name{as.gltf}
 \alias{as.gltf}
 \alias{as.gltf.mesh3d}
+\alias{as.gltf.rglscene}
 \alias{as.gltf.default}
 \title{
 Produce glTF objects
@@ -29,6 +30,8 @@ as.gltf(x, ...)
                             parentNode = NULL,
                             dir = tempdir())
 
+\S3method{as.gltf}{rglscene}(x, ..., previous = list(),
+                            newScene = FALSE)
 \S3method{as.gltf}{mesh3d}(x, ...)
 }
 \arguments{
@@ -73,10 +76,23 @@ Where to write the binary buffer file.
 }
 \details{
 \code{as.gltf} is a generic function.
+
+The method for \code{"rglscene"} objects can handle most
+objects produced by \code{\link{scene3d}}, but not all
+objects will be handled.  In particular:
+\itemize{
+\item{Lights are ignored.}
+\item{Sprites are not handled, with a warning.}
+\item{Text, bounding box decorations and backgrounds are saved in \dQuote{extra} fields, so
+they can be read by \pkg{rgl2gltf}, but most other
+software will ignore them or only display some parts.}
+\item{Most material properties are also stored in \dQuote{extra}
+fields.}
 }
-\note{The arguments to the default method are similar to
-the arguments to the \code{\link{mesh3d}} function, with a few
-additional arguments after the dots.}
+
+There are methods for many individual types of \code{"rglobject"}, but these are intended for internal
+use.
+}
 \value{
 A \code{"gltf"} object.
 }
