@@ -3,13 +3,14 @@
 
 # rgl2gltf: Read and write .gltf and .glb files
 
-This package contains functions to read and write `.gltf` and `.glb`
-files containing 3D models, following the [official spec at
+This package contains functions to read, write and display `.gltf` and
+`.glb` files containing 3D models, following the [official spec at
 khronos.org](https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html)
-.
+. It also contains functions to convert `rgl` `mesh3d` objects and
+scenes to and from glTF objects.
 
-It is currently in very early development. Please add issues or pull
-requests if something important to you is missing.
+It is currently in early development. Please add issues or pull requests
+if something important to you is missing.
 
 A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf/dev>
 
