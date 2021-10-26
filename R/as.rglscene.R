@@ -341,7 +341,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
                                                   indices[-c(1, ninds)],
                                                   indices[-c(1,2)]),
                                   material = mat))
-    activeSubscene$objects <<- c(activeSubscene$objects, newobj$id)
+    activeSubscene$objects <<- union(activeSubscene$objects, newobj$id)
     objects <- c(rglscene$objects, list(newobj))
     names(objects)[length(objects)] <- newobj$id
     rglscene$objects <<- objects
@@ -432,9 +432,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
     children <- unlist(node$children)
 
+    isSubscene <- FALSE
     if (n %in% convertNodes) {
-      isSpecial <- !is.null(node$extras) && !is.null(node$extras$RGL_obj)
-      isSubscene <- isSpecial && node$extras$RGL_obj$type == "subscene"
+      isSpecial <- !is.null(node$extras) && !is.null(obj <- node$extras$RGL_obj)
+      if (isSpecial)
+        isSubscene <- identical(obj$class1, "rglsubscene") ||
+                      identical(obj$type, "subscene") ||
+                      inherits(obj, "rglsubscene")
       if (isSubscene) {
         saveActive <- activeSubscene
         processSubscene(node, parentTransform)
@@ -449,8 +453,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       }
 
       convertNodes <<- union(convertNodes, children)
-    } else
-      isSubscene <- FALSE
+    }
 
     for (child in children)
       processNode(child, transform)

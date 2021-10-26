@@ -65,46 +65,60 @@ as.gltf.mesh3d <- function(x, ...) {
                   quads = x$ib, ...)
 }
 
-as.gltf.rglpoints <- function(x, ...)
+as.gltf.rglpoints <- function(x, ...) {
+  if (is.null(indices <- x$indices))
+    indices <- seq_len(nrow(x$vertices))
   as.gltf.default(x = x$vertices,
                   material = x$material,
-                  points = seq_len(nrow(x$vertices)), ...)
+                  points = indices, ...)
+}
 
 as.gltf.rgllinestrip <- function(x, ...) {
-  n <- nrow(x$vertices)
+  if (is.null(indices <- x$indices))
+    indices <- seq_len(nrow(x$vertices))
+  n <- length(indices)
   as.gltf.default(x = x$vertices,
                   material = x$material,
-                  segments = rbind(seq_len(n-1),
-                                   seq_len(n-1)+1),
+                  segments = rbind(indices[-n],
+                                   indices[-1]),
                   ...)
 }
 
-as.gltf.rgllines <- function(x, ...)
+as.gltf.rgllines <- function(x, ...) {
+  if (is.null(indices <- x$indices))
+    indices <- seq_len(nrow(x$vertices))
   as.gltf.default(x = x$vertices,
                   material = x$material,
-                  segments = matrix(seq_len(nrow(x$vertices)), nrow = 2),
+                  segments = matrix(indices, nrow = 2),
                   ...)
+}
 
-as.gltf.rgltriangles <- function(x, ...)
+as.gltf.rgltriangles <- function(x, ...) {
+  if (is.null(indices <- x$indices))
+    indices <- seq_len(nrow(x$vertices))
   as.gltf.default(x = x$vertices,
                   normals = x$normals,
                   texcoords = x$texcoords,
                   material = x$material,
-                  triangles = matrix(seq_len(nrow(x$vertices)), nrow = 3),
+                  triangles = matrix(indices, nrow = 3),
                   ...)
+}
 
-as.gltf.rglquads <- function(x, ...)
+as.gltf.rglquads <- function(x, ...) {
+  if (is.null(indices <- x$indices))
+    indices <- seq_len(nrow(x$vertices))
   as.gltf.default(x = x$vertices,
                   normals = x$normals,
                   texcoords = x$texcoords,
                   material = x$material,
-                  quads = inds <- matrix(seq_len(nrow(x$vertices)), nrow = 4),
+                  quads = matrix(indices, nrow = 4),
                   ...)
+}
 
 as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentNode = NULL, ...) {
   transform <- x$par3d$userMatrix
-  scale <- x$par3d$scale
-  transform <- transform %*% scaleMatrix(scale[1], scale[2], scale[3])
+  if (!is.null(scale <- x$par3d$scale))
+    transform <- transform %*% scaleMatrix(scale[1], scale[2], scale[3])
   previous <- as.gltf.default(vertices = NULL,
                   transform = transform,
                   previous = previous,
@@ -347,6 +361,19 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     writeVectors(col)
   }
 
+  # The material is in glTF format; have
+  # we recorded it already?
+  getMaterialNumber <- function(material) {
+    materials <- result$materials
+    for (i in seq_along(materials))
+      if (identical(materials[[i]], material)) {
+        return(i - 1)
+      }
+
+    result$materials <<- c(result$materials, list(material))
+    length(result$materials) - 1
+  }
+
   addMaterial <- function(mat) {
     newmat <- defaultMaterial
     newmat[names(mat)] <- mat
@@ -374,8 +401,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     mat$color <- mat$alpha <- mat$emission <- mat$texture <- NULL
     # Include the rest as an extension
     material$extras <- list(RGL_material_properties = mat)
-    result$materials <<- c(result$materials, list(material))
-    length(result$materials) - 1
+    getMaterialNumber(material)
   }
 
   addTexture <- function(mat) {
