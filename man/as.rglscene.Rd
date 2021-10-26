@@ -1,4 +1,4 @@
-\name{as.rglscene}
+\name{as.rglscene.gltf}
 \alias{as.rglscene.gltf}
 \alias{as.mesh3d.gltf}
 \title{
