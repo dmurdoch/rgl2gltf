@@ -149,7 +149,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       }
       if (!is.null(node$translation)) {
         trans <- unlist(node$translation)
-        transform <- t(translationMatrix(trans[1], trans[2], trans[3]))
+        transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
       }
     }
     parentTransform %*% transform
@@ -418,7 +418,16 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   processSubscene <- function(node, parentTransform) {
     newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
+    newobj$objects <- c()
     activeSubscene <<- newobj
+  }
+
+  # We assume obj is not NULL...
+  isRGL <- function(obj, type) {
+    rglclass <- paste0("rgl", type)
+    identical(obj$class1, rglclass) ||
+    identical(obj$type, type) ||
+    inherits(obj, rglclass)
   }
 
   processNode <- function(n, parentTransform) {
@@ -433,12 +442,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     children <- unlist(node$children)
 
     isSubscene <- FALSE
+    isSpheres <- FALSE
     if (n %in% convertNodes) {
       isSpecial <- !is.null(node$extras) && !is.null(obj <- node$extras$RGL_obj)
-      if (isSpecial)
-        isSubscene <- identical(obj$class1, "rglsubscene") ||
-                      identical(obj$type, "subscene") ||
-                      inherits(obj, "rglsubscene")
+      if (isSpecial) {
+        isSubscene <- isRGL(obj, "subscene")
+        isSpheres <- isRGL(obj, "spheres")
+      }
       if (isSubscene) {
         saveActive <- activeSubscene
         processSubscene(node, parentTransform)
@@ -454,6 +464,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
       convertNodes <<- union(convertNodes, children)
     }
+
+    if (isSpheres)
+      children <- NULL
 
     for (child in children)
       processNode(child, transform)

@@ -1,3 +1,8 @@
+as.node <- function(x, ...) {
+  class(x) <- "gltfNode"
+  x
+}
+
 as.gltf <- function(x, ...) {
   UseMethod("as.gltf")
 }
@@ -115,6 +120,12 @@ as.gltf.rglquads <- function(x, ...) {
                   ...)
 }
 
+as.gltf.rglspheres <- function(x, previous = list(), parentNode = NULL, ...) {
+  as.gltf.default(x, spheres = TRUE,
+                  previous = previous,
+                  parentNode = parentNode)
+}
+
 as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentNode = NULL, ...) {
   transform <- x$par3d$userMatrix
   if (!is.null(scale <- x$par3d$scale))
@@ -124,6 +135,7 @@ as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentN
                   previous = previous,
                   parentNode = parentNode,
                   extras = asRGLobj(x), ...)
+
   thisNode <- length(previous$nodes) - 1
   for (i in seq_along(x$objects)) {
     previous <- as.gltf(rglscene$objects[[as.character(x$objects[i])]], previous = previous,
@@ -131,11 +143,12 @@ as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentN
                         rglscene = rglscene,
                         parentNode = thisNode)
   }
-  for (i in seq_along(x$subscenes))
+  for (i in seq_along(x$subscenes)) {
     previous <- as.gltf(x$subscenes[[i]],
                         previous = previous,
                         rglscene = rglscene,
                         parentNode = thisNode)
+  }
   previous
 }
 
@@ -214,6 +227,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                             points = NULL, segments = NULL,
                             triangles = NULL,
                             quads = NULL,
+                            spheres = FALSE,
                             transform = NULL,
                             extras = NULL,
                             ...,
@@ -509,43 +523,130 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   tnonnull <- function(x)
     if(!is.null(x)) t(x)
 
+  makeSphere <- function(sections = 18, segments = 24) {
+    phi <- rep((1:(sections-1))/sections - 0.5, segments)
+    theta <- rep(2*(0:(segments-1))/segments, each = sections - 1)
+
+    x <- c(sinpi(theta)*cospi(phi), 0, 0)
+    y <- c(sinpi(phi), -1, 1)
+    z <- c(cospi(theta)*cospi(phi), 0, 0)
+    s <- c(theta/2, 0, 0)
+    t <- c(phi + 0.5, 0, 1)
+
+    pole <- length(theta) # zero based index
+
+    mod1 <- segments*(sections - 1)
+    ind <- rep(0:(sections - 3), segments) + (sections - 1)*rep(0:(segments-1), each = sections - 2)
+    it <- rbind(ind %% mod1,
+                (ind + sections - 1) %% mod1,
+                (ind + sections) %% mod1,
+                ind %% mod1,
+                (ind + sections) %% mod1,
+                (ind + 1) %% mod1)
+    it <- cbind(it, rbind(rep(pole, segments),
+                          ((1:segments)*(sections - 1)) %% mod1,
+                          ((1:segments)*(sections - 1) - sections + 1) %% mod1,
+                          rep(pole + 1, segments),
+                          ((1:segments)*(sections - 1) - 1) %% mod1,
+                          ((1:segments)*(sections - 1) + sections - 2) %% mod1))
+    sphereAttributes <- list(vertices = writeVectors(rbind(x, y, z)),
+                              texcoords = writeVectors(rbind(s, t)),
+                              indices = addAccessor(c(it), targetElementArray))
+    result$extras <<- c(result$extras, list(RGL_sphere = sphereAttributes))
+  }
+
+  addSpheres <- function(x) {
+    if (is.null(result$extras) || is.null(result$extras$RGL_sphere))
+      makeSphere()
+    sphere <- result$extras$RGL_sphere
+
+    scale <- c(1,1,1)
+    if (!is.null(parentNode)) {
+      parent <- result$nodes[[parentNode + 1]]
+      if (!is.null(parent$extras) &&
+          !is.null(parentSub <- parent$extras$RGL_obj) &&
+          !is.null(par3d <- parentSub$par3d) &&
+          !is.null(par3d$scale)) {
+        scale <- scale/par3d$scale
+      }
+    }
+    vertices <- x$vertices
+    n <- nrow(vertices)
+    material <- x$material
+    radii <- rep(x$radii, length = n)
+    i <- seq_len(nrow(x$colors))
+    colors <- x$colors[rep(i, length.out = n),]
+    children <- c()
+    primitive <- list(list(attributes = c(POSITION = sphere$vertices,
+                                          NORMALS = sphere$vertices,
+                                          TEXCOORDS = sphere$texcoords),
+                           mode = modeTriangles,
+                           indices = sphere$indices))
+    for (i in seq_len(n)) {
+      material$color <- rgb(colors[i, 1], colors[i, 2],
+                            colors[i, 3], colors[i, 4])
+      matnum <- addMaterial(material)
+      primitive[[1]]$material <- matnum
+      mesh <- addMesh(primitive)
+      child <- addNode(mesh)
+      children <- c(children, child)
+      node <- result$nodes[[child + 1]]
+      node$scale <- rep(radii[i], 3)*scale
+      node$translation <- vertices[i,]
+      result$nodes[[child + 1]] <<- node
+    }
+    main <- addNode(extras = asRGLobj(x))
+    node <- result$nodes[[main + 1]]
+    node$children <- I(children)
+    result$nodes[[main + 1]] <<- node
+    if (newScene)
+      scene <- addScene()
+    else
+      scene <- defaultScene()
+    main
+  }
+
   result <- previous
   if (!missing(rglscene))
     defaultMaterial <- rglscene$material
   else
     defaultMaterial <- material3d()
 
-  if (missing(vertices)) {
-    if (!missing(x)) {
-      xyz <- xyz.coords(x, y, z, recycle = TRUE)
-      vertices <- rbind(xyz$x, xyz$y, xyz$z)
-    } else
+  if (spheres)
+    node <- addSpheres(x)
+  else {
+    if (missing(vertices)) {
+      if (!missing(x)) {
+        xyz <- xyz.coords(x, y, z, recycle = TRUE)
+        vertices <- rbind(xyz$x, xyz$y, xyz$z)
+      } else
+        vertices <- NULL
+    } else if (length(vertices))
+      vertices <- asEuclidean2(vertices)
+    else
       vertices <- NULL
-  } else if (length(vertices))
-    vertices <- asEuclidean2(vertices)
-  else
-    vertices <- NULL
 
-  if (!is.null(texcoords))
-    texcoords[,2] <- -texcoords[,2]
+    if (!is.null(texcoords))
+      texcoords[,2] <- -texcoords[,2]
 
-  attributes <- as.list(c(POSITION = writeVectors(vertices),
-                     NORMAL = writeVectors(tnonnull(normals)),
-                     TEXCOORD_0 = writeVectors(tnonnull(texcoords)),
-                     COLOR_0 = if (is.multicolored(material)) writeColors(material)
-                       ))
+    attributes <- as.list(c(POSITION = writeVectors(vertices),
+                            NORMAL = writeVectors(tnonnull(normals)),
+                            TEXCOORD_0 = writeVectors(tnonnull(texcoords)),
+                            COLOR_0 = if (is.multicolored(material)) writeColors(material)
+    ))
 
-  matnum <- addMaterial(material)
+    matnum <- addMaterial(material)
 
-  primitives <- c(addPrimitive(points, modePoints),
-                  addPrimitive(segments, modeSegments),
-                  addPrimitive(triangles, modeTriangles),
-                  addPrimitive(cbind(quads[1:3,], quads[c(1,3,4),]),
-                               modeTriangles))
+    primitives <- c(addPrimitive(points, modePoints),
+                    addPrimitive(segments, modeSegments),
+                    addPrimitive(triangles, modeTriangles),
+                    addPrimitive(cbind(quads[1:3,], quads[c(1,3,4),]),
+                                 modeTriangles))
 
-  mesh <- addMesh(primitives)
-  node <- addNode(mesh, matrix = transform, extras = extras)
-  if (is.null(parentNode)) {
+    mesh <- addMesh(primitives)
+    node <- addNode(mesh, matrix = transform, extras = extras)
+  }
+  if (is.null(parentNode) && !spheres) {
     if (newScene)
       scene <- addScene()
     else

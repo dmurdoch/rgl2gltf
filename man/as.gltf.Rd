@@ -21,6 +21,7 @@ as.gltf(x, ...)
                             points = NULL, segments = NULL,
                             triangles = NULL,
                             quads = NULL,
+                            spheres = FALSE,
                             transform = NULL,
                             extras = NULL,
                             ...,
@@ -50,7 +51,9 @@ to make coordinates.  Any reasonable way of defining the coordinates is acceptab
   segments}
   \item{triangles}{3 x n matrix of indices of vertices to draw
   as triangles}
-  \item{quads}{4 x n matrix of indices of vertices to draw as quads},
+  \item{quads}{4 x n matrix of indices of vertices to draw as quads}
+  \item{spheres}{logical value, \code{TRUE} if this call is
+  drawing spheres}
   \item{transform}{4 x 4 matrix associated with this object
   (e.g. a subscene)}
   \item{extras}{A list to attach as \code{extras} component to
