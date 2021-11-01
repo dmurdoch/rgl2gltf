@@ -358,7 +358,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       child <- addNode(mesh)
       children <- c(children, child)
       node <- result$nodes[[child + 1]]
-      node$scale <- rep(radii[i], 3)*scale
+      node$scale <- rep(radii[i], 3)/scale
       node$translation <- vertices[i,]
       result$nodes[[child + 1]] <<- node
     }

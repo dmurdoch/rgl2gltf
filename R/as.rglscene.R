@@ -1,5 +1,6 @@
 
-as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
+as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
+                             useRGLinfo = TRUE, ...) {
 
   matdiff <- function(mat) {
     for (m in names(mat)) {
@@ -421,7 +422,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     isSubscene <- FALSE
     isSpheres <- FALSE
     if (n %in% convertNodes) {
-      isSpecial <- !is.null(node$extras) && !is.null(obj <- node$extras$RGL_obj)
+      isSpecial <- useRGLinfo &&
+                   !is.null(node$extras) &&
+                   !is.null(obj <- node$extras$RGL_obj)
       if (isSpecial) {
         isSubscene <- isRGL(obj, "subscene")
         isSpheres <- isRGL(obj, "spheres")
@@ -458,6 +461,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       activeSubscene <<- saveActive
     }
   }
+
+  if (length(list(...)))
+    warning("These arguments ignored: ", paste(names(list(...)), collapse = ", "))
 
   if (is.null(scene))
     scene <- 0

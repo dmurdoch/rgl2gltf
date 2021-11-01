@@ -10,7 +10,7 @@ a \code{"rglscene"} object, similar to what \code{\link{scene3d}}
 would produce, or a \code{"mesh3d"} object.
 }
 \usage{
-\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, ...)
+\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, ...)
 \S3method{as.mesh3d}{gltf}(x, scene = x$scene, nodes = NULL, ...)
 }
 \arguments{
@@ -24,6 +24,9 @@ The \code{"gltf"} object to convert.
   nodes used in the scene will be converted, otherwise only
   the listed ones and their children.
   }
+  \item{useRGLinfo}{\code{"gltf"} objects contain RGL-specific information
+in \dQuote{extra} fields.  If \code{useRGLinfo} is \code{TRUE}, we use
+that information, otherwise include only what standard glTF viewers would display.}
   \item{...}{Currently unused.}
 }
 \value{
