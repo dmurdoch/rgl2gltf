@@ -29,7 +29,8 @@ as.gltf(x, ...)
                             previous = list(),
                             newScene = FALSE,
                             parentNode = NULL,
-                            dir = tempdir())
+                            dir = tempdir(),
+                            scale = c(1,1,1))
 
 \S3method{as.gltf}{rglscene}(x, ..., previous = list(),
                             newScene = FALSE)
@@ -75,6 +76,9 @@ as a child of this node, otherwise add to the first node of the
 default scene.}
   \item{dir}{
 Where to write the binary buffer file.
+}
+  \item{scale}{
+Rescaling in the enclosing subscene.
 }
 }
 \details{

@@ -1,18 +1,3 @@
-dotprod <- function(x, y) {
-  apply(x*y, 1, sum)
-}
-
-normalize <- function(vertices) {
-  lens <- sqrt(dotprod(vertices, vertices))
-  vertices <- vertices/lens
-  vertices
-}
-
-getDefaults <- function(class, value, default) {
-  if (is.null(result <- getr3dDefaults(class, value)))
-    result <- default
-  result
-}
 
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
@@ -420,14 +405,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
     newobj$id <- getId(newobj$id)
     newobj$objects <- c()
     activeSubscene <<- newobj
-  }
-
-  # We assume obj is not NULL...
-  isRGL <- function(obj, type) {
-    rglclass <- paste0("rgl", type)
-    identical(obj$class1, rglclass) ||
-    identical(obj$type, type) ||
-    inherits(obj, rglclass)
   }
 
   processNode <- function(n, parentTransform) {
