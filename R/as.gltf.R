@@ -14,8 +14,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                             points = NULL, segments = NULL,
                             triangles = NULL,
                             quads = NULL,
-                            spheres = FALSE,
-                            transform = NULL,
+                            transform = diag(4),
                             extras = NULL,
                             ...,
                             rglscene = list(),
@@ -373,14 +372,73 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     main
   }
 
+  # This handles 3D sprites only
+  addSprites <- function(x) {
+    vertices <- x$vertices
+    n <- nrow(vertices)
+    radii <- rep(x$radii, length = n)
+    material <- x$material
+    i <- seq_len(nrow(x$colors))
+    colors <- x$colors[rep(i, length.out = n),]
+    transform <- x$usermatrix
+    if (is.null(transform)) transform <- diag(4)
+
+    # add the main node
+    thisNodeNum <- addNode()
+    thisNode <- result$nodes[[thisNodeNum + 1]]
+
+    # Add nodes for each of the children
+    for (i in seq_along(x$objects)) {
+      result <<- as.gltf(x$objects[[i]], previous = result,
+                          newScene = FALSE,
+                          rglscene = rglscene,
+                          parentNode = NULL,
+                          transform = transform,
+                          ...)
+    }
+
+    childnodes <- length(result$nodes) - 1 - length(x$objects) + seq_along(x$objects)
+    scenenodes <- result$scenes[[result$scene + 1]]$nodes
+    scenenodes <- setdiff(scenenodes, childnodes)
+    result$scenes[[result$scene + 1]]$nodes <<- scenenodes
+
+    # Add nodes for each rep of the sprite.  Really we'd
+    # like to have each of these refer to the child nodes
+    # created above, but that's not allowed, so we make
+    # copies.
+
+    children <- c()
+    for (i in seq_len(n)) {
+      child <- addNode()
+      children <- c(children, child)
+      node <- result$nodes[[child + 1]]
+      node$scale <- rep(radii[i], 3)/scale
+      node$translation <- vertices[i,]
+      if (i > 1) {
+        result$nodes <<- c(result$nodes, result$nodes[childnodes + 1])
+        childnodes <- length(result$nodes) - 1 - length(x$objects) + seq_along(x$objects)
+      }
+      node$children <- childnodes
+      result$nodes[[child + 1]] <<- node
+    }
+    thisNode$children <- children
+    x$objects <- NULL # They have been copied into their own objects
+    thisNode$extras <- asRGLobj(x)
+    result$nodes[[thisNodeNum + 1]] <<- thisNode
+    thisNodeNum
+  }
+
   result <- previous
   if (!missing(rglscene))
     defaultMaterial <- rglscene$material
   else
     defaultMaterial <- material3d()
 
-  if (spheres)
+  sprites <- FALSE
+  if (spheres <- isRGL(x, "spheres"))
     node <- addSpheres(x)
+  else if (sprites <- isRGL(x, "sprites"))
+    node <- addSprites(x) # only 3D sprites here
   else {
     if (missing(vertices)) {
       if (!missing(x)) {
@@ -413,7 +471,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     mesh <- addMesh(primitives)
     node <- addNode(mesh, matrix = transform, extras = extras)
   }
-  if (is.null(parentNode) && !spheres) {
+  if (is.null(parentNode) && !spheres && !sprites) {
     if (newScene)
       scene <- addScene()
     else
@@ -437,63 +495,8 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   structure(result, class = "gltf")
 }
 
-as.gltf.rglpoints <- function(x, ...) {
-  if (is.null(indices <- x$indices))
-    indices <- seq_len(nrow(x$vertices))
-  as.gltf.default(x = x$vertices,
-                  material = x$material,
-                  points = indices, ...)
-}
-
-as.gltf.rgllinestrip <- function(x, ...) {
-  if (is.null(indices <- x$indices))
-    indices <- seq_len(nrow(x$vertices))
-  n <- length(indices)
-  as.gltf.default(x = x$vertices,
-                  material = x$material,
-                  segments = rbind(indices[-n],
-                                   indices[-1]),
-                  ...)
-}
-
-as.gltf.rgllines <- function(x, ...) {
-  if (is.null(indices <- x$indices))
-    indices <- seq_len(nrow(x$vertices))
-  as.gltf.default(x = x$vertices,
-                  material = x$material,
-                  segments = matrix(indices, nrow = 2),
-                  ...)
-}
-
-as.gltf.rgltriangles <- function(x, ...) {
-  if (is.null(indices <- x$indices))
-    indices <- seq_len(nrow(x$vertices))
-  as.gltf.default(x = x$vertices,
-                  normals = x$normals,
-                  texcoords = x$texcoords,
-                  material = x$material,
-                  triangles = matrix(indices, nrow = 3),
-                  ...)
-}
-
-as.gltf.rglquads <- function(x, ...) {
-  if (is.null(indices <- x$indices))
-    indices <- seq_len(nrow(x$vertices))
-  as.gltf.default(x = x$vertices,
-                  normals = x$normals,
-                  texcoords = x$texcoords,
-                  material = x$material,
-                  quads = matrix(indices, nrow = 4),
-                  ...)
-}
-
-as.gltf.rglspheres <- function(x, previous = list(), parentNode = NULL, scale = c(1,1,1), ...) {
-  as.gltf.default(x, spheres = TRUE,
-                  previous = previous,
-                  parentNode = parentNode,
-                  scale = scale,
-                  ...)
-}
+as.gltf.rglspheres <- function(x, ...)
+  as.gltf.default(x, ...)
 
 as.gltf.rglsprites <- function(x, scale = c(1,1,1), ...) {
   if (is.null(x$objects)) {
@@ -518,11 +521,9 @@ as.gltf.rglsprites <- function(x, scale = c(1,1,1), ...) {
                     quads = matrix(seq_len(4*n), nrow=4),
                     extras = asRGLobj(x),
                     ...
-                    )
-  } else {
-    warning("3D sprites are not handled yet")
-    as.gltf.default(extras = asRGLobj(x), ...)
-  }
+    )
+  } else  # 3D sprites are handled by the default method
+    as.gltf.default(x, scale = scale, ...)
 }
 
 as.gltf.rglsubscene <- function(x, previous = list(), rglscene = list(), parentNode = NULL, ...) {
@@ -601,6 +602,38 @@ as.gltf.rglobject <- function(x, ..., previous = list()) {
   # Some objects can't be converted
   if (x$type %in% c("light")) {
     # do nothing
+  } else if (x$type %in% c("points", "linestrip", "lines",
+                           "triangles", "quads")) {
+    if (is.null(indices <- x$indices))
+      indices <- seq_len(nrow(x$vertices))
+    n <- length(indices)
+    points <- NULL
+    segments <- NULL
+    triangles <- NULL
+    quads <- NULL
+    switch(x$type,
+      points =    { points <- indices },
+      linestrip = { segments <- rbind(indices[-n],
+                                     indices[-1])},
+      lines =     { segments <- matrix(indices, nrow = 2)},
+      triangles = { triangles <- matrix(indices, nrow = 3)},
+      quads =     { quads <- matrix(indices, nrow = 4)})
+
+    vertices <- x$vertices
+    texcoords <- x$texcoords
+    normals <- x$normals
+    x$vertices <- x$texcoords <- x$normals <- x$indices <- NULL
+    previous <- as.gltf.default(x = vertices,
+                    texcoords = texcoords,
+                    normals = normals,
+                    material = x$material,
+                    points = points,
+                    segments = segments,
+                    triangles = triangles,
+                    quads = quads,
+                    extras = asRGLobj(x),
+                    previous = previous,
+                    ...)
   } else {
     # Not a type we know how to handle yet; try to convert to a mesh first
     m <- as.mesh3d(x)
@@ -614,6 +647,13 @@ as.gltf.rglobject <- function(x, ..., previous = list()) {
 }
 
 as.gltf.rglscene <- function(x, ..., previous = list(), newScene = FALSE) {
+  if (!is.null(x$material)) {
+    if (is.null(previous$extras))
+      previous$extras <- list()
+    if (is.null(previous$extras$RGL_material))
+      previous$extras$RGL_material <- x$material
+  }
+
   previous <- as.gltf(x$rootSubscene, previous = previous, newScene = newScene, rglscene = x)
   previous
 }

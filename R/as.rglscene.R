@@ -3,6 +3,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE, ...) {
 
   matdiff <- function(mat) {
+    if (is.null(defaultmaterial))
+      defaultmaterial <<- mat
     for (m in names(mat)) {
       if (identical(mat[[m]], defaultmaterial[[m]]))
         mat[[m]] <- NULL
@@ -148,12 +150,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   applyidTranslations <- function(sub) {
     if (!is.null(idTranslations))
-      sub$par3d$listeners <- idTranslations[as.character(sub$par3d$listeners)]
+      sub$par3d$listeners <- as.integer(idTranslations[as.character(sub$par3d$listeners)])
     sub
   }
 
   getId <- function(oldid) {
-    lastid <<- lastid + 1
+    lastid <<- lastid + 1L
     if (!is.null(oldid))
       saveTranslation(oldid, lastid)
     lastid
@@ -208,7 +210,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   newSubscene <- function(parent) {
     result <- structure(list(id = getId(NULL),
-                   par3d = list()),
+                             type = "subscene",
+                             par3d = list()),
               class = c("rglsubscene", "rglobject"))
     if (missing(parent)) { # i.e. root
       result$embeddings <- c(viewport = "replace",
@@ -216,7 +219,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              model = "replace",
                              mouse = "replace")
       result$par3d$windowRect <- getDefaults("par3d", "windowRect",
-          c(x = 0, y = 40, width = 512, height = 552))
+          c(x = 0, y = 40, width = 256, height = 296))
       result$par3d$viewport <- getDefaults("par3d", "windowRect", result$par3d$windowRect - c(0, 40, 0, 40))
       result$par3d$userMatrix <- diag(4)
     } else {
@@ -231,7 +234,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result
   }
 
-  processPrimitive <- function(prim, transform) {
+  primToRglobj <- function(prim, transform) {
     class(prim) <- "gltfPrimitive"
 
     if (!is.null(prim$targets)) {
@@ -270,6 +273,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     }
 
     positions <- asEuclidean(asHomogeneous(positions) %*% t(transform))
+    colnames(positions) <- c("x", "y", "z")
 
     if (!is.null(normals)) {
       nt <- transform
@@ -282,51 +286,56 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       mode <- 4
     ninds <- length(indices)
 
-    newobj <- switch(as.character(mode),
-                     "0" = newObj(xyz = positions,    # points
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  material = mat,
-                                  indices = indices,
-                                  type = "points"),
-                     "1" = newObj(xyz = positions,    # segments
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  material = mat,
-                                  indices = indices,
-                                  type = "lines"),
-                     "2" = newObj(x = positions,    # loop
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  material = mat,
-                                  indices = c(indices, indices[1]),
-                                  type = "linestrip"),
-                     "3" = newObj(x = positions,    # strip
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  material = mat,
-                                  indices = indices,
-                                  type = "linestrip"),
-                     "4" = newObj(x = positions,    # triangles
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  material = mat,
-                                  indices = indices,
-                                  type = "triangles"),
-                     "5" = newObj(x = positions,    # triangle strip
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  indices = rbind(indices[-c(ninds, ninds-1)],
-                                                  indices[-c(1, ninds)],
-                                                  indices[-c(1,2)]),
-                                  material = mat),
-                     "6" = newObj(x = positions,    # triangle fan
-                                  normals = normals,
-                                  texcoords = texcoords,
-                                  indices = rbind(indices[1],
-                                                  indices[-c(1, ninds)],
-                                                  indices[-c(1,2)]),
-                                  material = mat))
+    switch(as.character(mode),
+           "0" = newObj(xyz = positions,    # points
+                        normals = normals,
+                        texcoords = texcoords,
+                        material = mat,
+                        indices = indices,
+                        type = "points"),
+           "1" = newObj(xyz = positions,    # segments
+                        normals = normals,
+                        texcoords = texcoords,
+                        material = mat,
+                        indices = indices,
+                        type = "lines"),
+           "2" = newObj(x = positions,    # loop
+                        normals = normals,
+                        texcoords = texcoords,
+                        material = mat,
+                        indices = c(indices, indices[1]),
+                        type = "linestrip"),
+           "3" = newObj(x = positions,    # strip
+                        normals = normals,
+                        texcoords = texcoords,
+                        material = mat,
+                        indices = indices,
+                        type = "linestrip"),
+           "4" = newObj(x = positions,    # triangles
+                        normals = normals,
+                        texcoords = texcoords,
+                        material = mat,
+                        indices = indices,
+                        type = "triangles"),
+           "5" = newObj(x = positions,    # triangle strip
+                        normals = normals,
+                        texcoords = texcoords,
+                        indices = rbind(indices[-c(ninds, ninds-1)],
+                                        indices[-c(1, ninds)],
+                                        indices[-c(1,2)]),
+                        material = mat),
+           "6" = newObj(x = positions,    # triangle fan
+                        normals = normals,
+                        texcoords = texcoords,
+                        indices = rbind(indices[1],
+                                        indices[-c(1, ninds)],
+                                        indices[-c(1,2)]),
+                        material = mat))
+  }
+
+  processPrimitive <- function(prim, transform) {
+
+    newobj <- primToRglobj(prim, transform)
     activeSubscene$objects <<- union(activeSubscene$objects, newobj$id)
     objects <- c(rglscene$objects, list(newobj))
     names(objects)[length(objects)] <- newobj$id
@@ -392,9 +401,45 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     obj
   }
 
+  processSprites <- function(node, parentTransform) {
+    main <- restoreRGLclass(node$extras$RGL_obj)
+    main$id <- getId(main$id)
+    children <- node$children
+    if (!is.null(children)) {
+      firstborn <- x$nodes[[children[[1]] + 1]]
+      children <- unlist(firstborn$children)
+    }
+    saveSubscene <- activeSubscene
+    on.exit(activeSubscene <<- saveSubscene)
+
+    activeSubscene <<- main
+
+    for (child in children)
+      processNode(child, parentTransform)
+
+    main <- activeSubscene
+    main$ids <- main$objects
+    main$objects <- NULL
+    rglscene$objects[[as.character(main$id)]] <<- main
+    # activeSubscene will be restored by on.exit
+  }
+
   processSpecial <- function(node, parentTransform) {
+    primobj <- NULL
+    m <- node$mesh
+    if (!is.null(m)) {
+      mesh <- x$meshes[[m+1]]
+      class(mesh) <- "gltfMesh"
+      if (!is.null(mesh$primitives)) {
+        primobj <- primToRglobj(mesh$primitives[[1]], parentTransform)
+      }
+    }
     newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
+    if (!is.null(primobj)) {
+      newobj <- merge(newobj, primobj)
+      newobj$type <- primobj$type # quads may have changed to triangles
+    }
     activeSubscene$objects <<- c(activeSubscene$objects, newobj$id)
     objects <- c(rglscene$objects, list(newobj))
     names(objects)[length(objects)] <- newobj$id
@@ -421,6 +466,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
     isSubscene <- FALSE
     isSpheres <- FALSE
+    isSprites <- FALSE
+
     if (n %in% convertNodes) {
       isSpecial <- useRGLinfo &&
                    !is.null(node$extras) &&
@@ -428,11 +475,14 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       if (isSpecial) {
         isSubscene <- isRGL(obj, "subscene")
         isSpheres <- isRGL(obj, "spheres")
+        isSprites <- isRGL(obj, "sprites")
       }
       if (isSubscene) {
         saveActive <- activeSubscene
         processSubscene(node, parentTransform)
         transform <- diag(4)
+      } else if (isSprites) {
+        processSprites(node, parentTransform)
       } else if (isSpecial) {
         processSpecial(node, parentTransform)
       } else {
@@ -477,12 +527,14 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   on.exit(closeBuffers(x))
 
-  lastid <- 0
-  rglscene <- list()
+  lastid <- 0L
+  rglscene <- list(material = NULL, rootSubscene = NULL)
 
   activeSubscene <- NULL
 
-  defaultmaterial <- list()
+  defaultmaterial <- NULL
+  if (useRGLinfo && !is.null(x$extras))
+      defaultmaterial <- x$extras$RGL_material
 
   nodes <- sc$nodes
 
@@ -495,6 +547,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     processNode(n, parentTransform = diag(4))
 
   rglscene$rootSubscene <- applyidTranslations(activeSubscene)
+  rglscene$material <- defaultmaterial
 
   structure(rglscene, class = "rglscene")
 }

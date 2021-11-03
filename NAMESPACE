@@ -21,13 +21,10 @@ S3method("as.mesh3d", "gltf")
 S3method("as.gltf", "default")
 S3method("as.gltf", "mesh3d")
 S3method("as.gltf", "shapelist3d")
-S3method("as.gltf", "rglpoints")
-S3method("as.gltf", "rgllinestrip")
-S3method("as.gltf", "rgllines")
-S3method("as.gltf", "rgltriangles")
-S3method("as.gltf", "rglquads")
 
 S3method("as.gltf", "rglobject")
 S3method("as.gltf", "rglscene")
 
 S3method("as.rglscene", "gltf")
+
+S3method("merge", "rglobject")

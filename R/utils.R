@@ -28,7 +28,7 @@ getDefaults <- function(class, value, default) {
 # Works even if the class hasn't been restored yet.
 
 isRGL <- function(obj, type) {
-  if (!is.null(obj)) {
+  if (!missing(obj) && !is.null(obj) && is.list(obj)) {
     rglclass <- paste0("rgl", type)
     identical(obj$class1, rglclass) ||
       identical(obj$type, type) ||
@@ -100,4 +100,13 @@ asRGLobj <- function(x) {
   list(RGL_obj = x)
 }
 
-
+merge.rglobject <- function(x, y) {
+  for (n in setdiff(names(y), names(x)))
+    x[[n]] <- y[[n]]
+  if (is.null(x$material))
+    x$material <- list()
+  if (!is.null(y$material))
+    for (n in setdiff(names(y$material), names(x$material)))
+      x$material[[n]] <- y$material[[n]]
+  x
+}
