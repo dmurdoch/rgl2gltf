@@ -477,3 +477,38 @@ print.gltf <- function(x, verbose = FALSE, names = FALSE, ...) {
   invisible(x)
 }
 
+showtree <- function(gltf) {
+  showNode <- function(n) {
+    node <- nodes[[n+1]]
+    cat(paste(rep(" ", indent), collapse = ""))
+    cat("Node ", n)
+    if (!is.null(extras <- node$extras) &&
+        !is.null(obj <- extras$RGL_obj))
+      cat(" (", obj$type, ")")
+    if (!is.null(name <- node$name))
+      cat(" ", name)
+    if (!is.null(meshnum <- node$mesh)) {
+      mesh <- gltf$meshes[[meshnum + 1]]
+      if (!is.null(mesh$name))
+        cat(" (mesh ", mesh$name, ")")
+    }
+    cat("\n")
+    indent <<- indent + 2
+    for (i in node$children)
+      showNode(i)
+    indent <<- indent - 2
+  }
+  if (!is.null(gltf$nodes)) {
+    nodes <- gltf$nodes
+    isChild <- rep(FALSE, length(nodes))
+    for (i in seq_along(nodes)) {
+      if (!is.null(children <- unlist(nodes[[i]]$children)))
+        isChild[children + 1] <- TRUE
+    }
+    roots <- which(!isChild) - 1
+    for (n in roots) {
+      indent <- 0
+      showNode(n)
+    }
+  }
+}
