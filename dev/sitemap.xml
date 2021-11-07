@@ -22,6 +22,9 @@
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/extractTexture.html</loc>
   </url>
   <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/findName.html</loc>
+  </url>
+  <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/imports.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/readglTF.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/showtree.html</loc>
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/writeglTF.html</loc>
