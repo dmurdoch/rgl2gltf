@@ -4,9 +4,12 @@ findName <- function(pattern, x, path = c()) {
   toIndex <- function(s) {
     if (nchar(s) &&
         substr(s, 1, 1) %in% c(letters, LETTERS, ".", "_") &&
-        grepl("^[[:alnum:]_.]*$", s))
-      paste0("$", s)
-    else
+        grepl("^[[:alnum:]_.]*$", s)) {
+      if (is.recursive(x))
+        paste0("$", s)
+      else
+        paste0("['", s, "']" )
+    } else
       paste0("[['", s, "']]")
   }
   result <- list()

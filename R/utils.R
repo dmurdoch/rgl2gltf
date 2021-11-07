@@ -100,7 +100,7 @@ asRGLobj <- function(x) {
   list(RGL_obj = x)
 }
 
-merge.rglobject <- function(x, y) {
+merge.rglobject <- function(x, y, ...) {
   for (n in setdiff(names(y), names(x)))
     x[[n]] <- y[[n]]
   if (is.null(x$material))
