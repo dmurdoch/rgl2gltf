@@ -85,9 +85,7 @@ The method for \code{"rglscene"} objects can handle most
 objects produced by \code{\link{scene3d}}, but not all
 objects will be handled.  In particular:
 \itemize{
-\item{Lights are ignored.}
-\item{3D sprites are not handled, with a warning.}
-\item{Text, bounding box decorations and backgrounds are saved in \dQuote{extra} fields, so
+\item{Lights, text, bounding box decorations and backgrounds are saved in \dQuote{extra} fields, so
 they can be read by \pkg{rgl2gltf}, but most other
 software will ignore them or only display some parts.}
 \item{Most material properties are also stored in \dQuote{extra}

@@ -341,7 +341,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     material <- x$material
     radii <- rep(x$radii, length = n)
     i <- seq_len(nrow(x$colors))
-    colors <- x$colors[rep(i, length.out = n),]
+    colors <- x$colors[rep(i, length.out = n),,drop = FALSE]
     children <- c()
     primitive <- list(list(attributes = c(POSITION = sphere$vertices,
                                           NORMALS = sphere$vertices,
@@ -601,7 +601,9 @@ as.gltf.rgltext <- function(x, ...) {
 as.gltf.rglobject <- function(x, ..., previous = list()) {
   # Some objects can't be converted
   if (x$type %in% c("light")) {
-    # do nothing
+    previous <- as.gltf.default(extras = asRGLobj(x),
+                                previous = previous,
+                                ...)
   } else if (x$type %in% c("points", "linestrip", "lines",
                            "triangles", "quads")) {
     if (is.null(indices <- x$indices))
