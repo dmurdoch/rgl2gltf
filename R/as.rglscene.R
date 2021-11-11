@@ -3,8 +3,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE, ...) {
 
   matdiff <- function(mat) {
-    if (is.null(defaultmaterial))
-      defaultmaterial <<- mat
     for (m in names(mat)) {
       if (identical(mat[[m]], defaultmaterial[[m]]))
         mat[[m]] <- NULL
@@ -28,14 +26,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                  "5126" = TRUE)
     lens <- c(SCALAR = 1, VEC2 = 2, VEC3 = 3, VEC4 = 4,
               MAT2 = 4, MAT3 = 9, MAT4 = 16)
-    accessor <- x$accessors[[acc+1]]
-    class(accessor) <- "gltfAccessor"
+    accessor <- x$getAccessor(acc)
     if (!is.null(accessor$sparse))
       warning("sparse accessors are not supported.")
-    read <- readBufferview(accessor$bufferView, x)
-    x <<- read[[2]]
-    view <- read[[1]]
-    con <- view$bufferdata
+    view <- x$getBufferview(accessor$bufferView)
+    con <- x$openBufferview(accessor$bufferView)
     ctype <- as.character(accessor$componentType)
     atype <- accessor$type
     type <- types[ctype]
@@ -87,8 +82,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (is.null(n))
       result <- list()
     else {
-      material <- x$materials[[n+1]]
-      class(material) <- "gltfMaterial"
+      material <- x$getMaterial(n)
       result <- list(color = "white", alpha = 1)
       if (!is.null(pbrm <- material$pbrMetallicRoughness)) {
         if (!is.null(col <- unlist(pbrm$baseColorFactor))) {
@@ -97,9 +91,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
         }
         if (!is.null(texture <- pbrm$baseColorTexture)) {
           texturefile <- extractTexture(x, texture$index,
-                                        verbose = FALSE,
-                                        closeConnections = FALSE)
-          x <<- attr(texturefile, "gltf")
+                                        verbose = FALSE)
           mime <- attr(texturefile, "mimeType")
           if (!is.null(mime) && mime != "image/png")
             warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
@@ -343,8 +335,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processMesh <- function(m, transform) {
-    mesh <- x$meshes[[m+1]]
-    class(mesh) <- "gltfMesh"
+    mesh <- x$getMesh(m)
 
     for (p in seq_along(mesh$primitives))
       processPrimitive(mesh$primitives[[p]], transform)
@@ -378,8 +369,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processCamera <- function(cam) {
-    camera <- x$cameras[[cam + 1]]
-    class(camera) <- "gltfCamera"
+    camera <- x$getCamera(cam)
 
     if (camera$type == "orthographic")
       processOrthographic(camera$orthographic)
@@ -406,7 +396,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     main$id <- getId(main$id)
     children <- node$children
     if (!is.null(children)) {
-      firstborn <- x$nodes[[children[[1]] + 1]]
+      firstborn <- x$getNode(children[[1]])
       children <- unlist(firstborn$children)
     }
     saveSubscene <- activeSubscene
@@ -428,8 +418,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     primobj <- NULL
     m <- node$mesh
     if (!is.null(m)) {
-      mesh <- x$meshes[[m+1]]
-      class(mesh) <- "gltfMesh"
+      mesh <- x$getMesh(m)
       if (!is.null(mesh$primitives)) {
         primobj <- primToRglobj(mesh$primitives[[1]], parentTransform)
       }
@@ -454,8 +443,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processNode <- function(n, parentTransform) {
-    node <- x$nodes[[n + 1]]
-    class(node) <- "gltfNode"
+    node <- x$getNode(n)
 
     if (!is.null(node$camera))
       processCamera(node$camera)
@@ -519,13 +507,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     scene <- 0
 
   if (is.null(convertNodes <- nodes))
-    convertNodes <- seq_along(x$nodes) - 1
+    convertNodes <- seq_len(x$listCount("nodes")) - 1
 
-  sc <- x$scenes[[scene + 1]]
+  sc <- x$getScene(scene)
   if (is.null(sc))
     return()
-
-  on.exit(closeBuffers(x))
 
   lastid <- 0L
   rglscene <- list(material = NULL, rootSubscene = NULL)
@@ -534,9 +520,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   defaultmaterial <- list()
   if (useRGLinfo &&
-      !is.null(x$extras) &&
-      !is.null(x$extras$RGL_material))
-    defaultmaterial <- x$extras$RGL_material
+      !is.null(extras <- x$getExtras()) &&
+      !is.null(extras$RGL_material))
+    defaultmaterial <- extras$RGL_material
 
   nodes <- sc$nodes
 

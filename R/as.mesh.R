@@ -227,8 +227,6 @@ as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       processNode(child, transform)
   }
 
-  on.exit(closeBuffers(x))
-
   if (is.null(scene))
     scene <- 0
 
