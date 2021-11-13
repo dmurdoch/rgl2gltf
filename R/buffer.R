@@ -23,15 +23,14 @@ Buffer <- R6Class("Buffer",
         self$setBuffer(0, buffer)
       },
 
+      finalize = function()
+        self$closeBuffers(),
+
       load = function(uri, buf = 0) {
         buffer <- self$getBuffer(buf)
         if (is.null(buffer))
-          buffer <- list()
-        if (!is.null(con <- buffer$con) &&
-            inherits(con, "connection") &&
-            isOpen(con)) {
-          close(con)
-        }
+          buffer <- list(byteLength = 0)
+        self$closeBuffer(buf)
         if (is.character(uri)) {
           bytes <- readBin(uri, "raw", n = file.size(uri))
           buffer$uri <- uri
@@ -53,7 +52,7 @@ Buffer <- R6Class("Buffer",
         writeBin(bytes, con)
       },
 
-      getBuffer = function(buf, default = list()) {
+      getBuffer = function(buf, default = list(byteLength = 0)) {
         buffer <- if (buf + 1 <= length(private$buffers))
           private$buffers[[buf + 1]]
         if (is.null(buffer))
@@ -70,7 +69,11 @@ Buffer <- R6Class("Buffer",
         if (is.null(buffer))
           stop("no such buffer")
         if (is.null(buffer$con)) {
-          if (is.null(buffer$uri)) {
+          if (!is.null(bytes <- buffer$bytes)) {
+            buffer$con <- rawConnection(bytes, open = "r+b")
+            buffer$bytes <- NULL
+            self$setBuffer(buf, buffer)
+          } else if (is.null(buffer$uri)) {
             buffer$con <- rawConnection(raw(0), open = "r+b")
             self$setBuffer(buf, buffer)
           } else
@@ -81,12 +84,19 @@ Buffer <- R6Class("Buffer",
 
       closeBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
-        if (is.null(buffer))
-          stop("no such buffer")
-        if (!is.null(buffer$con)) {
-          close(buffer$con)
+        if (!is.null(buffer) &&
+            !is.null(con <- buffer$con) &&
+            isOpen(con)) {
+          buffer$bytes <- rawConnectionValue(con)
+          close(con)
           buffer$con <- NULL
           self$setBuffer(buf, buffer)
+        }
+      },
+
+      closeBuffers = function() {
+        for (i in seq_along(private$buffers)) {
+          self$closeBuffer(i - 1)
         }
       },
 
@@ -129,6 +139,7 @@ Buffer <- R6Class("Buffer",
         if (acc + 1 > length(private$accessors))
           stop("No such accessor")
         accessor <- self$getAccessor(acc)
+        view <- self$getBufferview(accessor$bufferView)
         con <- self$openBufferview(accessor$bufferView)
         ctype <- as.character(accessor$componentType)
         atype <- accessor$type
@@ -186,6 +197,8 @@ Buffer <- R6Class("Buffer",
           con <- buffer$con <- rawConnection(raw(0), open = "r+b")
         seek(con, byteOffset)
         byteOffset <- bitwAnd(byteOffset + size - 1, bitwNot(size - 1))
+        if (is.null(byteLength))
+          browser()
         if (byteOffset > byteLength) {
           writeBin(raw(byteOffset - byteLength), con)
         }
@@ -207,6 +220,7 @@ Buffer <- R6Class("Buffer",
         if (!is.null(target))
           bufferview$target <- target
         self$setBufferview(length(private$bufferViews), bufferview)
+        length(private$bufferViews) - 1
       },
 
       getType = function(x, useDouble = FALSE) {

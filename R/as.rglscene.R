@@ -10,74 +10,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     mat
   }
 
-  readAccessor <- function(acc) {
-    typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
-                   "5122" = "short", "5123" = "unsigned_short",
-                   "5125" = "unsigned_int", "5126" = "float")
-    types <- c("5120" = "int", "5121" = "int",
-               "5122" = "int", "5123" = "int",
-               "5125" = "int", "5126" = "double")
-    sizes <- c("5120" = 1, "5121" = 1,
-               "5122" = 2, "5123" = 2,
-               "5125" = 4, "5126" = 4)
-    signeds <- c("5120" = TRUE, "5121" = FALSE,
-                 "5122" = TRUE, "5123" = FALSE,
-                 "5125" = TRUE, # not really, but make readBin happy
-                 "5126" = TRUE)
-    lens <- c(SCALAR = 1, VEC2 = 2, VEC3 = 3, VEC4 = 4,
-              MAT2 = 4, MAT3 = 9, MAT4 = 16)
-    accessor <- x$getAccessor(acc)
-    if (!is.null(accessor$sparse))
-      warning("sparse accessors are not supported.")
-    view <- x$getBufferview(accessor$bufferView)
-    con <- x$openBufferview(accessor$bufferView)
-    ctype <- as.character(accessor$componentType)
-    atype <- accessor$type
-    type <- types[ctype]
-    len <- lens[atype]
-    size <- sizes[ctype]
-    signed <- signeds[ctype]
-    count <- accessor$count
-    if (is.null(view$byteStride)) {
-      skip <- 0
-    } else
-      skip <- len*size - view$byteStride
-    if (is.null(byteOffset <- accessor$byteOffset))
-      byteOffset <- 0
-    start <- view$byteOffset + byteOffset
-
-    if (skip == 0) {
-      seek(con, start)
-      values <- readBin(con, type, n = len*count,  size = size,
-                        signed = signed, endian = "little")
-    } else {
-      values <- numeric(count*len)
-      for (i in seq_len(count)) {
-        seek(con, start + (i-1)*view$byteStride)
-        values[(i-1)*len + seq_len(len)] <-
-          readBin(con, type, n = len,  size = size,
-                  signed = signed, endian = "little")
-      }
-    }
-    if (ctype == "5125") { # fix up unsigned integers
-      values[is.na(values)] <- 2^31
-      values[values < 0] <- values[values < 0] + 2^32
-    }
-    if (!is.null(accessor$normalized) && accessor$normalized)
-      values <- switch(ctype,
-             "5120" = (values + 128)/255 - 1, # byte
-             "5121" = values/255,             # u byte
-             "5122" = (values + 2^15)/65535 - 1, # short
-             "5123" = values/65535,           # u short
-                      values)                 # default
-    if (len > 1)
-      if (grepl("MAT", atype)) {
-        values <- matrix(values, ncol = sqrt(len), byrow = TRUE)
-      } else
-        values <- matrix(values, ncol = len, byrow = TRUE)
-    values
-  }
-
   getMaterial <- function(n) {
     if (is.null(n))
       result <- list()
@@ -240,7 +172,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     texcoords <- NULL
     for (a in seq_along(prim$attributes)) {
       attr <- unlist(prim$attributes[a])
-      values <- readAccessor(attr[1])
+      values <- x$readAccessor(attr[1])
       switch (names(attr),
               NORMAL = normals <- values,
               POSITION = positions <- values,
@@ -261,7 +193,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (is.null(prim$indices))
       indices <- seq_len(nrow(positions))
     else {
-      indices <- readAccessor(prim$indices) + 1 # R indices start at 1
+      indices <- x$readAccessor(prim$indices) + 1 # R indices start at 1
     }
 
     positions <- asEuclidean(asHomogeneous(positions) %*% t(transform))

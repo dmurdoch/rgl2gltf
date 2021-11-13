@@ -110,3 +110,6 @@ merge.rglobject <- function(x, y, ...) {
       x$material[[n]] <- y$material[[n]]
   x
 }
+
+is.multicolored <- function(mat)
+  length(unique(mat$color)) > 1 || length(unique(mat$alpha)) > 1
