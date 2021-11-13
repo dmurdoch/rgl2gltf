@@ -77,7 +77,7 @@ Gltf <- R6Class("gltf",
       if (!is.null(mat$emission))
         material$emissiveFactor <- c(col2rgb(mat$emission)/255)
       if (!is.null(mat$texture))
-        pbrMetallicRoughness$baseColorTexture <- addTexture(mat)
+        pbrMetallicRoughness$baseColorTexture <- self$addTexture(mat)
       if (length(pbrMetallicRoughness))
         material$pbrMetallicRoughness <- pbrMetallicRoughness
 
@@ -86,6 +86,35 @@ Gltf <- R6Class("gltf",
       # Include the rest as an extension
       material$extras <- list(RGL_material_properties = mat)
       self$getMaterialNumber(material)
+    },
+
+    addTexture = function(mat) {
+      texture <- list()
+      texture$source <- self$addImage(mat)
+      texture$sampler <- self$addSampler(mat)
+      texture$name <- basename(mat$texture)
+      private$textures <- c(private$textures, list(texture))
+      length(private$textures) - 1
+    },
+
+    addImage = function(mat) {
+      image <- list()
+      bytes <- readBin(mat$texture, "raw", file.size(mat$texture))
+      image$bufferView <- self$addBufferView(bytes, typeUnsignedInt, size = 1)
+      image$mimeType <- "image/png"
+      image$name <- basename(mat$texture)
+      private$images <- c(private$images, list(image))
+      length(private$images) - 1
+    },
+
+    addSampler = function(mat) {
+      sampler <- list()
+      sampler$magFilter <- getFilter(mat$texmagfilter)
+      sampler$minFilter <- getFilter(mat$texminfilter)
+      if (length(sampler)) {
+        private$samplers <- c(private$samplers, list(sampler))
+        length(private$samplers) - 1
+      }
     },
 
     # The material is in glTF format; have
@@ -126,7 +155,7 @@ Gltf <- R6Class("gltf",
     addNode = function(mesh = NULL, matrix = NULL, extras = NULL) {
       node <- list()
       node$mesh <- mesh
-      if (!is.null(matrix))
+      if (!is.null(matrix) && !all(matrix == diag(4)))
         node$matrix <- as.numeric(matrix)
       if (!is.null(extras))
         node$extras <- extras
@@ -201,15 +230,16 @@ Gltf <- R6Class("gltf",
             result$color <- rgb(col[1], col[2], col[3])
             result$alpha <- col[4]
           }
-          if (!is.null(texture <- pbrm$baseColorTexture)) {
-            texturefile <- extractTexture(x, texture$index,
+          if (!is.null(texnum <- pbrm$baseColorTexture)) {
+            texturefile <- extractTexture(self, texnum,
                                           verbose = FALSE)
             mime <- attr(texturefile, "mimeType")
             if (!is.null(mime) && mime != "image/png")
-              warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
+              warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texnum))
             attributes(texturefile) <- NULL
-            result <- c(result, texture = texturefile,
-                        list(gltftexCoord = texture$texCoord))
+            result$texture <- texturefile
+            texture <- self$getTexture(texnum)
+            result$gltftexCoord <- texture$texCoord
           }
         }
         if (!is.null(col <- unlist(material$emissiveFactor)))
@@ -237,6 +267,7 @@ Gltf <- R6Class("gltf",
     meshes = list(),
     materials = list(),
     nodes = list(),
+    samplers = list(),
     scenes = list(),
     textures = list()
   )

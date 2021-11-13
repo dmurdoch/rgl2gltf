@@ -267,7 +267,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       children <- unlist(firstborn$children)
     }
     saveSubscene <- activeSubscene
-    on.exit(activeSubscene <<- saveSubscene)
 
     activeSubscene <<- main
 
@@ -278,7 +277,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     main$ids <- main$objects
     main$objects <- NULL
     rglscene$objects[[as.character(main$id)]] <<- main
-    # activeSubscene will be restored by on.exit
+    activeSubscene <<- saveSubscene
+    activeSubscene$objects <<- c(activeSubscene$objects, main$id)
   }
 
   processSpecial <- function(node, parentTransform) {

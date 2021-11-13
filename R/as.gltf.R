@@ -58,18 +58,6 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     result$writeVectors(col)
   }
 
-  getFilter <- function(filter) {
-    if (!is.null(filter))
-      c("nearest" = 9728, "linear" = 9729,
-        "nearest.mipmap.nearest" = 9984,
-        "linear.mipmap.nearest" = 9985,
-        "nearest.mipmap.linear" = 9986,
-        "linear.mipmap.linear" = 9987)[filter]
-  }
-
-  tnonnull <- function(x)
-    if(!is.null(x)) t(x)
-
   makeSphere <- function(sections = 18, segments = 24) {
     phi <- rep((1:(sections-1))/sections - 0.5, segments)
     theta <- rep(2*(0:(segments-1))/segments, each = sections - 1)
@@ -146,6 +134,11 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
   }
 
   # This handles 3D sprites only
+  # There's one node for the object (thisNodeNum).  It has one child
+  # for each instance of the sprite that includes the translation
+  # and scaling.  Each of those has a node for each of the
+  # component objects within the sprite.
+
   addSprites <- function(x) {
     vertices <- x$vertices
     n <- nrow(vertices)
@@ -160,8 +153,13 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     thisNodeNum <- result$addNode()
     thisNode <- result$getNode(thisNodeNum)
 
-    # Add nodes for each of the children
-    for (i in seq_along(x$objects)) {
+    # Add nodes for each of the objects in the sprite
+    childnodes <- integer(length(x$objects))
+    prevlastnode <- result$listCount("nodes") - 1
+    for (i in seq_along(childnodes)) {
+      # This assumes that if a child adds multiple nodes,
+      # the main one comes first.
+      childnodes[i] <- result$listCount("nodes")
       result <- as.gltf(x$objects[[i]], previous = result,
                           newScene = FALSE,
                           rglscene = rglscene,
@@ -170,9 +168,11 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                           ...)
     }
 
-    childnodes <- result$listCount("nodes") - 1 - length(x$objects) + seq_along(x$objects)
+    # Now remove all those nodes:  they belong lower
+    # in the hierarchy
+
     scene <- result$getScene(result$scene)
-    scene$nodes <- setdiff(scene$nodes, childnodes)
+    scene$nodes <- with(scene, nodes[nodes <= prevlastnode])
     result$setScene(result$scene, scene)
 
     # Add nodes for each rep of the sprite.  Really we'd
@@ -187,14 +187,13 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       node <- result$getNode(child)
       node$scale <- rep(radii[i], 3)/scale
       node$translation <- vertices[i,]
-      browser()
       if (i > 1) {
         for (j in seq_along(childnodes)) {
           prevnode <- result$getNode(childnodes[j])
           newnum <- result$addNode()
-          result$setNode(childnodes[j], prevnode)
+          result$setNode(newnum, prevnode)
+          childnodes[j] <- newnum
         }
-        childnodes <- result$listCount("nodes") - 1 - length(x$objects) + seq_along(x$objects)
       }
       node$children <- childnodes
       result$setNode(child, node)
@@ -238,7 +237,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                             COLOR_0 = if (is.multicolored(material)) writeColors(material)
     ))
 
-    matnum <- result$addMaterial(material)
+    matnum <- result$addMaterial(material, defaultMaterial)
 
     primitives <- c(addPrimitive(points, modePoints),
                     addPrimitive(segments, modeSegments),
@@ -334,7 +333,6 @@ as.gltf.rglbackground <- function(x, ...) {
 }
 
 as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = Gltf$new(), ...) {
-  if (!is.null(parentNode) && parentNode < 0) browser()
   if (!is.null(parentNode) && !is.null(parent <- previous$getNode(parentNode))) {
     subscene <- parent$extras$RGL_obj
     bbox <- subscene$par3d$bbox
@@ -355,6 +353,7 @@ as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = Gltf$new(), ...
           segments = indices,
           parentNode = parentNode,
           previous = previous,
+          material = x$material,
           extras = asRGLobj(x),
           ...)
 }

@@ -121,3 +121,15 @@ matdiff <- function(mat1, mat2) {
   }
   mat1
 }
+
+getFilter <- function(filter) {
+  if (!is.null(filter))
+    c("nearest" = 9728, "linear" = 9729,
+      "nearest.mipmap.nearest" = 9984,
+      "linear.mipmap.nearest" = 9985,
+      "nearest.mipmap.linear" = 9986,
+      "linear.mipmap.linear" = 9987)[filter]
+}
+
+tnonnull <- function(x)
+  if(!is.null(x)) t(x)
