@@ -157,8 +157,68 @@ Gltf <- R6Class("gltf",
       private$scenes[[sc + 1]] <- scene,
 
     setAsset = function(version, generator)
-      private$asset <- list(version = version, generator = generator)
+      private$asset <- list(version = version, generator = generator),
+
+
+    getTransform = function(node, parentTransform) {
+      if (!is.null(node$matrix)) {
+        transform <- matrix(unlist(node$matrix), 4, 4)
+      } else {
+        transform <- diag(4)
+        if (!is.null(node$scale)) {
+          scale <- unlist(node$scale)
+          transform <- t(scaleMatrix(scale[1], scale[2], scale[3])) %*% transform
+        }
+        if (!is.null(node$rotation)) {
+          rot <- unlist(node$rotation)
+          transform <- t(rotationMatrix(rot[4], rot[1], rot[2], rot[3])) %*% transform
+        }
+        if (!is.null(node$translation)) {
+          trans <- unlist(node$translation)
+          transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
+        }
+      }
+      parentTransform %*% transform
+    },
+
+    getRglMaterial = function(n) {
+      if (is.null(n))
+        result <- list()
+      else {
+        material <- self$getMaterial(n)
+        result <- list(color = "white", alpha = 1)
+        if (!is.null(pbrm <- material$pbrMetallicRoughness)) {
+          if (!is.null(col <- unlist(pbrm$baseColorFactor))) {
+            result$color <- rgb(col[1], col[2], col[3])
+            result$alpha <- col[4]
+          }
+          if (!is.null(texture <- pbrm$baseColorTexture)) {
+            texturefile <- extractTexture(x, texture$index,
+                                          verbose = FALSE)
+            mime <- attr(texturefile, "mimeType")
+            if (!is.null(mime) && mime != "image/png")
+              warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
+            attributes(texturefile) <- NULL
+            result <- c(result, texture = texturefile,
+                        list(gltftexCoord = texture$texCoord))
+          }
+        }
+        if (!is.null(col <- unlist(material$emissiveFactor)))
+          result$emission <- rgb(col[1], col[2], col[3])
+        else
+          result$emission <- "black"
+
+        if (!is.null(ext <- material$extras)
+            && !is.null(props <- ext$RGL_material_properties)) {
+          result[names(props)] <- props
+        } else
+          result$specular <- "gray10"
+      }
+      result
+    }
+
   ),
+
   private = list(
     asset = list(),
     cameras = list(),

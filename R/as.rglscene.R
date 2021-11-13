@@ -2,71 +2,6 @@
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE, ...) {
 
-  matdiff <- function(mat) {
-    for (m in names(mat)) {
-      if (identical(mat[[m]], defaultmaterial[[m]]))
-        mat[[m]] <- NULL
-    }
-    mat
-  }
-
-  getMaterial <- function(n) {
-    if (is.null(n))
-      result <- list()
-    else {
-      material <- x$getMaterial(n)
-      result <- list(color = "white", alpha = 1)
-      if (!is.null(pbrm <- material$pbrMetallicRoughness)) {
-        if (!is.null(col <- unlist(pbrm$baseColorFactor))) {
-          result$color <- rgb(col[1], col[2], col[3])
-          result$alpha <- col[4]
-        }
-        if (!is.null(texture <- pbrm$baseColorTexture)) {
-          texturefile <- extractTexture(x, texture$index,
-                                        verbose = FALSE)
-          mime <- attr(texturefile, "mimeType")
-          if (!is.null(mime) && mime != "image/png")
-            warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
-          attributes(texturefile) <- NULL
-          result <- c(result, texture = texturefile,
-                      list(gltftexCoord = texture$texCoord))
-        }
-      }
-      if (!is.null(col <- unlist(material$emissiveFactor)))
-        result$emission <- rgb(col[1], col[2], col[3])
-      else
-        result$emission <- "black"
-
-      if (!is.null(ext <- material$extras)
-          && !is.null(props <- ext$RGL_material_properties)) {
-        result[names(props)] <- props
-      } else
-        result$specular <- "gray10"
-    }
-    result
-  }
-
-  getTransform <- function(node, parentTransform) {
-    if (!is.null(node$matrix)) {
-      transform <- matrix(unlist(node$matrix), 4, 4)
-    } else {
-      transform <- diag(4)
-      if (!is.null(node$scale)) {
-        scale <- unlist(node$scale)
-        transform <- t(scaleMatrix(scale[1], scale[2], scale[3])) %*% transform
-      }
-      if (!is.null(node$rotation)) {
-        rot <- unlist(node$rotation)
-        transform <- t(rotationMatrix(rot[4], rot[1], rot[2], rot[3])) %*% transform
-      }
-      if (!is.null(node$translation)) {
-        trans <- unlist(node$translation)
-        transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
-      }
-    }
-    parentTransform %*% transform
-  }
-
   saveTranslation <- function(oldid, newid) {
     idTranslations <<- c(idTranslations, newid)
     names(idTranslations)[length(idTranslations)] <<- oldid
@@ -94,7 +29,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result <- list(id=getId(oldid), type=type)
 
     if (!(type %in% c("light", "clipplanes"))) {
-      result$material <- matdiff(material)
+      result$material <- matdiff(material, defaultmaterial)
     } else
       lit <- FALSE
 
@@ -166,7 +101,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       # What are prim targets????
       browser()
     }
-    mat <- getMaterial(prim$material)
+    mat <- x$getRglMaterial(prim$material)
     normals <- NULL
     positions <- NULL
     texcoords <- NULL
@@ -380,7 +315,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (!is.null(node$camera))
       processCamera(node$camera)
 
-    transform <- getTransform(node, parentTransform)
+    transform <- x$getTransform(node, parentTransform)
 
     children <- unlist(node$children)
 

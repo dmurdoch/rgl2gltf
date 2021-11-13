@@ -113,3 +113,11 @@ merge.rglobject <- function(x, y, ...) {
 
 is.multicolored <- function(mat)
   length(unique(mat$color)) > 1 || length(unique(mat$alpha)) > 1
+
+matdiff <- function(mat1, mat2) {
+  for (m in names(mat1)) {
+    if (identical(mat1[[m]], mat2[[m]]))
+      mat1[[m]] <- NULL
+  }
+  mat1
+}
