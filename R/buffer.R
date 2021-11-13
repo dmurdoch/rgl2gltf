@@ -193,8 +193,7 @@ Buffer <- R6Class("Buffer",
           self$setBuffer(buf, buffer <- list(byteLength = 0))
         byteLength <- buffer$byteLength
         byteOffset <- byteLength
-        if (is.null(con <- buffer$con))
-          con <- buffer$con <- rawConnection(raw(0), open = "r+b")
+        con <- self$openBuffer(buf)
         seek(con, byteOffset)
         byteOffset <- bitwAnd(byteOffset + size - 1, bitwNot(size - 1))
         if (is.null(byteLength))
@@ -207,6 +206,7 @@ Buffer <- R6Class("Buffer",
         else
           values <- as.integer(values)
         writeBin(values, con, size = size, endian = "little")
+        buffer <- self$getBuffer(buf)
         buffer$byteLength <- byteOffset + length(values)*size
         self$setBuffer(buf, buffer)
         byteOffset
@@ -216,6 +216,9 @@ Buffer <- R6Class("Buffer",
         bufferview <- list()
         bufferview$buffer <- buf
         bufferview$byteLength <- size*length(values)
+
+        buffer <- self$getBuffer(buf)
+
         bufferview$byteOffset <- self$writeBuffer(values, type, size, buf)
         if (!is.null(target))
           bufferview$target <- target

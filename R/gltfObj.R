@@ -27,11 +27,17 @@ Gltf <- R6Class("gltf",
     getNode = function(n)
       structure(private$nodes[[n + 1]], class = "gltfNode"),
 
+    setNode = function(n, node)
+      private$nodes[[n + 1]] <- node,
+
     getCamera = function(cam)
       structure(private$cameras[[cam + 1]], class = "gltfCamera"),
 
     getExtras = function()
       private$extras,
+
+    setExtras = function(extras)
+      private$extras <- extras,
 
     getMesh = function(m)
       structure(private$meshes[[m + 1]], class = "gltfMesh"),
@@ -155,6 +161,9 @@ Gltf <- R6Class("gltf",
 
     setScene = function(sc, scene)
       private$scenes[[sc + 1]] <- scene,
+
+    getAsset = function()
+      private$asset,
 
     setAsset = function(version, generator)
       private$asset <- list(version = version, generator = generator),

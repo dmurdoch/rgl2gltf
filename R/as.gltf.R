@@ -99,13 +99,15 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     sphereAttributes <- list(vertices = result$writeVectors(rbind(x, y, z)),
                              texcoords = result$writeVectors(rbind(s, t)),
                              indices = result$addAccessor(c(it), targetElementArray))
-    result$extras <<- c(result$extras, list(RGL_sphere = sphereAttributes))
+    result$setExtras(c(result$getExtras(), list(RGL_sphere = sphereAttributes)))
   }
 
   addSpheres <- function(x) {
-    if (is.null(result$extras) || is.null(result$extras$RGL_sphere))
+    if (!length(extras <- result$getExtras()) || is.null(extras$RGL_sphere)) {
       makeSphere()
-    sphere <- result$extras$RGL_sphere
+      extras <- result$getExtras()
+    }
+    sphere <- extras$RGL_sphere
 
     vertices <- x$vertices
     n <- nrow(vertices)
@@ -125,15 +127,15 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       matnum <- result$addMaterial(material)
       primitive[[1]]$material <- matnum
       mesh <- result$addMesh(primitive)
-      child <- addNode(mesh)
+      child <- result$addNode(mesh)
       children <- c(children, child)
-      node <- result$nodes[[child + 1]]
+      node <- result$getNode(child)
       node$scale <- rep(radii[i], 3)/scale
       node$translation <- vertices[i,]
-      result$nodes[[child + 1]] <<- node
+      result$setNode(child, node)
     }
-    main <- addNode(extras = asRGLobj(x))
-    node <- result$nodes[[main + 1]]
+    main <- result$addNode(extras = asRGLobj(x))
+    node <- result$getNode(main)
     node$children <- I(children)
     result$setNode(main, node)
     if (newScene)
@@ -168,10 +170,10 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                           ...)
     }
 
-    childnodes <- length(result$nodes) - 1 - length(x$objects) + seq_along(x$objects)
-    scenenodes <- result$scenes[[result$scene + 1]]$nodes
-    scenenodes <- setdiff(scenenodes, childnodes)
-    result$scenes[[result$scene + 1]]$nodes <<- scenenodes
+    childnodes <- result$listCount("nodes") - 1 - length(x$objects) + seq_along(x$objects)
+    scene <- result$getScene(result$scene)
+    scene$nodes <- setdiff(scene$nodes, childnodes)
+    result$setScene(result$scene, scene)
 
     # Add nodes for each rep of the sprite.  Really we'd
     # like to have each of these refer to the child nodes
@@ -180,22 +182,27 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
 
     children <- c()
     for (i in seq_len(n)) {
-      child <- addNode()
+      child <- result$addNode()
       children <- c(children, child)
-      node <- result$nodes[[child + 1]]
+      node <- result$getNode(child)
       node$scale <- rep(radii[i], 3)/scale
       node$translation <- vertices[i,]
+      browser()
       if (i > 1) {
-        result$nodes <<- c(result$nodes, result$nodes[childnodes + 1])
-        childnodes <- length(result$nodes) - 1 - length(x$objects) + seq_along(x$objects)
+        for (j in seq_along(childnodes)) {
+          prevnode <- result$getNode(childnodes[j])
+          newnum <- result$addNode()
+          result$setNode(childnodes[j], prevnode)
+        }
+        childnodes <- result$listCount("nodes") - 1 - length(x$objects) + seq_along(x$objects)
       }
       node$children <- childnodes
-      result$nodes[[child + 1]] <<- node
+      result$setNode(child, node)
     }
     thisNode$children <- children
     x$objects <- NULL # They have been copied into their own objects
     thisNode$extras <- asRGLobj(x)
-    result$nodes[[thisNodeNum + 1]] <<- thisNode
+    result$setNode(thisNodeNum, thisNode)
     thisNodeNum
   }
 
@@ -250,11 +257,11 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
 
     result$addToScene(scene, node)
   } else
-    addChild(parentNode, node)
+    result$addChild(parentNode, node)
 
   result$closeBuffers()
 
-  if (is.null(result$asset))
+  if (!length(result$getAsset()))
     result$setAsset(version = "2.0",
                     generator = paste("rgl2gltf version ", packageVersion("rgl2gltf")))
 
@@ -305,7 +312,7 @@ as.gltf.rglsubscene <- function(x, previous = Gltf$new(), rglscene = list(), par
                   parentNode = parentNode,
                   extras = asRGLobj(x), ...)
 
-  thisNode <- length(previous$nodes) - 1
+  thisNode <- previous$listCount("nodes") - 1
   for (i in seq_along(x$objects)) {
     previous <- as.gltf(rglscene$objects[[as.character(x$objects[i])]], previous = previous,
                         newScene = FALSE,
@@ -327,8 +334,8 @@ as.gltf.rglbackground <- function(x, ...) {
 }
 
 as.gltf.rglbboxdeco <- function(x, parentNode = NULL, previous = Gltf$new(), ...) {
-  if (!is.null(parentNode) && !is.null(parent <- previous$nodes[[parentNode + 1]])) {
-    class(parent) <- "gltfNode"
+  if (!is.null(parentNode) && parentNode < 0) browser()
+  if (!is.null(parentNode) && !is.null(parent <- previous$getNode(parentNode))) {
     subscene <- parent$extras$RGL_obj
     bbox <- subscene$par3d$bbox
     cube <- cube3d()
@@ -416,10 +423,11 @@ as.gltf.rglobject <- function(x, ..., previous = Gltf$new()) {
 
 as.gltf.rglscene <- function(x, ..., previous = Gltf$new(), newScene = FALSE) {
   if (!is.null(x$material)) {
-    if (is.null(previous$extras))
-      previous$extras <- list()
-    if (is.null(previous$extras$RGL_material))
-      previous$extras$RGL_material <- x$material
+    extras <- previous$getExtras()
+    if (is.null(extras$RGL_material)) {
+      extras$RGL_material <- x$material
+      previous$setExtras(extras)
+    }
   }
 
   previous <- as.gltf(x$rootSubscene, previous = previous, newScene = newScene, rglscene = x)
