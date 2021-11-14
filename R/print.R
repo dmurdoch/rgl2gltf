@@ -28,7 +28,9 @@ other <- c("name", "extensions", "extras")
 catother <- function(obj) {
   catstring(obj$name, "    name: %s\n")
   catstring(obj$extensions, "  extensions %s\n")
-  catstring(obj$extras,     "  extras %s\n")
+  showExtras <- getOption("rgl2gltf.showExtras", TRUE)
+  if (showExtras)
+    catstring(obj$extras,     "  extras %s\n")
 }
 
 catmode <- function(mode, string) {
@@ -275,7 +277,7 @@ print.gltfImage <- function(x, ...) {
             "    Other image fields:  %s.\n")
 }
 
-Gltf$set("public", "print", function(verbose = FALSE, names = FALSE, ...) {
+Gltf$set("public", "print", function(verbose = FALSE, names = FALSE, showExtras = TRUE, ...) {
 
   shownames <- function(sec) {
     if (!is.null(private[[sec]]) && sec %in% namefields) {
@@ -286,6 +288,9 @@ Gltf$set("public", "print", function(verbose = FALSE, names = FALSE, ...) {
       }
     }
   }
+
+  saveopt <- options(rgl2gltf.showExtras = showExtras)
+  on.exit(options(saveopt))
 
   knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
   if (!is.logical(verbose)) {

@@ -254,6 +254,20 @@ Gltf <- R6Class("gltf",
           result$specular <- "gray10"
       }
       result
+    },
+
+    as.list = function() {
+      result <- list()
+      for (n in names(private)) {
+        thelist <- private[[n]]
+        if (length(thelist)) {
+          for (i in seq_along(thelist))
+            thelist[[i]] <- unclass(thelist[[i]])
+          result[[n]] <- thelist
+        }
+      }
+      result$scene <- unclass(self$scene)
+      result
     }
 
   ),
