@@ -19,7 +19,7 @@ would produce, or a "mesh3d" object.'><meta name="robots" content="noindex"><!--
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.5</span>
       </span>
     </div>
 
@@ -71,21 +71,21 @@ would produce, or a <code>"mesh3d"</code> object.</p>
     <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
-    <p></p>
-<dl><dt>x</dt><dd><p>The <code>"gltf"</code> object to convert.</p></dd>
-</dl><p></p>
-<dl><dt>scene</dt><dd><p>Which scene to convert?  If <code>NULL</code> (e.g.
+    <dl><dt>x</dt>
+<dd><p>The <code>"gltf"</code> object to convert.</p></dd>
+<dt>scene</dt>
+<dd><p>Which scene to convert?  If <code>NULL</code> (e.g.
 <code>x</code> doesn't define a default scene), scene 0 will be used.</p></dd>
-</dl><p></p>
-<dl><dt>nodes</dt><dd><p>Which nodes to convert? If <code>NULL</code>, all
+<dt>nodes</dt>
+<dd><p>Which nodes to convert? If <code>NULL</code>, all
   nodes used in the scene will be converted, otherwise only
   the listed ones and their children.</p></dd>
-</dl><p></p>
-<dl><dt>useRGLinfo</dt><dd><p><code>"gltf"</code> objects contain RGL-specific information
+<dt>useRGLinfo</dt>
+<dd><p><code>"gltf"</code> objects contain RGL-specific information
 in “extra” fields.  If <code>useRGLinfo</code> is <code>TRUE</code>, we use
 that information, otherwise include only what standard glTF viewers would display.</p></dd>
-</dl><p></p>
-<dl><dt>...</dt><dd><p>Currently unused.</p></dd>
+<dt>...</dt>
+<dd><p>Currently unused.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

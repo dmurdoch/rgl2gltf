@@ -18,7 +18,7 @@ to a file."><meta name="robots" content="noindex"><!-- mathjax --><script src="h
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.5</span>
       </span>
     </div>
 
@@ -63,33 +63,28 @@ to a file.</p>
 
     <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">extractTexture</span><span class="op">(</span><span class="va">gltf</span>, index <span class="op">=</span> <span class="fl">0</span>,
                outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span>,
-               verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-               closeConnections <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+               verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 
     <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
-    <p></p>
-<dl><dt>gltf</dt><dd><p>The gltf object.</p></dd>
-</dl><p></p>
-<dl><dt>index</dt><dd><p>The texture number (starting from 0).</p></dd>
-</dl><p></p>
-<dl><dt>outfile</dt><dd><p>The filename to write to.  If <code>outfile</code> has no
+    <dl><dt>gltf</dt>
+<dd><p>The gltf object.</p></dd>
+<dt>index</dt>
+<dd><p>The texture number (starting from 0).</p></dd>
+<dt>outfile</dt>
+<dd><p>The filename to write to.  If <code>outfile</code> has no
 file extension, one will be added based on the MIME type
 of the texture.</p></dd>
-</dl><p></p>
-<dl><dt>verbose</dt><dd><p>Whether to report on success.</p></dd>
-</dl><p></p>
-<dl><dt>closeConnections</dt><dd><p>Close all connections in <code>gltf</code> on exit.</p></dd>
+<dt>verbose</dt>
+<dd><p>Whether to report on success.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns the filename that was written, or <code>NULL</code>
-if the request failed.</p>
-<p>If <code>closeConnections = FALSE</code>, the filename will have
-attribute <code>"gltf"</code> containing the <code>gltf</code>
-object which might now contain a new open connection.</p>
-<p>If the texture has a recorded MIME type in <code>gltf</code>,
+    <p>Returns the filename that was written, or <code>NULL</code>if the request failed.
+If <code>closeConnections = FALSE</code>, the filename will have
+attribute <code>"gltf"</code> containing the <code>gltf</code>object which might now contain a new open connection.
+If the texture has a recorded MIME type in <code>gltf</code>,
 that will be returned in attribute <code>"mimeType"</code>.</p>
     </div>
     </div>

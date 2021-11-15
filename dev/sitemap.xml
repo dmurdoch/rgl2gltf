@@ -13,6 +13,12 @@
     <loc>https://dmurdoch.github.io/rgl2gltf/index.html</loc>
   </url>
   <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/Buffer.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/Gltf.html</loc>
+  </url>
+  <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/as.gltf.html</loc>
   </url>
   <url>
@@ -29,9 +35,6 @@
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/reference/print.gltf.html</loc>
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/readGLB.html</loc>

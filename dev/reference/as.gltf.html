@@ -4,7 +4,7 @@ scene.  This function creates the R structure corresponding to
 one, and writes the binary buffer file for it."><meta name="robots" content="noindex"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]--><!-- dependencies from examples --><script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><script src="libs/rglWebGL-binding-0.107.25/rglWebGL.js"></script><link href="libs/rglwidgetClass-0.107.25/rgl.css" rel="stylesheet"><script src="libs/rglwidgetClass-0.107.25/rglClass.min.js"></script><script src="libs/CanvasMatrix4-0.107.25/CanvasMatrix.min.js"></script></head><body data-spy="scroll" data-target="#toc">
+<![endif]--><!-- dependencies from examples --><script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><script src="libs/rglWebGL-binding-0.107.26/rglWebGL.js"></script><link href="libs/rglwidgetClass-0.107.26/rgl.css" rel="stylesheet"><script src="libs/rglwidgetClass-0.107.26/rglClass.min.js"></script><script src="libs/CanvasMatrix4-0.107.26/CanvasMatrix.min.js"></script></head><body data-spy="scroll" data-target="#toc">
     
 
     <div class="container template-reference-topic">
@@ -19,7 +19,7 @@ one, and writes the binary buffer file for it."><meta name="robots" content="noi
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.5</span>
       </span>
     </div>
 
@@ -77,14 +77,14 @@ one, and writes the binary buffer file for it.</p>
                             extras <span class="op">=</span> <span class="cn">NULL</span>,
                             <span class="va">...</span>,
                             rglscene <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-                            previous <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
+                            previous <span class="op">=</span> <span class="va"><a href="Gltf.html">Gltf</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
                             newScene <span class="op">=</span> <span class="cn">FALSE</span>,
                             parentNode <span class="op">=</span> <span class="cn">NULL</span>,
                             dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
                             scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># S3 method for rglscene</span>
-<span class="fu">as.gltf</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, previous <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
+<span class="fu">as.gltf</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, previous <span class="op">=</span> <span class="va"><a href="Gltf.html">Gltf</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>,
                             newScene <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co"># S3 method for mesh3d</span>
 <span class="fu">as.gltf</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
@@ -92,54 +92,56 @@ one, and writes the binary buffer file for it.</p>
     <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
-    <p></p>
-<dl><dt>x</dt><dd><p>An object to convert to a <code>"gltf"</code> object.</p></dd>
-</dl><p></p>
-<dl><dt>y, z</dt><dd><p>In the default method, combined with <code>x</code>
+    <dl><dt>x</dt>
+<dd><p>An object to convert to a <code>"gltf"</code> object.</p></dd>
+<dt>y, z</dt>
+<dd><p>In the default method, combined with <code>x</code>
 to make coordinates.  Any reasonable way of defining the coordinates is acceptable. See the function <code><a href="https://rdrr.io/r/grDevices/xyz.coords.html" class="external-link">xyz.coords</a></code> for details.</p></dd>
-</dl><p></p>
-<dl><dt>vertices</dt><dd><p>A 3 or 4 row matrix of Euclidean or homogeneous coordinates; takes
+<dt>vertices</dt>
+<dd><p>A 3 or 4 row matrix of Euclidean or homogeneous coordinates; takes
   precedence over <code>x, y, z</code>.</p></dd>
-</dl><p></p>
-<dl><dt>material</dt><dd><p>material properties for rendering</p></dd>
-</dl><p></p>
-<dl><dt>normals</dt><dd><p>normals at each vertex as a 3 or 4 <b>column</b> matrix</p></dd>
-</dl><p></p>
-<dl><dt>texcoords</dt><dd><p>texture coordinates at each vertex as a 2 column matrix</p></dd>
-</dl><p></p>
-<dl><dt>points</dt><dd><p>vector of indices of vertices to draw as points</p></dd>
-</dl><p></p>
-<dl><dt>segments</dt><dd><p>2 x n matrix of indices of vertices to draw as
+<dt>material</dt>
+<dd><p>material properties for rendering</p></dd>
+<dt>normals</dt>
+<dd><p>normals at each vertex as a 3 or 4 <b>column</b> matrix</p></dd>
+<dt>texcoords</dt>
+<dd><p>texture coordinates at each vertex as a 2 column matrix</p></dd>
+<dt>points</dt>
+<dd><p>vector of indices of vertices to draw as points</p></dd>
+<dt>segments</dt>
+<dd><p>2 x n matrix of indices of vertices to draw as
   segments</p></dd>
-</dl><p></p>
-<dl><dt>triangles</dt><dd><p>3 x n matrix of indices of vertices to draw
+<dt>triangles</dt>
+<dd><p>3 x n matrix of indices of vertices to draw
   as triangles</p></dd>
-</dl><p></p>
-<dl><dt>quads</dt><dd><p>4 x n matrix of indices of vertices to draw as quads</p></dd>
-</dl><p></p>
-<dl><dt>transform</dt><dd><p>4 x 4 matrix associated with this object
+<dt>quads</dt>
+<dd><p>4 x n matrix of indices of vertices to draw as quads</p></dd>
+<dt>transform</dt>
+<dd><p>4 x 4 matrix associated with this object
   (e.g. a subscene)</p></dd>
-</dl><p></p>
-<dl><dt>extras</dt><dd><p>A list to attach as <code>extras</code> component to
+<dt>extras</dt>
+<dd><p>A list to attach as <code>extras</code> component to
   the result</p></dd>
-</dl><p></p>
-<dl><dt>...</dt><dd><p>Other parameters passed to the default method.</p></dd>
-</dl><p></p>
-<dl><dt>rglscene</dt><dd><p>The RGL scene this came from, e.g. to look
+<dt>...</dt>
+<dd><p>Other parameters passed to the default method.</p></dd>
+<dt>rglscene</dt>
+<dd><p>The RGL scene this came from, e.g. to look
   up defaults</p></dd>
-</dl><p></p>
-<dl><dt>previous</dt><dd><p>Optionally a previously produced <code>"gltf"</code> object;
+<dt>previous</dt>
+<dd><p>Optionally a previously produced <code>"gltf"</code> object;
 the new geometry will be added to it.</p></dd>
-</dl><dl><dt>newScene</dt><dd><p>logical; if <code>TRUE</code>, add a new
+<dt>newScene</dt>
+<dd><p>logical; if <code>TRUE</code>, add a new
 scene to <code>previous</code>, otherwise try to add to the existing
 scene.</p></dd>
-</dl><dl><dt>parentNode</dt><dd><p>If not <code>NULL</code>, add the new object
+<dt>parentNode</dt>
+<dd><p>If not <code>NULL</code>, add the new object
 as a child of this node, otherwise add to the first node of the
 default scene.</p></dd>
-</dl><p></p>
-<dl><dt>dir</dt><dd><p>Where to write the binary buffer file.</p></dd>
-</dl><p></p>
-<dl><dt>scale</dt><dd><p>Rescaling in the enclosing subscene.</p></dd>
+<dt>dir</dt>
+<dd><p>Where to write the binary buffer file.</p></dd>
+<dt>scale</dt>
+<dd><p>Rescaling in the enclosing subscene.</p></dd>
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -174,8 +176,9 @@ use.</p>
     <div class="ref-examples sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">cube</span> <span class="op">&lt;-</span> <span class="fu">rgl</span><span class="fu">::</span><span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/matrices.html" class="external-link">rotate3d</a></span><span class="op">(</span><span class="fu">rgl</span><span class="fu">::</span><span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/cube3d.html" class="external-link">cube3d</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span>, <span class="op">-</span><span class="va">pi</span><span class="op">/</span><span class="fl">10</span>, <span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">gltf</span> <span class="op">&lt;-</span> <span class="fu">as.gltf</span><span class="op">(</span><span class="va">cube</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu">rgl</span><span class="fu">::</span><span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/plot3d.html" class="external-link">plot3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span></span>
-<div id="rgl78643" style="width:480px;height:480px;" class="rglWebGL html-widget"></div>
-<script type="application/json" data-for="rgl78643">{"x":{"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":true,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0],"margin":"","floating":false,"tag":""},"rootSubscene":7,"objects":{"13":{"id":13,"type":"triangles","material":{},"vertices":[[-1,-0.64203953742981,-1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[1,1.26007354259491,-0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[1,-1.26007354259491,0.64203953742981],[-1,0.64203953742981,1.26007354259491],[1,0.64203953742981,1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[-1,1.26007354259491,-0.64203953742981],[1,1.26007354259491,-0.64203953742981],[1,-0.64203953742981,-1.26007354259491],[1,1.26007354259491,-0.64203953742981],[1,0.64203953742981,1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[1,0.64203953742981,1.26007354259491],[-1,-0.64203953742981,-1.26007354259491],[-1,0.64203953742981,1.26007354259491],[-1,-0.64203953742981,-1.26007354259491],[-1,0.64203953742981,1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[-1,-0.64203953742981,-1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[1,-1.26007354259491,0.64203953742981],[-1,-0.64203953742981,-1.26007354259491],[1,-1.26007354259491,0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[1,-1.26007354259491,0.64203953742981],[1,0.64203953742981,1.26007354259491],[-1,-1.26007354259491,0.64203953742981],[1,0.64203953742981,1.26007354259491],[-1,0.64203953742981,1.26007354259491]],"colors":[[1,0,0,1]],"centers":[[-0.333333343267441,0.626035869121552,-0.848050951957703],[0.333333343267441,-0.00800184439867735,-1.05406224727631],[-0.333333343267441,0.848050951957703,0.626035869121552],[0.333333343267441,1.05406224727631,-0.00800184439867735],[1,0.420024514198303,-0.214013189077377],[1,-0.420024514198303,0.214013189077377],[-1,-0.420024514198303,0.214013189077377],[-1,0.420024514198303,-0.214013189077377],[0.333333343267441,-0.848050951957703,-0.626035869121552],[-0.333333343267441,-1.05406224727631,0.00800184439867735],[0.333333343267441,-0.626035869121552,0.848050951957703],[-0.333333343267441,0.00800184439867735,1.05406224727631]],"indices":[[1],[3],[4],[1],[4],[2],[9],[7],[8],[10],[8],[11],[12],[13],[14],[15],[16],[6],[17],[5],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],[32],[33]],"normals":[[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[-1,0,0],[1,0,0],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236]],"ignoreExtent":false,"flags":32771},"11":{"id":11,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"10":{"id":10,"type":"background","material":{},"colors":[[0.298039227724075,0.298039227724075,0.298039227724075,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","fogscale":1,"flags":32768},"12":{"id":12,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","fogscale":1,"flags":32768},"7":{"id":7,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":7,"mouseMode":{"none":"none","left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,7.8951735496521],"modelMatrix":[[1,0,0,0],[0,1,0,0],[0,0,1,-7.8951735496521],[0,0,0,1]],"projMatrix":[[3.73205089569092,0,0,0],[0,3.73205089569092,0,0],[0,0,-3.86370325088501,-28.4611873626709],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[1,1,1],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[-1,1,-1.26007354259491,1.26007354259491,-1.26007354259491,1.26007354259491],"windowRect":[0,45,256,301],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/System/Library/Fonts/Supplemental/Arial.ttf","maxClipPlanes":6,"glVersion":2.1,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[12,13,11],"subscenes":[],"flags":33027}},"crosstalk":{"key":[],"group":[],"id":[],"options":[]},"width":480,"height":480,"context":{"shiny":false,"rmarkdown":null},"players":[],"webGLoptions":{"preserveDrawingBuffer":true}},"evals":[],"jsHooks":[]}</script></code></pre></div>
+<div id="rgl10475" style="width:480px;height:480px;" class="rglWebGL html-widget"></div>
+<script type="application/json" data-for="rgl10475">{"x":{"material":{"color":"#000000","alpha":1,"lit":true,"ambient":"#000000","specular":"#FFFFFF","emission":"#000000","shininess":50,"smooth":true,"front":"filled","back":"filled","size":3,"lwd":1,"fog":true,"point_antialias":false,"line_antialias":false,"texture":null,"textype":"rgb","texmipmap":false,"texminfilter":"linear","texmagfilter":"linear","texenvmap":false,"depth_mask":true,"depth_test":"less","isTransparent":false,"polygon_offset":[0,0],"margin":"","floating":false,"tag":""},"rootSubscene":7,"objects":{"13":{"id":13,"type":"triangles","material":{},"vertices":[[-1,-0.64203953742981,-1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[1,1.26007354259491,-0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[1,-1.26007354259491,0.64203953742981],[-1,0.64203953742981,1.26007354259491],[1,0.64203953742981,1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[-1,1.26007354259491,-0.64203953742981],[1,1.26007354259491,-0.64203953742981],[1,-0.64203953742981,-1.26007354259491],[1,1.26007354259491,-0.64203953742981],[1,0.64203953742981,1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[1,0.64203953742981,1.26007354259491],[-1,-0.64203953742981,-1.26007354259491],[-1,0.64203953742981,1.26007354259491],[-1,-0.64203953742981,-1.26007354259491],[-1,0.64203953742981,1.26007354259491],[-1,1.26007354259491,-0.64203953742981],[-1,-0.64203953742981,-1.26007354259491],[1,-0.64203953742981,-1.26007354259491],[1,-1.26007354259491,0.64203953742981],[-1,-0.64203953742981,-1.26007354259491],[1,-1.26007354259491,0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[-1,-1.26007354259491,0.64203953742981],[1,-1.26007354259491,0.64203953742981],[1,0.64203953742981,1.26007354259491],[-1,-1.26007354259491,0.64203953742981],[1,0.64203953742981,1.26007354259491],[-1,0.64203953742981,1.26007354259491]],"colors":[[1,0,0,1]],"centers":[[-0.333333343267441,0.626035869121552,-0.848050951957703],[0.333333343267441,-0.00800184439867735,-1.05406224727631],[-0.333333343267441,0.848050951957703,0.626035869121552],[0.333333343267441,1.05406224727631,-0.00800184439867735],[1,0.420024514198303,-0.214013189077377],[1,-0.420024514198303,0.214013189077377],[-1,-0.420024514198303,0.214013189077377],[-1,0.420024514198303,-0.214013189077377],[0.333333343267441,-0.848050951957703,-0.626035869121552],[-0.333333343267441,-1.05406224727631,0.00800184439867735],[0.333333343267441,-0.626035869121552,0.848050951957703],[-0.333333343267441,0.00800184439867735,1.05406224727631]],"indices":[[1],[3],[4],[1],[4],[2],[9],[7],[8],[10],[8],[11],[12],[13],[14],[15],[16],[6],[17],[5],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],[32],[33]],"normals":[[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[0,0.30901700258255,-0.95105654001236],[-1,0,0],[1,0,0],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[0,0.95105654001236,0.30901700258255],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[-1,0,0],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.95105654001236,-0.30901700258255],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236],[0,-0.30901700258255,0.95105654001236]],"ignoreExtent":false,"flags":32771},"11":{"id":11,"type":"light","vertices":[[0,0,1]],"colors":[[1,1,1,1],[1,1,1,1],[1,1,1,1]],"viewpoint":true,"finite":false},"10":{"id":10,"type":"background","material":{},"colors":[[0.298039227724075,0.298039227724075,0.298039227724075,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","fogscale":1,"flags":32768},"12":{"id":12,"type":"background","material":{"lit":false,"back":"lines"},"colors":[[1,1,1,1]],"centers":[[0,0,0]],"sphere":false,"fogtype":"none","fogscale":1,"flags":32768},"7":{"id":7,"type":"subscene","par3d":{"antialias":8,"FOV":30,"ignoreExtent":false,"listeners":7,"mouseMode":{"none":"none","left":"trackball","right":"zoom","middle":"fov","wheel":"pull"},"observer":[0,0,7.8951735496521],"modelMatrix":[[1,0,0,0],[0,1,0,0],[0,0,1,-7.8951735496521],[0,0,0,1]],"projMatrix":[[3.73205089569092,0,0,0],[0,3.73205089569092,0,0],[0,0,-3.86370325088501,-28.4611873626709],[0,0,-1,0]],"skipRedraw":false,"userMatrix":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"userProjection":[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],"scale":[1,1,1],"viewport":{"x":0,"y":0,"width":1,"height":1},"zoom":1,"bbox":[-1,1,-1.26007354259491,1.26007354259491,-1.26007354259491,1.26007354259491],"windowRect":[0,45,256,301],"family":"sans","font":1,"cex":1,"useFreeType":true,"fontname":"/System/Library/Fonts/Supplemental/Arial.ttf","maxClipPlanes":6,"glVersion":2.1,"activeSubscene":0},"embeddings":{"viewport":"replace","projection":"replace","model":"replace","mouse":"replace"},"objects":[12,13,11],"subscenes":[],"flags":33027}},"crosstalk":{"key":[],"group":[],"id":[],"options":[]},"width":480,"height":480,"context":{"shiny":false,"rmarkdown":null},"players":[],"webGLoptions":{"preserveDrawingBuffer":true}},"evals":[],"jsHooks":[]}</script><span class="r-in"><span class="va">gltf</span><span class="op">$</span><span class="fu">closeBuffers</span><span class="op">(</span><span class="op">)</span></span>
+</code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
