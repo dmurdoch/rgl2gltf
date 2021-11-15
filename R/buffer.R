@@ -7,10 +7,20 @@ typeUnsignedInt   <- 5125
 typeFloat         <- 5126
 typeDouble        <- 5130  # Not supported in glTF
 
+#' @title R6 Class for binary buffers in glTF files.
+#'
+#' @description
+#' These files typically have one buffer holding all the
+#' binary data for a scene.
 
 Buffer <- R6Class("Buffer",
     public = list(
 
+#' @param json
+#'   list read from glTF file.
+#' @param binfile
+#'   optional external binary file.
+#'
       initialize = function(json = NULL, binfile = NULL) {
         if (!is.null(json)) {
           private$buffers <- json$buffers
@@ -23,9 +33,12 @@ Buffer <- R6Class("Buffer",
         self$setBuffer(0, buffer)
       },
 
-      finalize = function()
-        self$closeBuffers(),
-
+#' @description
+#'   Load from file.
+#'
+#' @param uri Which file to load.
+#' @param buf Which buffer number to load.
+#'
       load = function(uri, buf = 0) {
         buffer <- self$getBuffer(buf)
         if (is.null(buffer))
@@ -41,7 +54,15 @@ Buffer <- R6Class("Buffer",
         self$setBuffer(buf, buffer)
       },
 
-      save = function(con, buf = 0) {
+#' @description
+#'   Write open buffer to connection.
+#'
+#' @param con
+#'   Output connection.
+#' @param buf
+#'   Buffer number.
+#'
+      saveOpenBuffer = function(con, buf = 0) {
         buffer <- self$getBuffer(buf)
         if (is.null(buffer) ||
             is.null(con0 <- buffer$con) ||
@@ -52,6 +73,15 @@ Buffer <- R6Class("Buffer",
         writeBin(bytes, con)
       },
 
+#' @description
+#'   Get buffer object
+#'
+#' @param buf Buffer number
+#' @param default Default buffer object if `buf` not found
+#'
+#' @return A list containing components described here:
+#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer}
+#'
       getBuffer = function(buf, default = list(byteLength = 0)) {
         buffer <- if (buf + 1 <= length(private$buffers))
           private$buffers[[buf + 1]]
@@ -61,9 +91,22 @@ Buffer <- R6Class("Buffer",
           structure(buffer, class = "gltfBuffer")
       },
 
+#' @description
+#'   Set buffer object
+#'
+#' @param buf Buffer number
+#' @param buffer New value to insert
+#'
       setBuffer = function(buf, buffer)
         private$buffers[[buf + 1]] <- buffer,
 
+#' @description
+#'   Open a connection for the data in a buffer
+#'
+#' @param buf Buffer number
+#'
+#' @return An open binary connection
+#'
       openBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
         if (is.null(buffer))
@@ -82,6 +125,48 @@ Buffer <- R6Class("Buffer",
         self$getBuffer(buf)$con
       },
 
+#' @description
+#'   Write data to buffer
+#'
+#' @param values Values to write
+#' @param type Type to write
+#' @param size Byte size of each value
+#' @param buf Which buffer to write to
+#'
+#' @return byte offset of start of bytes written
+#'
+      writeBuffer = function(values, type, size, buf = 0) {
+        if (is.null(buffer <- self$getBuffer(buf)))
+          self$setBuffer(buf, buffer <- list(byteLength = 0))
+        byteLength <- buffer$byteLength
+        byteOffset <- byteLength
+        con <- self$openBuffer(buf)
+        seek(con, byteOffset)
+        byteOffset <- bitwAnd(byteOffset + size - 1, bitwNot(size - 1))
+        if (is.null(byteLength))
+          browser()
+        if (byteOffset > byteLength) {
+          writeBin(raw(byteOffset - byteLength), con)
+        }
+        if (type %in% c(typeFloat, typeDouble))
+          values <- as.numeric(values)
+        else
+          values <- as.integer(values)
+        writeBin(values, con, size = size, endian = "little")
+        buffer <- self$getBuffer(buf)
+        buffer$byteLength <- byteOffset + length(values)*size
+        self$setBuffer(buf, buffer)
+        byteOffset
+      },
+
+#' @description
+#'   Close the connection in a buffer
+#'
+#' If there was a connection open, this will save the
+#' contents in the raw vector `bytes` within the buffer object.
+#'
+#' @param buf The buffer number
+#'
       closeBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
         if (!is.null(buffer) &&
@@ -94,18 +179,61 @@ Buffer <- R6Class("Buffer",
         }
       },
 
+#' @description
+#'   Close any open buffers
+#'
       closeBuffers = function() {
         for (i in seq_along(private$buffers)) {
           self$closeBuffer(i - 1)
         }
       },
 
+#' @description
+#'   Get bufferview object
+#'
+#' @param bufv bufferView number
+#'
+#' @return A list containing components described here:
+#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview}
+#'
       getBufferview = function(bufv) {
         bufferview <- private$bufferViews[[bufv+1]]
         if (is.null(bufferview))
           stop("bufferView ", bufv, " not found.")
         structure(bufferview, class = "gltfBufferview")
       },
+
+#' @description
+#'   Add a new buffer view
+#'
+#' @param values Values to put in the view
+#' @param type Type of values
+#' @param size Size of values in bytes
+#' @param target Optional target use for values
+#' @param buf Which buffer to write to
+#'
+#' @return New bufferview number
+#'
+      addBufferView = function(values, type, size, target = NULL, buf = 0) {
+        bufferview <- list()
+        bufferview$buffer <- buf
+        bufferview$byteLength <- size*length(values)
+
+        buffer <- self$getBuffer(buf)
+
+        bufferview$byteOffset <- self$writeBuffer(values, type, size, buf)
+        if (!is.null(target))
+          bufferview$target <- target
+        self$setBufferview(length(private$bufferViews), bufferview)
+        length(private$bufferViews) - 1
+      },
+
+#' @description
+#'   Open a connecton to a buffer view
+#'
+#' @param bufv Which bufferView
+#'
+#' @return A connection
 
       openBufferview = function(bufv) {
         bufferview <- self$getBufferview(bufv)
@@ -114,12 +242,33 @@ Buffer <- R6Class("Buffer",
         con
       },
 
+#' @description
+#'   Set bufferview object
+#'
+#' @param bufv Bufferview number
+#' @param bufferView New value to insert
+
       setBufferview = function(bufv, bufferView)
         private$bufferViews[[bufv + 1]] <- bufferView,
 
+#' @description
+#'   Get accessor object
+#'
+#' @param acc accessor number
+#'
+#' @return A list containing components described here:
+#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-accessor}
+#'
       getAccessor = function(acc)
         structure(private$accessors[[acc + 1]], class = "gltfAccessor"),
 
+#' @description
+#'   Read data given by accessor object
+#'
+#' @param acc accessor number
+#'
+#' @return A vector or array as specified in the accessor
+#'
       readAccessor = function(acc) {
         typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
                        "5122" = "short", "5123" = "unsigned_short",
@@ -188,73 +337,18 @@ Buffer <- R6Class("Buffer",
         values
       },
 
-      writeBuffer = function(values, type, size, buf = 0) {
-        if (is.null(buffer <- self$getBuffer(buf)))
-          self$setBuffer(buf, buffer <- list(byteLength = 0))
-        byteLength <- buffer$byteLength
-        byteOffset <- byteLength
-        con <- self$openBuffer(buf)
-        seek(con, byteOffset)
-        byteOffset <- bitwAnd(byteOffset + size - 1, bitwNot(size - 1))
-        if (is.null(byteLength))
-          browser()
-        if (byteOffset > byteLength) {
-          writeBin(raw(byteOffset - byteLength), con)
-        }
-        if (type %in% c(typeFloat, typeDouble))
-          values <- as.numeric(values)
-        else
-          values <- as.integer(values)
-        writeBin(values, con, size = size, endian = "little")
-        buffer <- self$getBuffer(buf)
-        buffer$byteLength <- byteOffset + length(values)*size
-        self$setBuffer(buf, buffer)
-        byteOffset
-      },
-
-      addBufferView = function(values, type, size, target = NULL, buf = 0) {
-        bufferview <- list()
-        bufferview$buffer <- buf
-        bufferview$byteLength <- size*length(values)
-
-        buffer <- self$getBuffer(buf)
-
-        bufferview$byteOffset <- self$writeBuffer(values, type, size, buf)
-        if (!is.null(target))
-          bufferview$target <- target
-        self$setBufferview(length(private$bufferViews), bufferview)
-        length(private$bufferViews) - 1
-      },
-
-      getType = function(x, useDouble = FALSE) {
-        if (is.integer(x)) {
-          r <- range(x)
-          if (r[1] < 0) {
-            if (-128 <= r[1] && r[2] <= 127)
-              typeSignedByte
-            else if (-32768 <= r[1] && r[2] <= 32767)
-              typeSignedShort
-            else
-              typeSignedInt
-          } else {
-            if (r[2] <= 255)
-              typeUnsignedByte
-            else if (r[2] <= 65535)
-              typeUnsignedShort
-            else
-              typeUnsignedInt
-          }
-        } else if (is.numeric(x)) {
-          if (!useDouble)
-            typeFloat
-          else
-            typeDouble
-        } else
-          stop('Unrecognized type')
-      },
+#' @description
+#'   Write values to accessor
+#'
+#' @param values Values to write
+#' @param target Optional target use for values
+#' @param glTF Whether this is for glTF use
+#' @param useDouble Whether to write doubles or singles
+#'
+#' @return New accessor number
 
       addAccessor = function(values, target = NULL, glTF = TRUE, useDouble = FALSE) {
-        componentType <- self$getType(values, useDouble)
+        componentType <- getType(values, useDouble)
         if (glTF) {
           if (componentType %in% c(typeSignedInt, typeDouble))
             stop("Type is not supported in glTF")
@@ -301,6 +395,13 @@ Buffer <- R6Class("Buffer",
         length(private$accessors) - 1
       },
 
+#' @description
+#'   Convert buffer to data URI
+#'
+#' @param buf Buffer to convert
+#'
+#' @return String containing data URI
+
       dataURI = function(buf = 0) {
         buffer <- self$getBuffer(buf)
         if (is.null(buffer))
@@ -322,6 +423,11 @@ Buffer <- R6Class("Buffer",
   private = list(
     buffers = list(),
     bufferViews = list(),
-    accessors = list()
+    accessors = list(),
+
+    finalize = function() {
+      self$closeBuffers()
+    }
+
   )
 )

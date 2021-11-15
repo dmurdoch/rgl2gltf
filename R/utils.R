@@ -133,3 +133,31 @@ getFilter <- function(filter) {
 
 tnonnull <- function(x)
   if(!is.null(x)) t(x)
+
+
+getType <- function(x, useDouble = FALSE) {
+  if (is.integer(x)) {
+    r <- range(x)
+    if (r[1] < 0) {
+      if (-128 <= r[1] && r[2] <= 127)
+        typeSignedByte
+      else if (-32768 <= r[1] && r[2] <= 32767)
+        typeSignedShort
+      else
+        typeSignedInt
+    } else {
+      if (r[2] <= 255)
+        typeUnsignedByte
+      else if (r[2] <= 65535)
+        typeUnsignedShort
+      else
+        typeUnsignedInt
+    }
+  } else if (is.numeric(x)) {
+    if (!useDouble)
+      typeFloat
+    else
+      typeDouble
+  } else
+    stop('Unrecognized type')
+}
