@@ -1,6 +1,7 @@
+
 readglTF <- function(path, defaultbin = NULL, ...) {
   gltf <- read_json(path, ...)
   if (is.null(gltf$asset) || as.numeric_version(gltf$asset$version) != "2.0")
     stop("This function can only read GLtf version 2.0 files")
-  structure(gltf, defaultbin = defaultbin, class = "gltf")
+  Gltf$new(gltf, defaultbin = defaultbin)
 }

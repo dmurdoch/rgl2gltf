@@ -25,13 +25,13 @@ as.gltf(x, ...)
                             extras = NULL,
                             ...,
                             rglscene = list(),
-                            previous = list(),
+                            previous = Gltf$new(),
                             newScene = FALSE,
                             parentNode = NULL,
                             dir = tempdir(),
                             scale = c(1,1,1))
 
-\S3method{as.gltf}{rglscene}(x, ..., previous = list(),
+\S3method{as.gltf}{rglscene}(x, ..., previous = Gltf$new(),
                             newScene = FALSE)
 \S3method{as.gltf}{mesh3d}(x, ...)
 }

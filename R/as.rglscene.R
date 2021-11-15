@@ -2,147 +2,6 @@
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE, ...) {
 
-  matdiff <- function(mat) {
-    if (is.null(defaultmaterial))
-      defaultmaterial <<- mat
-    for (m in names(mat)) {
-      if (identical(mat[[m]], defaultmaterial[[m]]))
-        mat[[m]] <- NULL
-    }
-    mat
-  }
-
-  readAccessor <- function(acc) {
-    typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
-                   "5122" = "short", "5123" = "unsigned_short",
-                   "5125" = "unsigned_int", "5126" = "float")
-    types <- c("5120" = "int", "5121" = "int",
-               "5122" = "int", "5123" = "int",
-               "5125" = "int", "5126" = "double")
-    sizes <- c("5120" = 1, "5121" = 1,
-               "5122" = 2, "5123" = 2,
-               "5125" = 4, "5126" = 4)
-    signeds <- c("5120" = TRUE, "5121" = FALSE,
-                 "5122" = TRUE, "5123" = FALSE,
-                 "5125" = TRUE, # not really, but make readBin happy
-                 "5126" = TRUE)
-    lens <- c(SCALAR = 1, VEC2 = 2, VEC3 = 3, VEC4 = 4,
-              MAT2 = 4, MAT3 = 9, MAT4 = 16)
-    accessor <- x$accessors[[acc+1]]
-    class(accessor) <- "gltfAccessor"
-    if (!is.null(accessor$sparse))
-      warning("sparse accessors are not supported.")
-    read <- readBufferview(accessor$bufferView, x)
-    x <<- read[[2]]
-    view <- read[[1]]
-    con <- view$bufferdata
-    ctype <- as.character(accessor$componentType)
-    atype <- accessor$type
-    type <- types[ctype]
-    len <- lens[atype]
-    size <- sizes[ctype]
-    signed <- signeds[ctype]
-    count <- accessor$count
-    if (is.null(view$byteStride)) {
-      skip <- 0
-    } else
-      skip <- len*size - view$byteStride
-    if (is.null(byteOffset <- accessor$byteOffset))
-      byteOffset <- 0
-    start <- view$byteOffset + byteOffset
-
-    if (skip == 0) {
-      seek(con, start)
-      values <- readBin(con, type, n = len*count,  size = size,
-                        signed = signed, endian = "little")
-    } else {
-      values <- numeric(count*len)
-      for (i in seq_len(count)) {
-        seek(con, start + (i-1)*view$byteStride)
-        values[(i-1)*len + seq_len(len)] <-
-          readBin(con, type, n = len,  size = size,
-                  signed = signed, endian = "little")
-      }
-    }
-    if (ctype == "5125") { # fix up unsigned integers
-      values[is.na(values)] <- 2^31
-      values[values < 0] <- values[values < 0] + 2^32
-    }
-    if (!is.null(accessor$normalized) && accessor$normalized)
-      values <- switch(ctype,
-             "5120" = (values + 128)/255 - 1, # byte
-             "5121" = values/255,             # u byte
-             "5122" = (values + 2^15)/65535 - 1, # short
-             "5123" = values/65535,           # u short
-                      values)                 # default
-    if (len > 1)
-      if (grepl("MAT", atype)) {
-        values <- matrix(values, ncol = sqrt(len), byrow = TRUE)
-      } else
-        values <- matrix(values, ncol = len, byrow = TRUE)
-    values
-  }
-
-  getMaterial <- function(n) {
-    if (is.null(n))
-      result <- list()
-    else {
-      material <- x$materials[[n+1]]
-      class(material) <- "gltfMaterial"
-      result <- list(color = "white", alpha = 1)
-      if (!is.null(pbrm <- material$pbrMetallicRoughness)) {
-        if (!is.null(col <- unlist(pbrm$baseColorFactor))) {
-          result$color <- rgb(col[1], col[2], col[3])
-          result$alpha <- col[4]
-        }
-        if (!is.null(texture <- pbrm$baseColorTexture)) {
-          texturefile <- extractTexture(x, texture$index,
-                                        verbose = FALSE,
-                                        closeConnections = FALSE)
-          x <<- attr(texturefile, "gltf")
-          mime <- attr(texturefile, "mimeType")
-          if (!is.null(mime) && mime != "image/png")
-            warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texture$index))
-          attributes(texturefile) <- NULL
-          result <- c(result, texture = texturefile,
-                      list(gltftexCoord = texture$texCoord))
-        }
-      }
-      if (!is.null(col <- unlist(material$emissiveFactor)))
-        result$emission <- rgb(col[1], col[2], col[3])
-      else
-        result$emission <- "black"
-
-      if (!is.null(ext <- material$extras)
-          && !is.null(props <- ext$RGL_material_properties)) {
-        result[names(props)] <- props
-      } else
-        result$specular <- "gray10"
-    }
-    result
-  }
-
-  getTransform <- function(node, parentTransform) {
-    if (!is.null(node$matrix)) {
-      transform <- matrix(unlist(node$matrix), 4, 4)
-    } else {
-      transform <- diag(4)
-      if (!is.null(node$scale)) {
-        scale <- unlist(node$scale)
-        transform <- t(scaleMatrix(scale[1], scale[2], scale[3])) %*% transform
-      }
-      if (!is.null(node$rotation)) {
-        rot <- unlist(node$rotation)
-        transform <- t(rotationMatrix(rot[4], rot[1], rot[2], rot[3])) %*% transform
-      }
-      if (!is.null(node$translation)) {
-        trans <- unlist(node$translation)
-        transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
-      }
-    }
-    parentTransform %*% transform
-  }
-
   saveTranslation <- function(oldid, newid) {
     idTranslations <<- c(idTranslations, newid)
     names(idTranslations)[length(idTranslations)] <<- oldid
@@ -170,7 +29,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result <- list(id=getId(oldid), type=type)
 
     if (!(type %in% c("light", "clipplanes"))) {
-      result$material <- matdiff(material)
+      result$material <- matdiff(material, defaultmaterial)
     } else
       lit <- FALSE
 
@@ -242,13 +101,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       # What are prim targets????
       browser()
     }
-    mat <- getMaterial(prim$material)
+    mat <- x$getRglMaterial(prim$material)
     normals <- NULL
     positions <- NULL
     texcoords <- NULL
     for (a in seq_along(prim$attributes)) {
       attr <- unlist(prim$attributes[a])
-      values <- readAccessor(attr[1])
+      values <- x$readAccessor(attr[1])
       switch (names(attr),
               NORMAL = normals <- values,
               POSITION = positions <- values,
@@ -269,7 +128,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (is.null(prim$indices))
       indices <- seq_len(nrow(positions))
     else {
-      indices <- readAccessor(prim$indices) + 1 # R indices start at 1
+      indices <- x$readAccessor(prim$indices) + 1 # R indices start at 1
     }
 
     positions <- asEuclidean(asHomogeneous(positions) %*% t(transform))
@@ -343,8 +202,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processMesh <- function(m, transform) {
-    mesh <- x$meshes[[m+1]]
-    class(mesh) <- "gltfMesh"
+    mesh <- x$getMesh(m)
 
     for (p in seq_along(mesh$primitives))
       processPrimitive(mesh$primitives[[p]], transform)
@@ -378,8 +236,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processCamera <- function(cam) {
-    camera <- x$cameras[[cam + 1]]
-    class(camera) <- "gltfCamera"
+    camera <- x$getCamera(cam)
 
     if (camera$type == "orthographic")
       processOrthographic(camera$orthographic)
@@ -406,11 +263,10 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     main$id <- getId(main$id)
     children <- node$children
     if (!is.null(children)) {
-      firstborn <- x$nodes[[children[[1]] + 1]]
+      firstborn <- x$getNode(children[[1]])
       children <- unlist(firstborn$children)
     }
     saveSubscene <- activeSubscene
-    on.exit(activeSubscene <<- saveSubscene)
 
     activeSubscene <<- main
 
@@ -421,15 +277,15 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     main$ids <- main$objects
     main$objects <- NULL
     rglscene$objects[[as.character(main$id)]] <<- main
-    # activeSubscene will be restored by on.exit
+    activeSubscene <<- saveSubscene
+    activeSubscene$objects <<- c(activeSubscene$objects, main$id)
   }
 
   processSpecial <- function(node, parentTransform) {
     primobj <- NULL
     m <- node$mesh
     if (!is.null(m)) {
-      mesh <- x$meshes[[m+1]]
-      class(mesh) <- "gltfMesh"
+      mesh <- x$getMesh(m)
       if (!is.null(mesh$primitives)) {
         primobj <- primToRglobj(mesh$primitives[[1]], parentTransform)
       }
@@ -454,13 +310,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processNode <- function(n, parentTransform) {
-    node <- x$nodes[[n + 1]]
-    class(node) <- "gltfNode"
+    node <- x$getNode(n)
 
     if (!is.null(node$camera))
       processCamera(node$camera)
 
-    transform <- getTransform(node, parentTransform)
+    transform <- x$getTransform(node, parentTransform)
 
     children <- unlist(node$children)
 
@@ -519,13 +374,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     scene <- 0
 
   if (is.null(convertNodes <- nodes))
-    convertNodes <- seq_along(x$nodes) - 1
+    convertNodes <- seq_len(x$listCount("nodes")) - 1
 
-  sc <- x$scenes[[scene + 1]]
+  sc <- x$getScene(scene)
   if (is.null(sc))
     return()
-
-  on.exit(closeBuffers(x))
 
   lastid <- 0L
   rglscene <- list(material = NULL, rootSubscene = NULL)
@@ -534,9 +387,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   defaultmaterial <- list()
   if (useRGLinfo &&
-      !is.null(x$extras) &&
-      !is.null(x$extras$RGL_material))
-    defaultmaterial <- x$extras$RGL_material
+      !is.null(extras <- x$getExtras()) &&
+      !is.null(extras$RGL_material))
+    defaultmaterial <- extras$RGL_material
 
   nodes <- sc$nodes
 

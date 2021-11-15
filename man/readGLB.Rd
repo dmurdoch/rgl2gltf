@@ -49,4 +49,6 @@ gltf <- readGLB(paste0(samples, "/Avocado/glTF-Binary/Avocado.glb?raw=true"))
 
 if (interactive() || rgl::in_pkgdown_example())
   rgl::plot3d(gltf)
+
+gltf$closeBuffers()
 }

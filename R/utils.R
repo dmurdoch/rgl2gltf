@@ -110,3 +110,54 @@ merge.rglobject <- function(x, y, ...) {
       x$material[[n]] <- y$material[[n]]
   x
 }
+
+is.multicolored <- function(mat)
+  length(unique(mat$color)) > 1 || length(unique(mat$alpha)) > 1
+
+matdiff <- function(mat1, mat2) {
+  for (m in names(mat1)) {
+    if (identical(mat1[[m]], mat2[[m]]))
+      mat1[[m]] <- NULL
+  }
+  mat1
+}
+
+getFilter <- function(filter) {
+  if (!is.null(filter))
+    c("nearest" = 9728, "linear" = 9729,
+      "nearest.mipmap.nearest" = 9984,
+      "linear.mipmap.nearest" = 9985,
+      "nearest.mipmap.linear" = 9986,
+      "linear.mipmap.linear" = 9987)[filter]
+}
+
+tnonnull <- function(x)
+  if(!is.null(x)) t(x)
+
+
+getType <- function(x, useDouble = FALSE) {
+  if (is.integer(x)) {
+    r <- range(x)
+    if (r[1] < 0) {
+      if (-128 <= r[1] && r[2] <= 127)
+        typeSignedByte
+      else if (-32768 <= r[1] && r[2] <= 32767)
+        typeSignedShort
+      else
+        typeSignedInt
+    } else {
+      if (r[2] <= 255)
+        typeUnsignedByte
+      else if (r[2] <= 65535)
+        typeUnsignedShort
+      else
+        typeUnsignedInt
+    }
+  } else if (is.numeric(x)) {
+    if (!useDouble)
+      typeFloat
+    else
+      typeDouble
+  } else
+    stop('Unrecognized type')
+}

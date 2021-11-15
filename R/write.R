@@ -1,9 +1,17 @@
 writeglTF <- function(x, path) {
-  jsonlite::write_json(unclass(x), path,
+  jsonlite::write_json(x$as.list(), path,
                        auto_unbox = TRUE,
                        digits = NA)
   invisible(NULL)
 }
+
+# The glTF format allows for multiple buffers, but this
+# code only supports writing one, buffer 0.  It will be
+# available in some combination of con, bytes, and uri.
+# If neither con nor bytes is present, the buffer is in the
+# external file named by uri.  If con is present, it holds the
+# bytes, and if bytes is present, it does.  Normally only
+# bytes will be there after con is closed.
 
 writeGLB <- function(x, con) {
   magic <- 0x46546C67L
@@ -25,22 +33,49 @@ writeGLB <- function(x, con) {
     chunksize + 8
   }
 
-  if (length(x$buffers)) {
-    buffer <- x$buffers[[1]]$uri
-    x$buffers[[1]]$uri <- NULL
-  } else
-    buffer <- NULL
+  x$closeBuffers()
+
+  # First get bytes if necessary
+
+  bytes <- NULL
+  if (x$listCount("buffers") > 0) {
+    buffer <- x$getBuffer(0)
+    uri <- buffer$uri
+    bytes <- buffer$bytes
+    if (!is.null(bytes))
+      buffer$uri <- NULL
+    buffer$bytes <- NULL
+    x$setBuffer(0, buffer)
+    # We'll restore x on exit
+    on.exit({
+      buffer <- x$getBuffer(0)
+      buffer$uri <- uri
+      buffer$bytes <- bytes
+      x$setBuffer(0, buffer)
+    })
+  }
+
+  # next create and write the JSON chunk
 
   jsonfile <- tempfile(fileext = ".gltf")
   writeglTF(x, jsonfile)
+  on.exit(unlink(jsonfile), add = TRUE)
+
   if (is.character(con)) {
     con <- file(con, "wb")
-    on.exit(close(con))
+    on.exit(close(con), add = TRUE)
   }
   writeBin(c(magic, 2L, 0L), con, size = 4, endian = "little")
   size <- 12 + writeChunk(jsonfile, typejson)
-  if (!is.null(buffer))
-    size <- size + writeChunk(buffer, typebin)
+
+  # Next write the binary chunk.
+
+  if (!is.null(bytes)) {
+    binfile <- tempfile(fileext = ".bin")
+    writeBin(bytes, binfile)
+    on.exit(unlink(binfile), add = TRUE)
+    size <- size + writeChunk(binfile, typebin)
+  }
   seek(con, 8)
   writeBin(as.integer(size), con, size = 4, endian = "little")
   invisible(NULL)

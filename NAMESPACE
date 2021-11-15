@@ -1,4 +1,4 @@
-export(extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
+export(Buffer, Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showtree, plot3d, writeglTF, writeGLB, findName)
 
 importFrom("jsonlite", "read_json")
@@ -13,8 +13,9 @@ importFrom("rgl", "as.rglscene",
 importFrom("grDevices", "col2rgb", "rgb", "xyz.coords")
 importFrom("utils", "packageVersion")
 importFrom("tools", "file_ext")
+importFrom("R6", "R6Class")
+importFrom("base64enc", "dataURI")
 
-S3method("print", "gltf")
 S3method("plot3d", "gltf")
 S3method("as.mesh3d", "gltf")
 

@@ -10,8 +10,7 @@ to a file.
 \usage{
 extractTexture(gltf, index = 0,
                outfile = tempfile(),
-               verbose = TRUE,
-               closeConnections = TRUE)
+               verbose = TRUE)
 }
 \arguments{
   \item{gltf}{
@@ -28,9 +27,6 @@ of the texture.
   \item{verbose}{
 Whether to report on success.
 }
-  \item{closeConnections}{
-Close all connections in \code{gltf} on exit.
-  }
 }
 \value{
 Returns the filename that was written, or \code{NULL}

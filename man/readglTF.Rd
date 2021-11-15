@@ -65,4 +65,6 @@ if (interactive()) {
   rgl::plot3d(gltf)
   setwd(olddir)
 }
+gltf$closeBuffers()
+
 }
