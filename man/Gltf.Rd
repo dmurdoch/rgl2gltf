@@ -684,7 +684,7 @@ Print `gltf` objects with various levels of detail.
 \item{\code{verbose}}{logical indicator of verbose printing, or
 character vector of components to print verbosely}
 
-\item{\code{names}}{Which fields to print.}
+\item{\code{names}}{Print names for components.}
 
 \item{\code{showExtras}}{Logical:  show extra fields?}
 
