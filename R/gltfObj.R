@@ -377,7 +377,7 @@ Gltf <- R6Class("gltf",
     #' @description Print `gltf` objects with various levels of detail.
     #' @param verbose logical indicator of verbose printing, or
     #' character vector of components to print verbosely
-    #' @param names Which fields to print.
+    #' @param names Print names for components.
     #' @param showExtras Logical:  show extra fields?
     #' @param ... Passed...
     #' @examples
@@ -584,7 +584,10 @@ Gltf <- R6Class("gltf",
         }
       }
 
-      catstring(setdiff(names(private), knowntoplevel),
+      others <- setdiff(names(private), "finalize")
+      others <- Filter(function(n) length(private[[n]]) > 0, others)
+
+      catstring(setdiff(others, knowntoplevel),
                 "Other fields:  %s.\n")
       invisible(self)
     },
