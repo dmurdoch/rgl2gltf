@@ -43,7 +43,7 @@ binary data for a scene.
 \describe{
 \item{\code{json}}{list read from glTF file.}
 
-\item{\code{binfile}}{optional external binary file.}
+\item{\code{binfile}}{optional external binary filename, or raw vector}
 }
 \if{html}{\out{</div>}}
 }
@@ -199,6 +199,9 @@ contents in the raw vector `bytes` within the buffer object.
 \if{latex}{\out{\hypertarget{method-closeBuffers}{}}}
 \subsection{Method \code{closeBuffers()}}{
 Close any open buffers
+
+  Call this after working with a GLTF file to avoid warnings
+  from R about closing unused connections.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$closeBuffers()}\if{html}{\out{</div>}}
 }

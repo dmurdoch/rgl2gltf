@@ -332,7 +332,7 @@ Gltf <- R6Class("gltf",
             result$color <- rgb(col[1], col[2], col[3])
             result$alpha <- col[4]
           }
-          if (!is.null(texnum <- pbrm$baseColorTexture)) {
+          if (!is.null(texnum <- unlist(pbrm$baseColorTexture))) {
             texturefile <- extractTexture(self, texnum,
                                           verbose = FALSE)
             mime <- attr(texturefile, "mimeType")

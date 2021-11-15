@@ -26,6 +26,9 @@ reference:
 - contents:
   - extractTexture
   - findName
-  - print.gltf
   - showtree
   - plot3d
+- title: R6 classes used for internal storage
+- contents:
+  - Gltf
+  - Buffer

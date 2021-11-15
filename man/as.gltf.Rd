@@ -109,4 +109,5 @@ Duncan Murdoch
 cube <- rgl::rotate3d(rgl::cube3d(col = "red"), -pi/10, 1,0,0)
 gltf <- as.gltf(cube)
 rgl::plot3d(gltf)
+gltf$closeBuffers()
 }

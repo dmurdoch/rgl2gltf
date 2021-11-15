@@ -19,7 +19,7 @@ Buffer <- R6Class("Buffer",
 #' @param json
 #'   list read from glTF file.
 #' @param binfile
-#'   optional external binary file.
+#'   optional external binary filename, or raw vector
 #'
       initialize = function(json = NULL, binfile = NULL) {
         if (!is.null(json)) {
@@ -28,8 +28,12 @@ Buffer <- R6Class("Buffer",
           private$accessors <- json$accessors
         }
         buffer <- self$getBuffer(0)
-        if (is.null(buffer$uri))
-          buffer$uri <- binfile
+        if (is.null(buffer$uri)) {
+          if (is.character(binfile))
+            buffer$uri <- binfile
+          else if (is.raw(binfile))
+            buffer$bytes <- binfile
+        }
         self$setBuffer(0, buffer)
       },
 
@@ -170,10 +174,11 @@ Buffer <- R6Class("Buffer",
       closeBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
         if (!is.null(buffer) &&
-            !is.null(con <- buffer$con) &&
-            isOpen(con)) {
-          buffer$bytes <- rawConnectionValue(con)
-          close(con)
+            !is.null(buffer$con)) {
+          if(isValidConnection(buffer$con)) {
+            buffer$bytes <- rawConnectionValue(buffer$con)
+            close(buffer$con)
+          }
           buffer$con <- NULL
           self$setBuffer(buf, buffer)
         }
@@ -181,6 +186,9 @@ Buffer <- R6Class("Buffer",
 
 #' @description
 #'   Close any open buffers
+#'
+#'   Call this after working with a GLTF file to avoid warnings
+#'   from R about closing unused connections.
 #'
       closeBuffers = function() {
         for (i in seq_along(private$buffers)) {

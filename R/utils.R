@@ -161,3 +161,15 @@ getType <- function(x, useDouble = FALSE) {
   } else
     stop('Unrecognized type')
 }
+
+# This function checks if a connection is still valid, since
+# isOpen() doesn't work
+
+isValidConnection <- function(con) {
+  allconns <- showConnections()
+  for (i in rownames(allconns)) {
+    if (identical(con, getConnection(i)))
+      return(TRUE)
+  }
+  FALSE
+}
