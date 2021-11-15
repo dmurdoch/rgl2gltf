@@ -12,7 +12,7 @@ targetElementArray <- 34963
 Gltf <- R6Class("gltf",
   inherit = Buffer,
   public = list(
-    #' @field The default scene number
+    #' @field scene The default scene number
     scene = NULL,
 
     #' @param json
@@ -377,13 +377,12 @@ Gltf <- R6Class("gltf",
     #' @description Print `gltf` objects with various levels of detail.
     #' @param verbose logical indicator of verbose printing, or
     #' character vector of components to print verbosely
-    #' @param names
+    #' @param names Which fields to print.
     #' @param showExtras Logical:  show extra fields?
-    #' @example
+    #' @param ... Passed...
+    #' @examples
     #' samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
-
     #' gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
-
     #' gltf$print(names = "meshes")
     print = function(verbose = FALSE, names = FALSE, showExtras = TRUE, ...) {
 
