@@ -54,9 +54,9 @@ download.file(paste0(samples, "/2CylinderEngine/glTF/2CylinderEngine.gltf"),
   destfile = filename)
 download.file(paste0(samples, "/2CylinderEngine/glTF/2CylinderEngine0.bin?raw=true"),
   destfile = file.path(tempdir(), "2CylinderEngine0.bin"))
-readglTF(filename)
 
 gltf <- readglTF(filename)
+gltf
 if (interactive()) {
   # gltf files contain references to other files using
   # relative paths, so we can only use them from their

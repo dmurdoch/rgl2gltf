@@ -31,6 +31,7 @@ gltf$print(names = "meshes")
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{Gltf$new()}}
+\item \href{#method-addAccessor}{\code{Gltf$addAccessor()}}
 \item \href{#method-getScene}{\code{Gltf$getScene()}}
 \item \href{#method-setScene}{\code{Gltf$setScene()}}
 \item \href{#method-addScene}{\code{Gltf$addScene()}}
@@ -68,7 +69,6 @@ gltf$print(names = "meshes")
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="addAccessor">}\href{../../rgl2gltf/html/Buffer.html#method-addAccessor}{\code{rgl2gltf::Buffer$addAccessor()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="addBufferView">}\href{../../rgl2gltf/html/Buffer.html#method-addBufferView}{\code{rgl2gltf::Buffer$addBufferView()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="closeBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-closeBuffer}{\code{rgl2gltf::Buffer$closeBuffer()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="closeBuffers">}\href{../../rgl2gltf/html/Buffer.html#method-closeBuffers}{\code{rgl2gltf::Buffer$closeBuffers()}}\out{</span>}
@@ -81,6 +81,7 @@ gltf$print(names = "meshes")
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="openBufferview">}\href{../../rgl2gltf/html/Buffer.html#method-openBufferview}{\code{rgl2gltf::Buffer$openBufferview()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="readAccessor">}\href{../../rgl2gltf/html/Buffer.html#method-readAccessor}{\code{rgl2gltf::Buffer$readAccessor()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="saveOpenBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-saveOpenBuffer}{\code{rgl2gltf::Buffer$saveOpenBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="setAccessor">}\href{../../rgl2gltf/html/Buffer.html#method-setAccessor}{\code{rgl2gltf::Buffer$setAccessor()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="setBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-setBuffer}{\code{rgl2gltf::Buffer$setBuffer()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="setBufferview">}\href{../../rgl2gltf/html/Buffer.html#method-setBufferview}{\code{rgl2gltf::Buffer$setBufferview()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="writeBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-writeBuffer}{\code{rgl2gltf::Buffer$writeBuffer()}}\out{</span>}
@@ -98,18 +99,51 @@ gltf$print(names = "meshes")
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{json}}{list read from glTF file.}
+\item{\code{json}}{List read from glTF file.}
 
-\item{\code{defaultbin}}{optional external binary file.}
+\item{\code{defaultbin}}{Optional external binary file.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-addAccessor"></a>}}
+\if{latex}{\out{\hypertarget{method-addAccessor}{}}}
+\subsection{Method \code{addAccessor()}}{
+Write values to accessor, including \code{min} and \code{max}.
+
+The GLTF standard requires \code{min} and \code{max} values in
+accessors, whereas other uses of buffers may not.
+This function stores in the usual way using the
+\code{\link[=Buffer]{Buffer$addAccessor()}} method, and then adds
+\code{min} and \code{max} values.
+
+The standard also doesn't support signed 4 byte integers
+or double precision values, so we test for those here.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$addAccessor(values, target = NULL, useDouble = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{values}}{Values to write.}
+
+\item{\code{target}}{Optional target use for values.}
+
+\item{\code{useDouble}}{Whether to write doubles or singles.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+New accessor number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getScene"></a>}}
 \if{latex}{\out{\hypertarget{method-getScene}{}}}
 \subsection{Method \code{getScene()}}{
-Get scene object
+Get scene object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getScene(sc)}\if{html}{\out{</div>}}
 }
@@ -117,20 +151,20 @@ Get scene object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sc}}{Scene number}
+\item{\code{sc}}{Scene number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-scene object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}
+Scene object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setScene"></a>}}
 \if{latex}{\out{\hypertarget{method-setScene}{}}}
 \subsection{Method \code{setScene()}}{
-Update scene record
+Update scene record.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$setScene(sc, scene)}\if{html}{\out{</div>}}
 }
@@ -138,9 +172,9 @@ Update scene record
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sc}}{Which scene to update}
+\item{\code{sc}}{Which scene to update.}
 
-\item{\code{scene}}{New scene record}
+\item{\code{scene}}{New scene record.}
 }
 \if{html}{\out{</div>}}
 }
@@ -149,20 +183,20 @@ Update scene record
 \if{html}{\out{<a id="method-addScene"></a>}}
 \if{latex}{\out{\hypertarget{method-addScene}{}}}
 \subsection{Method \code{addScene()}}{
-Add a scene object
+Add a scene object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addScene()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-scene number
+Scene number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addToScene"></a>}}
 \if{latex}{\out{\hypertarget{method-addToScene}{}}}
 \subsection{Method \code{addToScene()}}{
-Add node to scene
+Add node to scene.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addToScene(scene, node)}\if{html}{\out{</div>}}
 }
@@ -170,9 +204,9 @@ Add node to scene
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{scene}}{Scene number to modify}
+\item{\code{scene}}{Scene number to modify.}
 
-\item{\code{node}}{Node number(s) to add}
+\item{\code{node}}{Node number(s) to add.}
 }
 \if{html}{\out{</div>}}
 }
@@ -181,20 +215,20 @@ Add node to scene
 \if{html}{\out{<a id="method-defaultScene"></a>}}
 \if{latex}{\out{\hypertarget{method-defaultScene}{}}}
 \subsection{Method \code{defaultScene()}}{
-Get default scene, creating it if necessary
+Get default scene, creating it if necessary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$defaultScene()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-scene number
+Scene number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getNode"></a>}}
 \if{latex}{\out{\hypertarget{method-getNode}{}}}
 \subsection{Method \code{getNode()}}{
-Get node object
+Get node object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getNode(n)}\if{html}{\out{</div>}}
 }
@@ -202,20 +236,20 @@ Get node object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{node number}
+\item{\code{n}}{Node number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-node object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}
+Node object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setNode"></a>}}
 \if{latex}{\out{\hypertarget{method-setNode}{}}}
 \subsection{Method \code{setNode()}}{
-Set node object
+Set node object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$setNode(n, node)}\if{html}{\out{</div>}}
 }
@@ -223,7 +257,7 @@ Set node object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{node number.}
+\item{\code{n}}{Node number.}
 
 \item{\code{node}}{New node object.}
 }
@@ -234,7 +268,7 @@ Set node object
 \if{html}{\out{<a id="method-addNode"></a>}}
 \if{latex}{\out{\hypertarget{method-addNode}{}}}
 \subsection{Method \code{addNode()}}{
-Add a node object
+Add a node object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addNode(mesh = NULL, matrix = NULL, extras = NULL)}\if{html}{\out{</div>}}
 }
@@ -242,23 +276,23 @@ Add a node object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mesh}}{A mesh number}
+\item{\code{mesh}}{A mesh number.}
 
-\item{\code{matrix}}{A matrix transformation for the node}
+\item{\code{matrix}}{A matrix transformation for the node.}
 
-\item{\code{extras}}{A list of extras, typically `rgl` objects}
+\item{\code{extras}}{A list of extras, typically \code{rgl} objects.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-node number
+Node number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addChild"></a>}}
 \if{latex}{\out{\hypertarget{method-addChild}{}}}
 \subsection{Method \code{addChild()}}{
-Add node as child of another
+Add node as child of another.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addChild(parent, node)}\if{html}{\out{</div>}}
 }
@@ -266,9 +300,9 @@ Add node as child of another
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{parent}}{Node number to modify}
+\item{\code{parent}}{Node number to modify.}
 
-\item{\code{node}}{Node number(s) to add as children}
+\item{\code{node}}{Node number(s) to add as children.}
 }
 \if{html}{\out{</div>}}
 }
@@ -277,7 +311,7 @@ Add node as child of another
 \if{html}{\out{<a id="method-getCamera"></a>}}
 \if{latex}{\out{\hypertarget{method-getCamera}{}}}
 \subsection{Method \code{getCamera()}}{
-Get camera object
+Get camera object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getCamera(cam)}\if{html}{\out{</div>}}
 }
@@ -285,33 +319,33 @@ Get camera object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cam}}{camera number}
+\item{\code{cam}}{Camera number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-camera object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}
+Camera object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getExtras"></a>}}
 \if{latex}{\out{\hypertarget{method-getExtras}{}}}
 \subsection{Method \code{getExtras()}}{
-Get top-level extras list
+Get top-level extras list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getExtras()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-extras list, including rgl objects
+Extras list, including rgl objects.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setExtras"></a>}}
 \if{latex}{\out{\hypertarget{method-setExtras}{}}}
 \subsection{Method \code{setExtras()}}{
-Set extras list
+Set extras list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$setExtras(extras)}\if{html}{\out{</div>}}
 }
@@ -319,7 +353,7 @@ Set extras list
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{extras}}{New extras list}
+\item{\code{extras}}{New extras list.}
 }
 \if{html}{\out{</div>}}
 }
@@ -328,7 +362,7 @@ Set extras list
 \if{html}{\out{<a id="method-getMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-getMesh}{}}}
 \subsection{Method \code{getMesh()}}{
-Get mesh object
+Get mesh object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getMesh(m)}\if{html}{\out{</div>}}
 }
@@ -336,20 +370,20 @@ Get mesh object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{m}}{mesh number}
+\item{\code{m}}{Mesh number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-mesh object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}
+Mesh object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-addMesh}{}}}
 \subsection{Method \code{addMesh()}}{
-Add a mesh object
+Add a mesh object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addMesh(primitives)}\if{html}{\out{</div>}}
 }
@@ -357,19 +391,19 @@ Add a mesh object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{primitives}}{A list of primitive objects}
+\item{\code{primitives}}{A list of primitive objects.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-mesh number
+Mesh number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getMaterial"></a>}}
 \if{latex}{\out{\hypertarget{method-getMaterial}{}}}
 \subsection{Method \code{getMaterial()}}{
-Get material object
+Get material object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getMaterial(m)}\if{html}{\out{</div>}}
 }
@@ -377,20 +411,20 @@ Get material object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{m}}{material number}
+\item{\code{m}}{Material number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-material object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}
+Material object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getTexture"></a>}}
 \if{latex}{\out{\hypertarget{method-getTexture}{}}}
 \subsection{Method \code{getTexture()}}{
-Get texture object
+Get texture object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getTexture(tex)}\if{html}{\out{</div>}}
 }
@@ -398,20 +432,20 @@ Get texture object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{tex}}{texture number}
+\item{\code{tex}}{Texture number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-texture object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}
+Texture object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getImage"></a>}}
 \if{latex}{\out{\hypertarget{method-getImage}{}}}
 \subsection{Method \code{getImage()}}{
-Get image object
+Get image object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getImage(im)}\if{html}{\out{</div>}}
 }
@@ -419,13 +453,13 @@ Get image object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{im}}{image number}
+\item{\code{im}}{Image number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-image object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}
+Image object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -442,14 +476,14 @@ This will return an existing material if possible.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mat}}{An `rgl` material record}
+\item{\code{mat}}{An \code{rgl} material record.}
 
-\item{\code{defaultMaterial}}{Default material properties}
+\item{\code{defaultMaterial}}{Default material properties.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-material number
+Material number.
 }
 }
 \if{html}{\out{<hr>}}
@@ -464,19 +498,19 @@ Add a texture.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mat}}{An `rgl` material record}
+\item{\code{mat}}{An \code{rgl} material record.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-texture number
+Texture number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addImage"></a>}}
 \if{latex}{\out{\hypertarget{method-addImage}{}}}
 \subsection{Method \code{addImage()}}{
-Add an image for a texture
+Add an image for a texture.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addImage(mat)}\if{html}{\out{</div>}}
 }
@@ -484,19 +518,19 @@ Add an image for a texture
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mat}}{An `rgl` material record}
+\item{\code{mat}}{An \code{rgl} material record.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-image number
+Image number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addSampler"></a>}}
 \if{latex}{\out{\hypertarget{method-addSampler}{}}}
 \subsection{Method \code{addSampler()}}{
-Add a sampler
+Add a sampler.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$addSampler(mat)}\if{html}{\out{</div>}}
 }
@@ -504,19 +538,19 @@ Add a sampler
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mat}}{An `rgl` material record}
+\item{\code{mat}}{An \code{rgl} material record.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-sampler number
+Sampler number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getMaterialNumber"></a>}}
 \if{latex}{\out{\hypertarget{method-getMaterialNumber}{}}}
 \subsection{Method \code{getMaterialNumber()}}{
-Add or return a material
+Add or return a material.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getMaterialNumber(material)}\if{html}{\out{</div>}}
 }
@@ -524,19 +558,19 @@ Add or return a material
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{material}}{A glTF material record}
+\item{\code{material}}{A glTF material record.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-material number
+Material number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-writeVectors"></a>}}
 \if{latex}{\out{\hypertarget{method-writeVectors}{}}}
 \subsection{Method \code{writeVectors()}}{
-Write data
+Write data.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$writeVectors(coords, target = NULL)}\if{html}{\out{</div>}}
 }
@@ -544,21 +578,21 @@ Write data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{coords}}{data to write, or `NULL`}
+\item{\code{coords}}{Data to write, or \code{NULL}.}
 
-\item{\code{target}}{optional target use for data}
+\item{\code{target}}{Optional target use for data.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-accessor number, or `NULL`
+Accessor number, or \code{NULL}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-makePrimitive"></a>}}
 \if{latex}{\out{\hypertarget{method-makePrimitive}{}}}
 \subsection{Method \code{makePrimitive()}}{
-Create a primitive record
+Create a primitive record.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$makePrimitive(inds, mode = NULL, attributes = NULL, matnum = NULL)}\if{html}{\out{</div>}}
 }
@@ -566,40 +600,40 @@ Create a primitive record
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{inds}}{Indices of vertices}
+\item{\code{inds}}{Indices of vertices.}
 
-\item{\code{mode}}{Mode of primitive}
+\item{\code{mode}}{Mode of primitive.}
 
-\item{\code{attributes}}{Primitive attributes}
+\item{\code{attributes}}{Primitive attributes.}
 
-\item{\code{matnum}}{Material number}
+\item{\code{matnum}}{Material number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 Primitive record, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getAsset"></a>}}
 \if{latex}{\out{\hypertarget{method-getAsset}{}}}
 \subsection{Method \code{getAsset()}}{
-Get asset list
+Get asset list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getAsset()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-asset object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}
+Asset object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setAsset"></a>}}
 \if{latex}{\out{\hypertarget{method-setAsset}{}}}
 \subsection{Method \code{setAsset()}}{
-Set asset list
+Set asset list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$setAsset(version, generator)}\if{html}{\out{</div>}}
 }
@@ -607,9 +641,9 @@ Set asset list
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{version}}{Version number of glTF format}
+\item{\code{version}}{Version number of glTF format.}
 
-\item{\code{generator}}{Identifier of code generating it}
+\item{\code{generator}}{Identifier of code generating it.}
 }
 \if{html}{\out{</div>}}
 }
@@ -618,7 +652,7 @@ Set asset list
 \if{html}{\out{<a id="method-getTransform"></a>}}
 \if{latex}{\out{\hypertarget{method-getTransform}{}}}
 \subsection{Method \code{getTransform()}}{
-Get local transform
+Get local transform.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getTransform(node, parentTransform)}\if{html}{\out{</div>}}
 }
@@ -626,21 +660,21 @@ Get local transform
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{node}}{Node object}
+\item{\code{node}}{Node object.}
 
-\item{\code{parentTransform}}{Matrix transform of parent object}
+\item{\code{parentTransform}}{Matrix transform of parent object.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-4x4 matrix of local transform
+4x4 matrix of local transform.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-getRglMaterial"></a>}}
 \if{latex}{\out{\hypertarget{method-getRglMaterial}{}}}
 \subsection{Method \code{getRglMaterial()}}{
-Reconstruct `rgl` material
+Reconstruct \code{rgl} material.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getRglMaterial(n)}\if{html}{\out{</div>}}
 }
@@ -648,32 +682,32 @@ Reconstruct `rgl` material
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{n}}{Material number}
+\item{\code{n}}{Material number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-`rgl` material record
+\code{rgl} material record.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-as.list"></a>}}
 \if{latex}{\out{\hypertarget{method-as.list}{}}}
 \subsection{Method \code{as.list()}}{
-Convert to list
+Convert to list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$as.list()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-List suitable for writing using JSON
+List suitable for writing using JSON.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
-Print `gltf` objects with various levels of detail.
+Print \code{gltf} objects with various levels of detail.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$print(verbose = FALSE, names = FALSE, showExtras = TRUE, ...)}\if{html}{\out{</div>}}
 }
@@ -681,14 +715,14 @@ Print `gltf` objects with various levels of detail.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{verbose}}{logical indicator of verbose printing, or
-character vector of components to print verbosely}
+\item{\code{verbose}}{Logical indicator of verbose printing, or
+character vector of components to print verbosely.}
 
 \item{\code{names}}{Print names for components.}
 
 \item{\code{showExtras}}{Logical:  show extra fields?}
 
-\item{\code{...}}{Passed...}
+\item{\code{...}}{Passed \code{...} .}
 }
 \if{html}{\out{</div>}}
 }
@@ -707,7 +741,7 @@ gltf$print(names = "meshes")
 \if{html}{\out{<a id="method-listCount"></a>}}
 \if{latex}{\out{\hypertarget{method-listCount}{}}}
 \subsection{Method \code{listCount()}}{
-Get number of items in private list
+Get number of items in private list.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$listCount(list)}\if{html}{\out{</div>}}
 }
@@ -715,7 +749,7 @@ Get number of items in private list
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{list}}{Name of list to get}
+\item{\code{list}}{Name of list to get.}
 }
 \if{html}{\out{</div>}}
 }

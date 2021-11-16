@@ -16,9 +16,9 @@ Gltf <- R6Class("gltf",
     scene = NULL,
 
     #' @param json
-    #'   list read from glTF file.
+    #'   List read from glTF file.
     #' @param defaultbin
-    #'   optional external binary file.
+    #'   Optional external binary file.
     initialize = function(json = NULL, defaultbin = NULL) {
       super$initialize(json, defaultbin)
       json$buffers <- json$bufferViews <- json$accessors <- NULL
@@ -29,21 +29,58 @@ Gltf <- R6Class("gltf",
     },
 
 
-    #' @description Get scene object
-    #' @param sc Scene number
-    #' @return scene object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}
+    #' @description
+    #' Write values to accessor, including `min` and `max`.
+    #'
+    #' The GLTF standard requires `min` and `max` values in
+    #' accessors, whereas other uses of buffers may not.
+    #' This function stores in the usual way using the
+    #' [`Buffer$addAccessor()`][Buffer] method, and then adds
+    #' `min` and `max` values.
+    #'
+    #' The standard also doesn't support signed 4 byte integers
+    #' or double precision values, so we test for those here.
+    #'
+    #' @param values Values to write.
+    #' @param target Optional target use for values.
+    #' @param useDouble Whether to write doubles or singles.
+    #'
+    #' @return New accessor number.
+    #'
+    addAccessor = function(values, target = NULL, useDouble = FALSE) {
+      acc <- super$addAccessor(values, target, useDouble)
+      accessor <- self$getAccessor(acc)
+      if (accessor$componentType %in% c(typeSignedInt, typeDouble))
+        stop("Type is not supported in glTF")
+      values <- self$readAccessor(acc)
+      if (any(!is.finite(values)))
+        stop("Only finite values are supported in glTF")
+      if (is.matrix(values)) {
+        accessor$max <- I(apply(values, 2, max))
+        accessor$min <- I(apply(values, 2, min))
+      } else {
+        accessor$max <- I(max(values))
+        accessor$min <- I(min(values))
+      }
+      self$setAccessor(acc, accessor)
+      acc
+    },
+
+    #' @description Get scene object.
+    #' @param sc Scene number.
+    #' @return Scene object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
     getScene = function(sc)
       structure(private$scenes[[sc + 1]], class = "gltfScene"),
 
-    #' @description Update scene record
-    #' @param sc Which scene to update
-    #' @param scene New scene record
+    #' @description Update scene record.
+    #' @param sc Which scene to update.
+    #' @param scene New scene record.
     setScene = function(sc, scene)
-      private$scenes[[sc + 1]] <- scene,
+      private$scenes[[sc + 1]] <- unclass(scene),
 
-    #' @description Add a scene object
-    #' @return scene number
+    #' @description Add a scene object.
+    #' @return Scene number.
     addScene = function() {
       scene <- list()
       private$scenes <- c(private$scenes, list(scene))
@@ -51,41 +88,41 @@ Gltf <- R6Class("gltf",
       self$scene
     },
 
-    #' @description Add node to scene
-    #' @param scene Scene number to modify
-    #' @param node Node number(s) to add
+    #' @description Add node to scene.
+    #' @param scene Scene number to modify.
+    #' @param node Node number(s) to add.
     addToScene = function(scene, node) {
       sceneobj <- self$getScene(scene)
       sceneobj$nodes <- I(c(sceneobj$nodes, node))
       self$setScene(scene, sceneobj)
     },
 
-    #' @description Get default scene, creating it if necessary
-    #' @return scene number
+    #' @description Get default scene, creating it if necessary.
+    #' @return Scene number.
     defaultScene = function() {
       if (is.null(self$scene))
         self$addScene()
       self$scene
     },
 
-    #' @description Get node object
-    #' @param n node number
-    #' @return node object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}
+    #' @description Get node object.
+    #' @param n Node number.
+    #' @return Node object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}.
     getNode = function(n)
       structure(private$nodes[[n + 1]], class = "gltfNode"),
 
-    #' @description Set node object
-    #' @param n node number.
+    #' @description Set node object.
+    #' @param n Node number.
     #' @param node New node object.
     setNode = function(n, node)
-      private$nodes[[n + 1]] <- node,
+      private$nodes[[n + 1]] <- unclass(node),
 
-    #' @description Add a node object
-    #' @param mesh A mesh number
-    #' @param matrix A matrix transformation for the node
-    #' @param extras A list of extras, typically `rgl` objects
-    #' @return node number
+    #' @description Add a node object.
+    #' @param mesh A mesh number.
+    #' @param matrix A matrix transformation for the node.
+    #' @param extras A list of extras, typically `rgl` objects.
+    #' @return Node number.
     addNode = function(mesh = NULL, matrix = NULL, extras = NULL) {
       node <- list()
       node$mesh <- mesh
@@ -97,42 +134,42 @@ Gltf <- R6Class("gltf",
       length(private$nodes) - 1
     },
 
-    #' @description Add node as child of another
-    #' @param parent Node number to modify
-    #' @param node Node number(s) to add as children
+    #' @description Add node as child of another.
+    #' @param parent Node number to modify.
+    #' @param node Node number(s) to add as children.
     addChild = function(parent, node) {
       parentobj <- self$getNode(parent)
       parentobj$children <- I(c(parentobj$children, node))
       self$setNode(parent, parentobj)
     },
 
-    #' @description Get camera object
-    #' @param cam camera number
-    #' @return camera object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}
+    #' @description Get camera object.
+    #' @param cam Camera number.
+    #' @return Camera object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
     getCamera = function(cam)
       structure(private$cameras[[cam + 1]], class = "gltfCamera"),
 
-    #' @description Get top-level extras list
-    #' @return extras list, including rgl objects
+    #' @description Get top-level extras list.
+    #' @return Extras list, including rgl objects.
     getExtras = function()
       private$extras,
 
-    #' @description Set extras list
-    #' @param extras New extras list
+    #' @description Set extras list.
+    #' @param extras New extras list.
     setExtras = function(extras)
-      private$extras <- extras,
+      private$extras <- unclass(extras),
 
-    #' @description Get mesh object
-    #' @param m mesh number
-    #' @return mesh object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}
+    #' @description Get mesh object.
+    #' @param m Mesh number.
+    #' @return Mesh object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
     getMesh = function(m)
       structure(private$meshes[[m + 1]], class = "gltfMesh"),
 
-    #' @description Add a mesh object
-    #' @param primitives A list of primitive objects
-    #' @return mesh number
+    #' @description Add a mesh object.
+    #' @param primitives A list of primitive objects.
+    #' @return Mesh number.
     addMesh = function(primitives) {
       if (length(primitives)) {
         mesh <- list(primitives = primitives)
@@ -141,33 +178,33 @@ Gltf <- R6Class("gltf",
       }
     },
 
-    #' @description Get material object
-    #' @param m material number
-    #' @return material object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}
+    #' @description Get material object.
+    #' @param m Material number.
+    #' @return Material object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}.
     getMaterial = function(m)
       structure(private$materials[[m + 1]], class = "gltfMaterial"),
 
-    #' @description Get texture object
-    #' @param tex texture number
-    #' @return texture object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}
+    #' @description Get texture object.
+    #' @param tex Texture number.
+    #' @return Texture object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
     getTexture = function(tex)
       structure(private$textures[[tex + 1]], class = "gltfTexture"),
 
-    #' @description Get image object
-    #' @param im image number
-    #' @return image object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}
+    #' @description Get image object.
+    #' @param im Image number.
+    #' @return Image object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}.
     getImage = function(im)
       structure(private$images[[im + 1]], class = "gltfImage"),
 
     #' @description Construct and possibly add material.
     #'
     #' This will return an existing material if possible.
-    #' @param mat An `rgl` material record
-    #' @param defaultMaterial Default material properties
-    #' @return material number
+    #' @param mat An `rgl` material record.
+    #' @param defaultMaterial Default material properties.
+    #' @return Material number.
     addMaterial = function(mat, defaultMaterial = list()) {
       newmat <- defaultMaterial
       newmat[names(mat)] <- mat
@@ -199,8 +236,8 @@ Gltf <- R6Class("gltf",
     },
 
     #' @description Add a texture.
-    #' @param mat An `rgl` material record
-    #' @return texture number
+    #' @param mat An `rgl` material record.
+    #' @return Texture number.
     addTexture = function(mat) {
       texture <- list()
       texture$source <- self$addImage(mat)
@@ -210,9 +247,9 @@ Gltf <- R6Class("gltf",
       length(private$textures) - 1
     },
 
-    #' @description Add an image for a texture
-    #' @param mat An `rgl` material record
-    #' @return image number
+    #' @description Add an image for a texture.
+    #' @param mat An `rgl` material record.
+    #' @return Image number.
     addImage = function(mat) {
       image <- list()
       bytes <- readBin(mat$texture, "raw", file.size(mat$texture))
@@ -223,9 +260,9 @@ Gltf <- R6Class("gltf",
       length(private$images) - 1
     },
 
-    #' @description Add a sampler
-    #' @param mat An `rgl` material record
-    #' @return sampler number
+    #' @description Add a sampler.
+    #' @param mat An `rgl` material record.
+    #' @return Sampler number.
     addSampler = function(mat) {
       sampler <- list()
       sampler$magFilter <- getFilter(mat$texmagfilter)
@@ -236,9 +273,9 @@ Gltf <- R6Class("gltf",
       }
     },
 
-    #' @description Add or return a material
-    #' @param material A glTF material record
-    #' @return material number
+    #' @description Add or return a material.
+    #' @param material A glTF material record.
+    #' @return Material number.
     getMaterialNumber = function(material) {
       materials <- private$materials
       for (i in seq_along(materials))
@@ -250,10 +287,10 @@ Gltf <- R6Class("gltf",
       length(private$materials) - 1
     },
 
-    #' @description Write data
-    #' @param coords data to write, or `NULL`
-    #' @param target optional target use for data
-    #' @return accessor number, or `NULL`
+    #' @description Write data.
+    #' @param coords Data to write, or `NULL`.
+    #' @param target Optional target use for data.
+    #' @return Accessor number, or `NULL`.
     writeVectors = function(coords, target = NULL) {
       if (!is.null(coords)) {
         self$addAccessor(coords, target = target)
@@ -261,13 +298,13 @@ Gltf <- R6Class("gltf",
         NULL
     },
 
-    #' @description Create a primitive record
-    #' @param inds Indices of vertices
-    #' @param mode Mode of primitive
-    #' @param attributes Primitive attributes
-    #' @param matnum Material number
+    #' @description Create a primitive record.
+    #' @param inds Indices of vertices.
+    #' @param mode Mode of primitive.
+    #' @param attributes Primitive attributes.
+    #' @param matnum Material number.
     #' @return Primitive record, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
     makePrimitive = function(inds, mode = NULL, attributes = NULL, matnum = NULL) {
       indices <- as.integer(inds)
       if (length(indices)) {
@@ -281,22 +318,22 @@ Gltf <- R6Class("gltf",
       }
     },
 
-    #' @description Get asset list
-    #' @return asset object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}
+    #' @description Get asset list.
+    #' @return Asset object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
     getAsset = function()
-      private$asset,
+      structure(private$asset, class = "gltfAsset"),
 
-    #' @description Set asset list
-    #' @param version Version number of glTF format
-    #' @param generator Identifier of code generating it
+    #' @description Set asset list.
+    #' @param version Version number of glTF format.
+    #' @param generator Identifier of code generating it.
     setAsset = function(version, generator)
       private$asset <- list(version = version, generator = generator),
 
-    #' @description Get local transform
-    #' @param node Node object
-    #' @param parentTransform Matrix transform of parent object
-    #' @return 4x4 matrix of local transform
+    #' @description Get local transform.
+    #' @param node Node object.
+    #' @param parentTransform Matrix transform of parent object.
+    #' @return 4x4 matrix of local transform.
     getTransform = function(node, parentTransform) {
       if (!is.null(node$matrix)) {
         transform <- matrix(unlist(node$matrix), 4, 4)
@@ -318,9 +355,9 @@ Gltf <- R6Class("gltf",
       parentTransform %*% transform
     },
 
-    #' @description Reconstruct `rgl` material
-    #' @param n Material number
-    #' @return `rgl` material record
+    #' @description Reconstruct `rgl` material.
+    #' @param n Material number.
+    #' @return `rgl` material record.
     getRglMaterial = function(n) {
       if (is.null(n))
         result <- list()
@@ -358,8 +395,8 @@ Gltf <- R6Class("gltf",
       result
     },
 
-    #' @description Convert to list
-    #' @return List suitable for writing using JSON
+    #' @description Convert to list.
+    #' @return List suitable for writing using JSON.
     as.list = function() {
       result <- list()
       for (n in names(private)) {
@@ -375,11 +412,11 @@ Gltf <- R6Class("gltf",
     },
 
     #' @description Print `gltf` objects with various levels of detail.
-    #' @param verbose logical indicator of verbose printing, or
-    #' character vector of components to print verbosely
+    #' @param verbose Logical indicator of verbose printing, or
+    #' character vector of components to print verbosely.
     #' @param names Print names for components.
     #' @param showExtras Logical:  show extra fields?
-    #' @param ... Passed...
+    #' @param ... Passed `...` .
     #' @examples
     #' samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
     #' gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
@@ -592,8 +629,8 @@ Gltf <- R6Class("gltf",
       invisible(self)
     },
 
-    #' @description Get number of items in private list
-    #' @param list Name of list to get
+    #' @description Get number of items in private list.
+    #' @param list Name of list to get.
     listCount = function(list) {
       length(private[[list]])
     }

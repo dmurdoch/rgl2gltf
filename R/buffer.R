@@ -19,7 +19,7 @@ Buffer <- R6Class("Buffer",
 #' @param json
 #'   list read from glTF file.
 #' @param binfile
-#'   optional external binary filename, or raw vector
+#'   optional External binary filename, or raw vector
 #'
       initialize = function(json = NULL, binfile = NULL) {
         if (!is.null(json)) {
@@ -78,13 +78,13 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Get buffer object
+#'   Get buffer object.
 #'
-#' @param buf Buffer number
-#' @param default Default buffer object if `buf` not found
+#' @param buf Buffer number.
+#' @param default Default buffer object if `buf` not found.
 #'
 #' @return A list containing components described here:
-#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer}
+#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer}.
 #'
       getBuffer = function(buf, default = list(byteLength = 0)) {
         buffer <- if (buf + 1 <= length(private$buffers))
@@ -96,20 +96,20 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Set buffer object
+#'   Set buffer object.
 #'
-#' @param buf Buffer number
-#' @param buffer New value to insert
+#' @param buf Buffer number.
+#' @param buffer New value to insert.
 #'
       setBuffer = function(buf, buffer)
-        private$buffers[[buf + 1]] <- buffer,
+        private$buffers[[buf + 1]] <- unclass(buffer),
 
 #' @description
-#'   Open a connection for the data in a buffer
+#'   Open a connection for the data in a buffer.
 #'
-#' @param buf Buffer number
+#' @param buf Buffer number.
 #'
-#' @return An open binary connection
+#' @return An open binary connection.
 #'
       openBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
@@ -130,14 +130,14 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Write data to buffer
+#'   Write data to buffer.
 #'
-#' @param values Values to write
-#' @param type Type to write
-#' @param size Byte size of each value
-#' @param buf Which buffer to write to
+#' @param values Values to write.
+#' @param type Type to write.
+#' @param size Byte size of each value.
+#' @param buf Which buffer to write to.
 #'
-#' @return byte offset of start of bytes written
+#' @return Byte offset of start of bytes written.
 #'
       writeBuffer = function(values, type, size, buf = 0) {
         if (is.null(buffer <- self$getBuffer(buf)))
@@ -164,12 +164,12 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Close the connection in a buffer
+#'   Close the connection in a buffer.
 #'
 #' If there was a connection open, this will save the
 #' contents in the raw vector `bytes` within the buffer object.
 #'
-#' @param buf The buffer number
+#' @param buf The buffer number.
 #'
       closeBuffer = function(buf) {
         buffer <- self$getBuffer(buf)
@@ -185,7 +185,7 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Close any open buffers
+#'   Close any open buffers.
 #'
 #'   Call this after working with a GLTF file to avoid warnings
 #'   from R about closing unused connections.
@@ -197,12 +197,12 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Get bufferview object
+#'   Get bufferView object.
 #'
-#' @param bufv bufferView number
+#' @param bufv bufferView number.
 #'
 #' @return A list containing components described here:
-#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview}
+#' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview}.
 #'
       getBufferview = function(bufv) {
         bufferview <- private$bufferViews[[bufv+1]]
@@ -212,15 +212,15 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Add a new buffer view
+#'   Add a new buffer view.
 #'
-#' @param values Values to put in the view
-#' @param type Type of values
-#' @param size Size of values in bytes
-#' @param target Optional target use for values
-#' @param buf Which buffer to write to
+#' @param values Values to put in the view.
+#' @param type Type of values.
+#' @param size Size of values in bytes.
+#' @param target Optional target use for values.
+#' @param buf Which buffer to write to.
 #'
-#' @return New bufferview number
+#' @return New bufferView number.
 #'
       addBufferView = function(values, type, size, target = NULL, buf = 0) {
         bufferview <- list()
@@ -237,11 +237,11 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Open a connecton to a buffer view
+#'   Open a connecton to a buffer view.
 #'
-#' @param bufv Which bufferView
+#' @param bufv Which bufferView.
 #'
-#' @return A connection
+#' @return A connection.
 
       openBufferview = function(bufv) {
         bufferview <- self$getBufferview(bufv)
@@ -251,18 +251,18 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Set bufferview object
+#'   Set bufferView object.
 #'
-#' @param bufv Bufferview number
-#' @param bufferView New value to insert
+#' @param bufv bufferView number.
+#' @param bufferView New value to insert.
 
       setBufferview = function(bufv, bufferView)
-        private$bufferViews[[bufv + 1]] <- bufferView,
+        private$bufferViews[[bufv + 1]] <- unclass(bufferView),
 
 #' @description
 #'   Get accessor object
 #'
-#' @param acc accessor number
+#' @param acc Accessor number
 #'
 #' @return A list containing components described here:
 #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-accessor}
@@ -271,11 +271,20 @@ Buffer <- R6Class("Buffer",
         structure(private$accessors[[acc + 1]], class = "gltfAccessor"),
 
 #' @description
-#'   Read data given by accessor object
+#'   Set accessor object.
 #'
-#' @param acc accessor number
+#' @param acc Accessor number.
+#' @param accessor New value to insert.
 #'
-#' @return A vector or array as specified in the accessor
+      setAccessor = function(acc, accessor)
+        private$accessors[[acc + 1]] <- unclass(accessor),
+
+#' @description
+#'   Read data given by accessor object.
+#'
+#' @param acc Accessor number.
+#'
+#' @return A vector or array as specified in the accessor.
 #'
       readAccessor = function(acc) {
         typenames <- c("5120" = "byte", "5121" = "unsigned_byte",
@@ -346,29 +355,18 @@ Buffer <- R6Class("Buffer",
       },
 
 #' @description
-#'   Write values to accessor
+#'   Write values to accessor, not including `min` and `max`.
 #'
-#' @param values Values to write
-#' @param target Optional target use for values
-#' @param glTF Whether this is for glTF use
-#' @param useDouble Whether to write doubles or singles
+#' @param values Values to write.
+#' @param target Optional target use for values.
+#' @param glTF Whether this is for glTF use.
+#' @param useDouble Whether to write doubles or singles.
 #'
 #' @return New accessor number
 
-      addAccessor = function(values, target = NULL, glTF = TRUE, useDouble = FALSE) {
+      addAccessor = function(values, target = NULL, useDouble = FALSE) {
         componentType <- getType(values, useDouble)
-        if (glTF) {
-          if (componentType %in% c(typeSignedInt, typeDouble))
-            stop("Type is not supported in glTF")
-          if (any(!is.finite(values)))
-            stop("Only finite values are supported in glTF")
-        }
-        if (componentType == typeFloat) {
-          min <- minS  # These will only last for one call!
-          max <- maxS
-          size <- 4
-        } else
-          size <- switch(as.character(componentType),
+        size <- switch(as.character(componentType),
             "5120" =,       # typeSignedByte
             "5121" = 1,     # typeUnsignedByte = 1,
             "5122" =,       # typeSignedShort =,
@@ -383,32 +381,25 @@ Buffer <- R6Class("Buffer",
         if (is.matrix(values)) {
           count <- ncol(values)
           type <- paste0("VEC", nrow(values))
-          max <- I(apply(values, 1, max))
-          min <- I(apply(values, 1, min))
-          if (any(is.na(min)))
-            browser()
         } else {
           count <- length(values)
           type <- "SCALAR"
-          max <- I(max(values))
-          min <- I(min(values))
         }
         accessor <- list(bufferView = bufferView,
                          componentType = componentType,
                          count = count,
-                         type = type,
-                         max = max,
-                         min = min)
+                         type = type)
+
         private$accessors <- c(private$accessors, list(accessor))
         length(private$accessors) - 1
       },
 
 #' @description
-#'   Convert buffer to data URI
+#'   Convert buffer to data URI.
 #'
-#' @param buf Buffer to convert
+#' @param buf Buffer to convert.
 #'
-#' @return String containing data URI
+#' @return String containing data URI.
 
       dataURI = function(buf = 0) {
         buffer <- self$getBuffer(buf)

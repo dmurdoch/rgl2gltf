@@ -24,6 +24,7 @@ binary data for a scene.
 \item \href{#method-openBufferview}{\code{Buffer$openBufferview()}}
 \item \href{#method-setBufferview}{\code{Buffer$setBufferview()}}
 \item \href{#method-getAccessor}{\code{Buffer$getAccessor()}}
+\item \href{#method-setAccessor}{\code{Buffer$setAccessor()}}
 \item \href{#method-readAccessor}{\code{Buffer$readAccessor()}}
 \item \href{#method-addAccessor}{\code{Buffer$addAccessor()}}
 \item \href{#method-dataURI}{\code{Buffer$dataURI()}}
@@ -43,7 +44,7 @@ binary data for a scene.
 \describe{
 \item{\code{json}}{list read from glTF file.}
 
-\item{\code{binfile}}{optional external binary filename, or raw vector}
+\item{\code{binfile}}{optional External binary filename, or raw vector}
 }
 \if{html}{\out{</div>}}
 }
@@ -90,7 +91,7 @@ Write open buffer to connection.
 \if{html}{\out{<a id="method-getBuffer"></a>}}
 \if{latex}{\out{\hypertarget{method-getBuffer}{}}}
 \subsection{Method \code{getBuffer()}}{
-Get buffer object
+Get buffer object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$getBuffer(buf, default = list(byteLength = 0))}\if{html}{\out{</div>}}
 }
@@ -98,22 +99,22 @@ Get buffer object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{buf}}{Buffer number}
+\item{\code{buf}}{Buffer number.}
 
-\item{\code{default}}{Default buffer object if `buf` not found}
+\item{\code{default}}{Default buffer object if \code{buf} not found.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A list containing components described here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer}
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setBuffer"></a>}}
 \if{latex}{\out{\hypertarget{method-setBuffer}{}}}
 \subsection{Method \code{setBuffer()}}{
-Set buffer object
+Set buffer object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$setBuffer(buf, buffer)}\if{html}{\out{</div>}}
 }
@@ -121,9 +122,9 @@ Set buffer object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{buf}}{Buffer number}
+\item{\code{buf}}{Buffer number.}
 
-\item{\code{buffer}}{New value to insert}
+\item{\code{buffer}}{New value to insert.}
 }
 \if{html}{\out{</div>}}
 }
@@ -132,7 +133,7 @@ Set buffer object
 \if{html}{\out{<a id="method-openBuffer"></a>}}
 \if{latex}{\out{\hypertarget{method-openBuffer}{}}}
 \subsection{Method \code{openBuffer()}}{
-Open a connection for the data in a buffer
+Open a connection for the data in a buffer.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$openBuffer(buf)}\if{html}{\out{</div>}}
 }
@@ -140,19 +141,19 @@ Open a connection for the data in a buffer
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{buf}}{Buffer number}
+\item{\code{buf}}{Buffer number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An open binary connection
+An open binary connection.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-writeBuffer"></a>}}
 \if{latex}{\out{\hypertarget{method-writeBuffer}{}}}
 \subsection{Method \code{writeBuffer()}}{
-Write data to buffer
+Write data to buffer.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$writeBuffer(values, type, size, buf = 0)}\if{html}{\out{</div>}}
 }
@@ -160,28 +161,28 @@ Write data to buffer
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{values}}{Values to write}
+\item{\code{values}}{Values to write.}
 
-\item{\code{type}}{Type to write}
+\item{\code{type}}{Type to write.}
 
-\item{\code{size}}{Byte size of each value}
+\item{\code{size}}{Byte size of each value.}
 
-\item{\code{buf}}{Which buffer to write to}
+\item{\code{buf}}{Which buffer to write to.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-byte offset of start of bytes written
+Byte offset of start of bytes written.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-closeBuffer"></a>}}
 \if{latex}{\out{\hypertarget{method-closeBuffer}{}}}
 \subsection{Method \code{closeBuffer()}}{
-Close the connection in a buffer
+Close the connection in a buffer.
 
 If there was a connection open, this will save the
-contents in the raw vector `bytes` within the buffer object.
+contents in the raw vector \code{bytes} within the buffer object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$closeBuffer(buf)}\if{html}{\out{</div>}}
 }
@@ -189,7 +190,7 @@ contents in the raw vector `bytes` within the buffer object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{buf}}{The buffer number}
+\item{\code{buf}}{The buffer number.}
 }
 \if{html}{\out{</div>}}
 }
@@ -198,10 +199,10 @@ contents in the raw vector `bytes` within the buffer object.
 \if{html}{\out{<a id="method-closeBuffers"></a>}}
 \if{latex}{\out{\hypertarget{method-closeBuffers}{}}}
 \subsection{Method \code{closeBuffers()}}{
-Close any open buffers
+Close any open buffers.
 
-  Call this after working with a GLTF file to avoid warnings
-  from R about closing unused connections.
+Call this after working with a GLTF file to avoid warnings
+from R about closing unused connections.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$closeBuffers()}\if{html}{\out{</div>}}
 }
@@ -211,7 +212,7 @@ Close any open buffers
 \if{html}{\out{<a id="method-getBufferview"></a>}}
 \if{latex}{\out{\hypertarget{method-getBufferview}{}}}
 \subsection{Method \code{getBufferview()}}{
-Get bufferview object
+Get bufferView object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$getBufferview(bufv)}\if{html}{\out{</div>}}
 }
@@ -219,20 +220,20 @@ Get bufferview object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{bufv}}{bufferView number}
+\item{\code{bufv}}{bufferView number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A list containing components described here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview}
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addBufferView"></a>}}
 \if{latex}{\out{\hypertarget{method-addBufferView}{}}}
 \subsection{Method \code{addBufferView()}}{
-Add a new buffer view
+Add a new buffer view.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$addBufferView(values, type, size, target = NULL, buf = 0)}\if{html}{\out{</div>}}
 }
@@ -240,27 +241,27 @@ Add a new buffer view
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{values}}{Values to put in the view}
+\item{\code{values}}{Values to put in the view.}
 
-\item{\code{type}}{Type of values}
+\item{\code{type}}{Type of values.}
 
-\item{\code{size}}{Size of values in bytes}
+\item{\code{size}}{Size of values in bytes.}
 
-\item{\code{target}}{Optional target use for values}
+\item{\code{target}}{Optional target use for values.}
 
-\item{\code{buf}}{Which buffer to write to}
+\item{\code{buf}}{Which buffer to write to.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-New bufferview number
+New bufferView number.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-openBufferview"></a>}}
 \if{latex}{\out{\hypertarget{method-openBufferview}{}}}
 \subsection{Method \code{openBufferview()}}{
-Open a connecton to a buffer view
+Open a connecton to a buffer view.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$openBufferview(bufv)}\if{html}{\out{</div>}}
 }
@@ -268,19 +269,19 @@ Open a connecton to a buffer view
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{bufv}}{Which bufferView}
+\item{\code{bufv}}{Which bufferView.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A connection
+A connection.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-setBufferview"></a>}}
 \if{latex}{\out{\hypertarget{method-setBufferview}{}}}
 \subsection{Method \code{setBufferview()}}{
-Set bufferview object
+Set bufferView object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$setBufferview(bufv, bufferView)}\if{html}{\out{</div>}}
 }
@@ -288,9 +289,9 @@ Set bufferview object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{bufv}}{Bufferview number}
+\item{\code{bufv}}{bufferView number.}
 
-\item{\code{bufferView}}{New value to insert}
+\item{\code{bufferView}}{New value to insert.}
 }
 \if{html}{\out{</div>}}
 }
@@ -307,7 +308,7 @@ Get accessor object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{acc}}{accessor number}
+\item{\code{acc}}{Accessor number}
 }
 \if{html}{\out{</div>}}
 }
@@ -317,10 +318,29 @@ A list containing components described here:
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setAccessor"></a>}}
+\if{latex}{\out{\hypertarget{method-setAccessor}{}}}
+\subsection{Method \code{setAccessor()}}{
+Set accessor object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Buffer$setAccessor(acc, accessor)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{acc}}{Accessor number.}
+
+\item{\code{accessor}}{New value to insert.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-readAccessor"></a>}}
 \if{latex}{\out{\hypertarget{method-readAccessor}{}}}
 \subsection{Method \code{readAccessor()}}{
-Read data given by accessor object
+Read data given by accessor object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$readAccessor(acc)}\if{html}{\out{</div>}}
 }
@@ -328,33 +348,33 @@ Read data given by accessor object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{acc}}{accessor number}
+\item{\code{acc}}{Accessor number.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A vector or array as specified in the accessor
+A vector or array as specified in the accessor.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-addAccessor"></a>}}
 \if{latex}{\out{\hypertarget{method-addAccessor}{}}}
 \subsection{Method \code{addAccessor()}}{
-Write values to accessor
+Write values to accessor, not including \code{min} and \code{max}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Buffer$addAccessor(values, target = NULL, glTF = TRUE, useDouble = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Buffer$addAccessor(values, target = NULL, useDouble = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{values}}{Values to write}
+\item{\code{values}}{Values to write.}
 
-\item{\code{target}}{Optional target use for values}
+\item{\code{target}}{Optional target use for values.}
 
-\item{\code{glTF}}{Whether this is for glTF use}
+\item{\code{useDouble}}{Whether to write doubles or singles.}
 
-\item{\code{useDouble}}{Whether to write doubles or singles}
+\item{\code{glTF}}{Whether this is for glTF use.}
 }
 \if{html}{\out{</div>}}
 }
@@ -366,7 +386,7 @@ New accessor number
 \if{html}{\out{<a id="method-dataURI"></a>}}
 \if{latex}{\out{\hypertarget{method-dataURI}{}}}
 \subsection{Method \code{dataURI()}}{
-Convert buffer to data URI
+Convert buffer to data URI.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Buffer$dataURI(buf = 0)}\if{html}{\out{</div>}}
 }
@@ -374,12 +394,12 @@ Convert buffer to data URI
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{buf}}{Buffer to convert}
+\item{\code{buf}}{Buffer to convert.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-String containing data URI
+String containing data URI.
 }
 }
 \if{html}{\out{<hr>}}

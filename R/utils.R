@@ -47,20 +47,6 @@ euclidean <- function(x, transpose = TRUE) {
   else asEuclidean(x)
 }
 
-# Round a vector of doubles to single precision
-toSingle <- function(x) {
-  con <- rawConnection(raw(), "r+b")
-  on.exit(close(con))
-  writeBin(x, con, size = 4)
-  seek(con, 0)
-  readBin(con, "double", n = length(x), size=4)
-}
-
-# Compute min and max in single precision
-
-minS <- function(x) min(toSingle(x))
-maxS <- function(x) max(toSingle(x))
-
 # Compute normals for each face of a mesh and add them
 addFaceNormals <- function(x) {
   x <- as.tmesh3d(x)
