@@ -28,6 +28,7 @@ binary data for a scene.
 \item \href{#method-readAccessor}{\code{Buffer$readAccessor()}}
 \item \href{#method-addAccessor}{\code{Buffer$addAccessor()}}
 \item \href{#method-dataURI}{\code{Buffer$dataURI()}}
+\item \href{#method-as.list}{\code{Buffer$as.list()}}
 \item \href{#method-clone}{\code{Buffer$clone()}}
 }
 }
@@ -400,6 +401,19 @@ Convert buffer to data URI.
 }
 \subsection{Returns}{
 String containing data URI.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-as.list"></a>}}
+\if{latex}{\out{\hypertarget{method-as.list}{}}}
+\subsection{Method \code{as.list()}}{
+Convert to list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Buffer$as.list()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+List suitable for writing using JSON.
 }
 }
 \if{html}{\out{<hr>}}

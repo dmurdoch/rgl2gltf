@@ -395,22 +395,6 @@ Gltf <- R6Class("gltf",
       result
     },
 
-    #' @description Convert to list.
-    #' @return List suitable for writing using JSON.
-    as.list = function() {
-      result <- list()
-      for (n in names(private)) {
-        thelist <- private[[n]]
-        if (is.list(thelist) && length(thelist)) {
-          for (i in seq_along(thelist))
-            thelist[[i]] <- unclass(thelist[[i]])
-          result[[n]] <- thelist
-        }
-      }
-      result$scene <- unclass(self$scene)
-      result
-    },
-
     #' @description Print `gltf` objects with various levels of detail.
     #' @param verbose Logical indicator of verbose printing, or
     #' character vector of components to print verbosely.
