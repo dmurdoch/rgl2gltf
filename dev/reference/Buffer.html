@@ -83,6 +83,7 @@ binary data for a scene.</p>
 <li><p><a href="#method-openBufferview"><code>Buffer$openBufferview()</code></a></p></li>
 <li><p><a href="#method-setBufferview"><code>Buffer$setBufferview()</code></a></p></li>
 <li><p><a href="#method-getAccessor"><code>Buffer$getAccessor()</code></a></p></li>
+<li><p><a href="#method-setAccessor"><code>Buffer$setAccessor()</code></a></p></li>
 <li><p><a href="#method-readAccessor"><code>Buffer$readAccessor()</code></a></p></li>
 <li><p><a href="#method-addAccessor"><code>Buffer$addAccessor()</code></a></p></li>
 <li><p><a href="#method-dataURI"><code>Buffer$dataURI()</code></a></p></li>
@@ -102,7 +103,7 @@ binary data for a scene.</p>
 
 
 <dt><code>binfile</code></dt>
-<dd><p>optional external binary filename, or raw vector</p></dd>
+<dd><p>optional External binary filename, or raw vector</p></dd>
 
 
 </dl><p></p></div>
@@ -150,7 +151,7 @@ binary data for a scene.</p>
 
 </div><p></p><hr><a id="method-getBuffer"></a><div class="section">
 <h3 id="method-getbuffer-">Method <code>getBuffer()</code><a class="anchor" aria-label="anchor" href="#method-getbuffer-"></a></h3>
-<p>Get buffer object</p><div class="section">
+<p>Get buffer object.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">getBuffer</span><span class="op">(</span><span class="va">buf</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>byteLength <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -158,11 +159,11 @@ binary data for a scene.</p>
 <div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>buf</code></dt>
-<dd><p>Buffer number</p></dd>
+<dd><p>Buffer number.</p></dd>
 
 
 <dt><code>default</code></dt>
-<dd><p>Default buffer object if `buf` not found</p></dd>
+<dd><p>Default buffer object if <code>buf</code> not found.</p></dd>
 
 
 </dl><p></p></div>
@@ -170,12 +171,12 @@ binary data for a scene.</p>
 <div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>A list containing components described here:
-<a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer" class="external-link">https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer</a></p>
+<a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer" class="external-link">https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-buffer</a>.</p>
 </div>
 
 </div><p></p><hr><a id="method-setBuffer"></a><div class="section">
 <h3 id="method-setbuffer-">Method <code>setBuffer()</code><a class="anchor" aria-label="anchor" href="#method-setbuffer-"></a></h3>
-<p>Set buffer object</p><div class="section">
+<p>Set buffer object.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">setBuffer</span><span class="op">(</span><span class="va">buf</span>, <span class="va">buffer</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -183,11 +184,11 @@ binary data for a scene.</p>
 <div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>buf</code></dt>
-<dd><p>Buffer number</p></dd>
+<dd><p>Buffer number.</p></dd>
 
 
 <dt><code>buffer</code></dt>
-<dd><p>New value to insert</p></dd>
+<dd><p>New value to insert.</p></dd>
 
 
 </dl><p></p></div>
@@ -195,7 +196,7 @@ binary data for a scene.</p>
 
 </div><p></p><hr><a id="method-openBuffer"></a><div class="section">
 <h3 id="method-openbuffer-">Method <code>openBuffer()</code><a class="anchor" aria-label="anchor" href="#method-openbuffer-"></a></h3>
-<p>Open a connection for the data in a buffer</p><div class="section">
+<p>Open a connection for the data in a buffer.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">openBuffer</span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -203,19 +204,19 @@ binary data for a scene.</p>
 <div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>buf</code></dt>
-<dd><p>Buffer number</p></dd>
+<dd><p>Buffer number.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>An open binary connection</p>
+<p>An open binary connection.</p>
 </div>
 
 </div><p></p><hr><a id="method-writeBuffer"></a><div class="section">
 <h3 id="method-writebuffer-">Method <code>writeBuffer()</code><a class="anchor" aria-label="anchor" href="#method-writebuffer-"></a></h3>
-<p>Write data to buffer</p><div class="section">
+<p>Write data to buffer.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">writeBuffer</span><span class="op">(</span><span class="va">values</span>, <span class="va">type</span>, <span class="va">size</span>, buf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -223,33 +224,33 @@ binary data for a scene.</p>
 <div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>values</code></dt>
-<dd><p>Values to write</p></dd>
+<dd><p>Values to write.</p></dd>
 
 
 <dt><code>type</code></dt>
-<dd><p>Type to write</p></dd>
+<dd><p>Type to write.</p></dd>
 
 
 <dt><code>size</code></dt>
-<dd><p>Byte size of each value</p></dd>
+<dd><p>Byte size of each value.</p></dd>
 
 
 <dt><code>buf</code></dt>
-<dd><p>Which buffer to write to</p></dd>
+<dd><p>Which buffer to write to.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>byte offset of start of bytes written</p>
+<p>Byte offset of start of bytes written.</p>
 </div>
 
 </div><p></p><hr><a id="method-closeBuffer"></a><div class="section">
 <h3 id="method-closebuffer-">Method <code>closeBuffer()</code><a class="anchor" aria-label="anchor" href="#method-closebuffer-"></a></h3>
-<p>Close the connection in a buffer</p>
+<p>Close the connection in a buffer.</p>
 <p>If there was a connection open, this will save the
-contents in the raw vector `bytes` within the buffer object.</p><div class="section">
+contents in the raw vector <code>bytes</code> within the buffer object.</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">closeBuffer</span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -257,7 +258,7 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>buf</code></dt>
-<dd><p>The buffer number</p></dd>
+<dd><p>The buffer number.</p></dd>
 
 
 </dl><p></p></div>
@@ -265,9 +266,9 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 
 </div><p></p><hr><a id="method-closeBuffers"></a><div class="section">
 <h3 id="method-closebuffers-">Method <code>closeBuffers()</code><a class="anchor" aria-label="anchor" href="#method-closebuffers-"></a></h3>
-<p>Close any open buffers</p>
+<p>Close any open buffers.</p>
 <p>Call this after working with a GLTF file to avoid warnings
-  from R about closing unused connections.</p><div class="section">
+from R about closing unused connections.</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">closeBuffers</span><span class="op">(</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -275,7 +276,7 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 
 </div><p></p><hr><a id="method-getBufferview"></a><div class="section">
 <h3 id="method-getbufferview-">Method <code>getBufferview()</code><a class="anchor" aria-label="anchor" href="#method-getbufferview-"></a></h3>
-<p>Get bufferview object</p><div class="section">
+<p>Get bufferView object.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">getBufferview</span><span class="op">(</span><span class="va">bufv</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -283,7 +284,7 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>bufv</code></dt>
-<dd><p>bufferView number</p></dd>
+<dd><p>bufferView number.</p></dd>
 
 
 </dl><p></p></div>
@@ -291,12 +292,12 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
 <p>A list containing components described here:
-<a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview" class="external-link">https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview</a></p>
+<a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview" class="external-link">https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-bufferview</a>.</p>
 </div>
 
 </div><p></p><hr><a id="method-addBufferView"></a><div class="section">
 <h3 id="method-addbufferview-">Method <code>addBufferView()</code><a class="anchor" aria-label="anchor" href="#method-addbufferview-"></a></h3>
-<p>Add a new buffer view</p><div class="section">
+<p>Add a new buffer view.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">addBufferView</span><span class="op">(</span><span class="va">values</span>, <span class="va">type</span>, <span class="va">size</span>, target <span class="op">=</span> <span class="cn">NULL</span>, buf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -304,35 +305,35 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>values</code></dt>
-<dd><p>Values to put in the view</p></dd>
+<dd><p>Values to put in the view.</p></dd>
 
 
 <dt><code>type</code></dt>
-<dd><p>Type of values</p></dd>
+<dd><p>Type of values.</p></dd>
 
 
 <dt><code>size</code></dt>
-<dd><p>Size of values in bytes</p></dd>
+<dd><p>Size of values in bytes.</p></dd>
 
 
 <dt><code>target</code></dt>
-<dd><p>Optional target use for values</p></dd>
+<dd><p>Optional target use for values.</p></dd>
 
 
 <dt><code>buf</code></dt>
-<dd><p>Which buffer to write to</p></dd>
+<dd><p>Which buffer to write to.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
-<p>New bufferview number</p>
+<p>New bufferView number.</p>
 </div>
 
 </div><p></p><hr><a id="method-openBufferview"></a><div class="section">
 <h3 id="method-openbufferview-">Method <code>openBufferview()</code><a class="anchor" aria-label="anchor" href="#method-openbufferview-"></a></h3>
-<p>Open a connecton to a buffer view</p><div class="section">
+<p>Open a connecton to a buffer view.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">openBufferview</span><span class="op">(</span><span class="va">bufv</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -340,19 +341,19 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>bufv</code></dt>
-<dd><p>Which bufferView</p></dd>
+<dd><p>Which bufferView.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
-<p>A connection</p>
+<p>A connection.</p>
 </div>
 
 </div><p></p><hr><a id="method-setBufferview"></a><div class="section">
 <h3 id="method-setbufferview-">Method <code>setBufferview()</code><a class="anchor" aria-label="anchor" href="#method-setbufferview-"></a></h3>
-<p>Set bufferview object</p><div class="section">
+<p>Set bufferView object.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">setBufferview</span><span class="op">(</span><span class="va">bufv</span>, <span class="va">bufferView</span><span class="op">)</span></code></pre><p></p></div>
 </div>
@@ -360,11 +361,11 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>bufv</code></dt>
-<dd><p>Bufferview number</p></dd>
+<dd><p>bufferView number.</p></dd>
 
 
 <dt><code>bufferView</code></dt>
-<dd><p>New value to insert</p></dd>
+<dd><p>New value to insert.</p></dd>
 
 
 </dl><p></p></div>
@@ -380,7 +381,7 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <div class="section">
 <h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>acc</code></dt>
-<dd><p>accessor number</p></dd>
+<dd><p>Accessor number</p></dd>
 
 
 </dl><p></p></div>
@@ -391,49 +392,69 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 <a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-accessor" class="external-link">https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-accessor</a></p>
 </div>
 
-</div><p></p><hr><a id="method-readAccessor"></a><div class="section">
-<h3 id="method-readaccessor-">Method <code>readAccessor()</code><a class="anchor" aria-label="anchor" href="#method-readaccessor-"></a></h3>
-<p>Read data given by accessor object</p><div class="section">
+</div><p></p><hr><a id="method-setAccessor"></a><div class="section">
+<h3 id="method-setaccessor-">Method <code>setAccessor()</code><a class="anchor" aria-label="anchor" href="#method-setaccessor-"></a></h3>
+<p>Set accessor object.</p><div class="section">
 <h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
-<p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">readAccessor</span><span class="op">(</span><span class="va">acc</span><span class="op">)</span></code></pre><p></p></div>
+<p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">setAccessor</span><span class="op">(</span><span class="va">acc</span>, <span class="va">accessor</span><span class="op">)</span></code></pre><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>acc</code></dt>
-<dd><p>accessor number</p></dd>
+<dd><p>Accessor number.</p></dd>
+
+
+<dt><code>accessor</code></dt>
+<dd><p>New value to insert.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-readAccessor"></a><div class="section">
+<h3 id="method-readaccessor-">Method <code>readAccessor()</code><a class="anchor" aria-label="anchor" href="#method-readaccessor-"></a></h3>
+<p>Read data given by accessor object.</p><div class="section">
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">readAccessor</span><span class="op">(</span><span class="va">acc</span><span class="op">)</span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>acc</code></dt>
+<dd><p>Accessor number.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
-<p>A vector or array as specified in the accessor</p>
+<p>A vector or array as specified in the accessor.</p>
 </div>
 
 </div><p></p><hr><a id="method-addAccessor"></a><div class="section">
 <h3 id="method-addaccessor-">Method <code>addAccessor()</code><a class="anchor" aria-label="anchor" href="#method-addaccessor-"></a></h3>
-<p>Write values to accessor</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
-<p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">addAccessor</span><span class="op">(</span><span class="va">values</span>, target <span class="op">=</span> <span class="cn">NULL</span>, glTF <span class="op">=</span> <span class="cn">TRUE</span>, useDouble <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre><p></p></div>
+<p>Write values to accessor, not including <code>min</code> and <code>max</code>.</p><div class="section">
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">addAccessor</span><span class="op">(</span><span class="va">values</span>, target <span class="op">=</span> <span class="cn">NULL</span>, useDouble <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>values</code></dt>
-<dd><p>Values to write</p></dd>
+<dd><p>Values to write.</p></dd>
 
 
 <dt><code>target</code></dt>
-<dd><p>Optional target use for values</p></dd>
-
-
-<dt><code>glTF</code></dt>
-<dd><p>Whether this is for glTF use</p></dd>
+<dd><p>Optional target use for values.</p></dd>
 
 
 <dt><code>useDouble</code></dt>
-<dd><p>Whether to write doubles or singles</p></dd>
+<dd><p>Whether to write doubles or singles.</p></dd>
+
+
+<dt><code>glTF</code></dt>
+<dd><p>Whether this is for glTF use.</p></dd>
 
 
 </dl><p></p></div>
@@ -445,33 +466,33 @@ contents in the raw vector `bytes` within the buffer object.</p><div class="sect
 
 </div><p></p><hr><a id="method-dataURI"></a><div class="section">
 <h3 id="method-datauri-">Method <code>dataURI()</code><a class="anchor" aria-label="anchor" href="#method-datauri-"></a></h3>
-<p>Convert buffer to data URI</p><div class="section">
-<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<p>Convert buffer to data URI.</p><div class="section">
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">dataURI</span><span class="op">(</span>buf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></code></pre><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
+<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>buf</code></dt>
-<dd><p>Buffer to convert</p></dd>
+<dd><p>Buffer to convert.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
-<p>String containing data URI</p>
+<p>String containing data URI.</p>
 </div>
 
 </div><p></p><hr><a id="method-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
 <p></p><div class="r"><pre><code><span class="va">Buffer</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
+<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
