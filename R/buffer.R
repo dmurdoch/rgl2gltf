@@ -378,7 +378,7 @@ Buffer <- R6Class("Buffer",
 
         bufferView <- self$addBufferView(c(values), componentType,
                                     size = size, target = target)
-        if (is.matrix(values)) {
+        if (is.matrix(values) && nrow(values) > 1) {
           count <- ncol(values)
           type <- paste0("VEC", nrow(values))
         } else {
@@ -417,6 +417,21 @@ Buffer <- R6Class("Buffer",
         }
         bytes <- rawConnectionValue(con)
         base64enc::dataURI(bytes, mime = "application/octet-stream")
+      },
+
+#' @description Convert to list.
+#' @return List suitable for writing using JSON.
+      as.list = function() {
+        result <- list()
+        for (n in names(private)) {
+          thelist <- private[[n]]
+          if (is.list(thelist) && length(thelist)) {
+            for (i in seq_along(thelist))
+              thelist[[i]] <- unclass(thelist[[i]])
+            result[[n]] <- thelist
+          }
+        }
+        result
       }
   ),
   private = list(

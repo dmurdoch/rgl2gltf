@@ -60,7 +60,6 @@ gltf$print(names = "meshes")
 \item \href{#method-setAsset}{\code{Gltf$setAsset()}}
 \item \href{#method-getTransform}{\code{Gltf$getTransform()}}
 \item \href{#method-getRglMaterial}{\code{Gltf$getRglMaterial()}}
-\item \href{#method-as.list}{\code{Gltf$as.list()}}
 \item \href{#method-print}{\code{Gltf$print()}}
 \item \href{#method-listCount}{\code{Gltf$listCount()}}
 \item \href{#method-clone}{\code{Gltf$clone()}}
@@ -70,6 +69,7 @@ gltf$print(names = "meshes")
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="addBufferView">}\href{../../rgl2gltf/html/Buffer.html#method-addBufferView}{\code{rgl2gltf::Buffer$addBufferView()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="as.list">}\href{../../rgl2gltf/html/Buffer.html#method-as.list}{\code{rgl2gltf::Buffer$as.list()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="closeBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-closeBuffer}{\code{rgl2gltf::Buffer$closeBuffer()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="closeBuffers">}\href{../../rgl2gltf/html/Buffer.html#method-closeBuffers}{\code{rgl2gltf::Buffer$closeBuffers()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="dataURI">}\href{../../rgl2gltf/html/Buffer.html#method-dataURI}{\code{rgl2gltf::Buffer$dataURI()}}\out{</span>}
@@ -688,19 +688,6 @@ Reconstruct \code{rgl} material.
 }
 \subsection{Returns}{
 \code{rgl} material record.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-as.list"></a>}}
-\if{latex}{\out{\hypertarget{method-as.list}{}}}
-\subsection{Method \code{as.list()}}{
-Convert to list.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$as.list()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-List suitable for writing using JSON.
 }
 }
 \if{html}{\out{<hr>}}
