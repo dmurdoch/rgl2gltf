@@ -57,14 +57,12 @@ download.file(paste0(samples, "/2CylinderEngine/glTF/2CylinderEngine0.bin?raw=tr
 
 gltf <- readglTF(filename)
 gltf
-if (interactive()) {
-  # gltf files contain references to other files using
-  # relative paths, so we can only use them from their
-  # own directory
-  olddir <- setwd(dirname(filename))
-  rgl::plot3d(gltf)
-  setwd(olddir)
-}
-gltf$closeBuffers()
 
+# gltf files contain references to other files using
+# relative paths, so we can only use them from their
+# own directory
+olddir <- setwd(dirname(filename))
+rgl::plot3d(gltf)
+gltf$closeBuffers()
+setwd(olddir)
 }

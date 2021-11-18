@@ -3,6 +3,10 @@
 targetArray <- 34962
 targetElementArray <- 34963
 
+typeSignedInt <- 5124
+typeUnsignedInt <- 5125
+typeDouble <- 5130
+
 #' @title R6 Class for glTF file objects
 #'
 #' @description

@@ -18,7 +18,7 @@ gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.gl
 gltf$print(names = "meshes")
 }
 \section{Super class}{
-\code{\link[rgl2gltf:Buffer]{rgl2gltf::Buffer}} -> \code{gltf}
+\code{\link[rgl:Buffer]{rgl::Buffer}} -> \code{gltf}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -68,6 +68,7 @@ gltf$print(names = "meshes")
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
+<<<<<<< HEAD
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="addBufferView">}\href{../../rgl2gltf/html/Buffer.html#method-addBufferView}{\code{rgl2gltf::Buffer$addBufferView()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="as.list">}\href{../../rgl2gltf/html/Buffer.html#method-as.list}{\code{rgl2gltf::Buffer$as.list()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="closeBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-closeBuffer}{\code{rgl2gltf::Buffer$closeBuffer()}}\out{</span>}
@@ -85,6 +86,25 @@ gltf$print(names = "meshes")
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="setBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-setBuffer}{\code{rgl2gltf::Buffer$setBuffer()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="setBufferview">}\href{../../rgl2gltf/html/Buffer.html#method-setBufferview}{\code{rgl2gltf::Buffer$setBufferview()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="rgl2gltf" data-topic="Buffer" data-id="writeBuffer">}\href{../../rgl2gltf/html/Buffer.html#method-writeBuffer}{\code{rgl2gltf::Buffer$writeBuffer()}}\out{</span>}
+=======
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="addBufferView">}\href{../../rgl/html/Buffer.html#method-addBufferView}{\code{rgl::Buffer$addBufferView()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="as.list">}\href{../../rgl/html/Buffer.html#method-as.list}{\code{rgl::Buffer$as.list()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffer">}\href{../../rgl/html/Buffer.html#method-closeBuffer}{\code{rgl::Buffer$closeBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffers">}\href{../../rgl/html/Buffer.html#method-closeBuffers}{\code{rgl::Buffer$closeBuffers()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="dataURI">}\href{../../rgl/html/Buffer.html#method-dataURI}{\code{rgl::Buffer$dataURI()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getAccessor">}\href{../../rgl/html/Buffer.html#method-getAccessor}{\code{rgl::Buffer$getAccessor()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBuffer">}\href{../../rgl/html/Buffer.html#method-getBuffer}{\code{rgl::Buffer$getBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBufferview">}\href{../../rgl/html/Buffer.html#method-getBufferview}{\code{rgl::Buffer$getBufferview()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="load">}\href{../../rgl/html/Buffer.html#method-load}{\code{rgl::Buffer$load()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBuffer">}\href{../../rgl/html/Buffer.html#method-openBuffer}{\code{rgl::Buffer$openBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBufferview">}\href{../../rgl/html/Buffer.html#method-openBufferview}{\code{rgl::Buffer$openBufferview()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor">}\href{../../rgl/html/Buffer.html#method-readAccessor}{\code{rgl::Buffer$readAccessor()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="saveOpenBuffer">}\href{../../rgl/html/Buffer.html#method-saveOpenBuffer}{\code{rgl::Buffer$saveOpenBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setAccessor">}\href{../../rgl/html/Buffer.html#method-setAccessor}{\code{rgl::Buffer$setAccessor()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBuffer">}\href{../../rgl/html/Buffer.html#method-setBuffer}{\code{rgl::Buffer$setBuffer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBufferview">}\href{../../rgl/html/Buffer.html#method-setBufferview}{\code{rgl::Buffer$setBufferview()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="writeBuffer">}\href{../../rgl/html/Buffer.html#method-writeBuffer}{\code{rgl::Buffer$writeBuffer()}}\out{</span>}
+>>>>>>> cf07440e205b656c51ee97ca2029dacde6d1299d
 }
 \out{</details>}
 }
