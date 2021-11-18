@@ -24,26 +24,12 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
                             dir = tempdir(),
                             scale = c(1,1,1)) {
 
-  typeUnsignedByte <- 5121
-  typeUnsignedShort <- 5123
-  typeUnsignedInt <- 5125
-  typeDouble <- 5126
-
   modePoints <- 0
   modeSegments <- 1
   modeTriangles <- 4
 
   addPrimitive <- function(indices, mode) {
     result$makePrimitive(indices, mode, attributes, matnum)
-  }
-
-  getType <- function(x) {
-    if (is.integer(x))
-      typeUnsignedInt
-    else if (is.numeric(x))
-      typeDouble
-    else
-      stop('Unrecognized type')
   }
 
   writeColors <- function(mat) {

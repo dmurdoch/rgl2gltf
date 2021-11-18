@@ -3,6 +3,10 @@
 targetArray <- 34962
 targetElementArray <- 34963
 
+typeSignedInt <- 5124
+typeUnsignedInt <- 5125
+typeDouble <- 5130
+
 #' @title R6 Class for glTF file objects
 #'
 #' @description
@@ -392,22 +396,6 @@ Gltf <- R6Class("gltf",
         } else
           result$specular <- "gray10"
       }
-      result
-    },
-
-    #' @description Convert to list.
-    #' @return List suitable for writing using JSON.
-    as.list = function() {
-      result <- list()
-      for (n in names(private)) {
-        thelist <- private[[n]]
-        if (is.list(thelist) && length(thelist)) {
-          for (i in seq_along(thelist))
-            thelist[[i]] <- unclass(thelist[[i]])
-          result[[n]] <- thelist
-        }
-      }
-      result$scene <- unclass(self$scene)
       result
     },
 
