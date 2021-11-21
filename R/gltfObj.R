@@ -399,6 +399,83 @@ Gltf <- R6Class("gltf",
       result
     },
 
+    #' @description Get animation.
+    #' @param ani Animation number
+    #' @return Animation object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specsparam/2.0/glTF-2.0.html#reference-animation}.
+    getAnimation = function(ani)
+      structure(private$animations[[ani + 1]], class = "gltfAnimation"),
+
+    setAnimation = function(ani, animation)
+        private$animations[[ani + 1]] <- unclass(animation),
+
+    timerange = function(ani) {
+      animation <- self$getAnimation(ani)
+      samplers <- animation$samplers
+      min <- Inf
+      max <- -Inf
+      for (i in seq_along(samplers)) {
+        sampler <- samplers[[i]]
+        accessor <- self$getAccessor(sampler$input)
+        min <- min(min, unlist(accessor$min))
+        max <- max(max, unlist(accessor$max))
+      }
+      c(min, max)
+    },
+
+    initAnimation = function(ani) {
+      animation <- self$getAnimation(ani)
+      if (isTRUE(animation$initialized))
+        return()
+      for (i in seq_along(animation$channels)) {
+        channel <- animation$channels[[i]]
+        if (is.null(channel$target$node))
+          next
+        sampler <- animation$samplers[[channel$sampler + 1]]
+        if (is.null(sampler$fn)) {
+          inputs <- self$readAccessor(sampler$input)
+          outputs <- self$readAccessor(sampler$output)
+          if (!is.null(sampler$interpolation) &&
+              sampler$interpolation == "STEP")
+            sampler$fn <- stepfun(inputs, outputs)
+          else if (channel$target$path == "rotation")
+            sampler$fn <- slerpfun(inputs, outputs)
+          else
+            sampler$fn <- lerpfun(inputs, outputs)
+        }
+        animation$samplers[[channel$sampler + 1]] <- sampler
+      }
+      animation$initialized <- TRUE
+      self$setAnimation(ani, animation)
+      animation
+    },
+
+    settime = function(ani, time) {
+      result <- c()
+      animation <- self$getAnimation(ani)
+      if (!isTRUE(animation$initialized))
+        animation <- self$initAnimation(ani)
+      for (i in seq_along(animation$channels)) {
+        channel <- animation$channels[[i]]
+        if (is.null(channel$target$node))
+          next
+        sampler <- animation$samplers[[channel$sampler + 1]]
+        value <- sampler$fn(time)
+        oldnode <- node <- self$getNode(channel$target$node)
+        if (channel$target$path == "translation")
+          node$translation <- value
+        else if (channel$target$path == "rotation")
+          node$rotation <- value
+        else if (channel$target$path == "scale")
+          node$scale <- value
+        if (!identical(node, oldnode)) {
+          self$setNode(channel$target$node, node)
+          result <- c(result, channel$target$node)
+        }
+      }
+      unique(result) # nodes that changed
+    },
+
     #' @description Print `gltf` objects with various levels of detail.
     #' @param verbose Logical indicator of verbose printing, or
     #' character vector of components to print verbosely.

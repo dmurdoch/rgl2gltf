@@ -327,7 +327,6 @@ print.gltfAnimationSampler <- function(x, ...) {
   catother(x)
 }
 
-
 showtree <- function(gltf) {
   showNode <- function(n) {
     node <- nodes[[n+1]]

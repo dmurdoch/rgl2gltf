@@ -60,6 +60,11 @@ gltf$print(names = "meshes")
 \item \href{#method-setAsset}{\code{Gltf$setAsset()}}
 \item \href{#method-getTransform}{\code{Gltf$getTransform()}}
 \item \href{#method-getRglMaterial}{\code{Gltf$getRglMaterial()}}
+\item \href{#method-getAnimation}{\code{Gltf$getAnimation()}}
+\item \href{#method-setAnimation}{\code{Gltf$setAnimation()}}
+\item \href{#method-timerange}{\code{Gltf$timerange()}}
+\item \href{#method-initAnimation}{\code{Gltf$initAnimation()}}
+\item \href{#method-settime}{\code{Gltf$settime()}}
 \item \href{#method-print}{\code{Gltf$print()}}
 \item \href{#method-listCount}{\code{Gltf$listCount()}}
 \item \href{#method-clone}{\code{Gltf$clone()}}
@@ -689,6 +694,63 @@ Reconstruct \code{rgl} material.
 \subsection{Returns}{
 \code{rgl} material record.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-getAnimation}{}}}
+\subsection{Method \code{getAnimation()}}{
+Get animation.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getAnimation(ani)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ani}}{Animation number}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Animation object, documented here:
+\url{https://www.khronos.org/registry/glTF/specsparam/2.0/glTF-2.0.html#reference-animation}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-setAnimation}{}}}
+\subsection{Method \code{setAnimation()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$setAnimation(ani, animation)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-timerange"></a>}}
+\if{latex}{\out{\hypertarget{method-timerange}{}}}
+\subsection{Method \code{timerange()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$timerange(ani)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-initAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-initAnimation}{}}}
+\subsection{Method \code{initAnimation()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$initAnimation(ani)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-settime"></a>}}
+\if{latex}{\out{\hypertarget{method-settime}{}}}
+\subsection{Method \code{settime()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$settime(ani, time)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
