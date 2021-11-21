@@ -144,6 +144,35 @@ catocclusion <- function(occlusion, string) {
   }
 }
 
+catchannels <- function(obj, string) {
+  cat(string)
+  for (i in seq_along(obj)) {
+    channel <- obj[[i]]
+    class(channel) <- "gltfChannel"
+    catstring(i-1,"      channel %s:\n")
+    print(channel)
+  }
+}
+
+catchanneltarget <- function(obj, string) {
+  cat(string)
+  catstring(obj$node, "          node: %s\n")
+  catstring(obj$path, "          path: %s\n")
+  catother(obj)
+}
+
+catsamplers <- function(obj, string) {
+    cat(string)
+    for (i in seq_along(obj)) {
+      sampler <- obj[[i]]
+      class(sampler) <- "gltfAnimationSampler"
+      catstring(i-1,"      sampler %s:\n")
+      print(sampler)
+    }
+  }
+
+
+
 catindices <- catvalues <- function(obj, string) {
   if (!is.null(obj))
     cat(string, "      not implemented\n")
@@ -276,6 +305,28 @@ print.gltfImage <- function(x, ...) {
   catstring(setdiff(names(x), c(other, "uri", "mimeType", "bufferView")),
             "    Other image fields:  %s.\n")
 }
+
+print.gltfAnimation <- function(x, ...) {
+  catchannels(x$channels,    "    channels:\n")
+  catsamplers(x$samplers,    "    samplers:\n")
+  catother(x)
+  catstring(setdiff(names(x), c(other, "channels", "samplers")),
+            "    Other animation fields:  %s.\n")
+}
+
+print.gltfChannel <- function(x, ...) {
+  catstring(x$sampler, "        sampler: %s\n")
+  catchanneltarget(x$target,  "        target:\n")
+  catother(x)
+}
+
+print.gltfAnimationSampler <- function(x, ...) {
+  catstring(x$input,         "        input: %s\n")
+  catstring(x$interpolation, "        interpolation: %s\n")
+  catstring(x$output,        "        output: %s\n")
+  catother(x)
+}
+
 
 showtree <- function(gltf) {
   showNode <- function(n) {

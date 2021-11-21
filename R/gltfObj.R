@@ -424,7 +424,7 @@ Gltf <- R6Class("gltf",
       saveopt <- options(rgl2gltf.showExtras = showExtras)
       on.exit(options(saveopt))
 
-      knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
+      knowntoplevel <- c("accessors", "animations", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
       if (!is.logical(verbose)) {
         verbosefields <- match.arg(verbose, knowntoplevel, several.ok = TRUE)
         verbose <- TRUE
@@ -609,6 +609,21 @@ Gltf <- R6Class("gltf",
         }
       }
 
+      if (length(animations <- private$animations)) {
+        if ("animations" %in% verbosefields) {
+          cat("Animations:\n")
+          for (i in seq_along(animations)) {
+            catstring(i-1, "  Animation %s:\n")
+            animation <- animations[[i]]
+            class(animation) <- "gltfAnimation"
+            print(animation)
+          }
+        } else {
+          cat("Animations (", length(animations), ")\n")
+          shownames("animations")
+        }
+      }
+
       others <- setdiff(names(private), "finalize")
       others <- Filter(function(n) length(private[[n]]) > 0, others)
 
@@ -626,6 +641,7 @@ Gltf <- R6Class("gltf",
   ),
 
   private = list(
+    animations = list(),
     asset = list(),
     cameras = list(),
     extras = list(),
