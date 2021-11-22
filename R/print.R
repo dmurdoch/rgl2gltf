@@ -329,7 +329,7 @@ print.gltfAnimationSampler <- function(x, ...) {
 
 showtree <- function(gltf) {
   showNode <- function(n) {
-    node <- nodes[[n+1]]
+    node <- gltf$getNode(n)
     cat(paste(rep(" ", indent), collapse = ""))
     cat("Node ", n)
     if (!is.null(extras <- node$extras) &&
@@ -338,7 +338,7 @@ showtree <- function(gltf) {
     if (!is.null(name <- node$name))
       cat(" ", name)
     if (!is.null(meshnum <- node$mesh)) {
-      mesh <- gltf$meshes[[meshnum + 1]]
+      mesh <- gltf$getMesh(meshnum)
       if (!is.null(mesh$name))
         cat(" (mesh ", mesh$name, ")")
     }
@@ -348,11 +348,11 @@ showtree <- function(gltf) {
       showNode(i)
     indent <<- indent - 2
   }
-  if (!is.null(gltf$nodes)) {
-    nodes <- gltf$nodes
-    isChild <- rep(FALSE, length(nodes))
-    for (i in seq_along(nodes)) {
-      if (!is.null(children <- unlist(nodes[[i]]$children)))
+  if ((n <- gltf$listCount("nodes")) > 0) {
+    isChild <- rep(FALSE, n)
+    for (i in seq_len(n)) {
+      node <- gltf$getNode(i - 1)
+      if (!is.null(children <- unlist(node$children)))
         isChild[children + 1] <- TRUE
     }
     roots <- which(!isChild) - 1
