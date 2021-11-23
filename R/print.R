@@ -327,6 +327,13 @@ print.gltfAnimationSampler <- function(x, ...) {
   catother(x)
 }
 
+print.gltfSkin <- function(x, ...) {
+  catstring(x$inverseBindMatrices, "        inverseBindMatrices: %s\n")
+  catstring(x$skeleton,            "        skeleton: %s\n")
+  catstring(x$joints,              "        joints: %s\n")
+  catother(x)
+}
+
 showtree <- function(gltf) {
   showNode <- function(n) {
     node <- gltf$getNode(n)

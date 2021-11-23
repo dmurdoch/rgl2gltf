@@ -406,9 +406,15 @@ Gltf <- R6Class("gltf",
     getAnimation = function(ani)
       structure(private$animations[[ani + 1]], class = "gltfAnimation"),
 
+    #' @description Set animation.
+    #' @param ani Animation number
+    #' @param animation New animation object
     setAnimation = function(ani, animation)
         private$animations[[ani + 1]] <- unclass(animation),
 
+    #' @description Find time range of an animation
+    #' @param ani Animation number
+    #' @return Min and max times from the samplers in the animation.
     timerange = function(ani) {
       animation <- self$getAnimation(ani)
       samplers <- animation$samplers
@@ -423,6 +429,12 @@ Gltf <- R6Class("gltf",
       c(min, max)
     },
 
+    #' @description Initialize animation.
+    #'
+    #' This builds all of the interpolation functions
+    #' in the samplers.
+    #' @param ani Animation number
+    #' @return Modified animation object
     initAnimation = function(ani) {
       animation <- self$getAnimation(ani)
       if (isTRUE(animation$initialized))
@@ -450,6 +462,13 @@ Gltf <- R6Class("gltf",
       animation
     },
 
+    #' @description Set time for an animation.
+    #'
+    #' This evaluates all the interpolators and modifies
+    #' self to reflect the specified time point.
+    #' @param ani Animation number.
+    #' @param time Time to set.
+    #' @return Vector of node numbers that were changed.
     settime = function(ani, time) {
       result <- c()
       animation <- self$getAnimation(ani)
@@ -501,7 +520,7 @@ Gltf <- R6Class("gltf",
       saveopt <- options(rgl2gltf.showExtras = showExtras)
       on.exit(options(saveopt))
 
-      knowntoplevel <- c("accessors", "animations", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
+      knowntoplevel <- c("accessors", "animations", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "skins", "textures", "images")
       if (!is.logical(verbose)) {
         verbosefields <- match.arg(verbose, knowntoplevel, several.ok = TRUE)
         verbose <- TRUE
@@ -701,6 +720,21 @@ Gltf <- R6Class("gltf",
         }
       }
 
+      if (length(skins <- private$skins)) {
+        if ("skins" %in% verbosefields) {
+          cat("Skins:\n")
+          for (i in seq_along(skins)) {
+            catstring(i-1, "  Skin %s:\n")
+            skin <- skins[[i]]
+            class(skin) <- "gltfSkin"
+            print(skin)
+          }
+        } else {
+          cat("Skins (", length(skins), ")\n")
+          shownames("skins")
+        }
+      }
+
       others <- setdiff(names(private), "finalize")
       others <- Filter(function(n) length(private[[n]]) > 0, others)
 
@@ -723,12 +757,15 @@ Gltf <- R6Class("gltf",
     cameras = list(),
     extras = list(),
     extensions = list(),
+    extensionsUsed = list(),
+    extensionsRequired = list(),
     images = list(),
-    meshes = list(),
     materials = list(),
+    meshes = list(),
     nodes = list(),
     samplers = list(),
     scenes = list(),
+    skins = list(),
     textures = list()
   )
 )

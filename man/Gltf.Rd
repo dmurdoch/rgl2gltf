@@ -720,37 +720,88 @@ Animation object, documented here:
 \if{html}{\out{<a id="method-setAnimation"></a>}}
 \if{latex}{\out{\hypertarget{method-setAnimation}{}}}
 \subsection{Method \code{setAnimation()}}{
+Set animation.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$setAnimation(ani, animation)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ani}}{Animation number}
+
+\item{\code{animation}}{New animation object}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-timerange"></a>}}
 \if{latex}{\out{\hypertarget{method-timerange}{}}}
 \subsection{Method \code{timerange()}}{
+Find time range of an animation
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$timerange(ani)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ani}}{Animation number}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Min and max times from the samplers in the animation.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-initAnimation"></a>}}
 \if{latex}{\out{\hypertarget{method-initAnimation}{}}}
 \subsection{Method \code{initAnimation()}}{
+Initialize animation.
+
+This builds all of the interpolation functions
+in the samplers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$initAnimation(ani)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ani}}{Animation number}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Modified animation object
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-settime"></a>}}
 \if{latex}{\out{\hypertarget{method-settime}{}}}
 \subsection{Method \code{settime()}}{
+Set time for an animation.
+
+This evaluates all the interpolators and modifies
+self to reflect the specified time point.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$settime(ani, time)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ani}}{Animation number.}
+
+\item{\code{time}}{Time to set.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Vector of node numbers that were changed.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
