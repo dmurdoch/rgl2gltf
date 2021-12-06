@@ -147,6 +147,42 @@ Gltf <- R6Class("gltf",
       self$setNode(parent, parentobj)
     },
 
+    #' @description Set parent member for all nodes
+
+    setParents = function() {
+      for (n in seq_len(self$listCount("nodes")) - 1) {
+        node <- self$getNode(n)
+        for (c in node$children) {
+          child <- self$getNode(c)
+          child$parent <- unlist(n)
+          self$setNode(c, child)
+        }
+      }
+    },
+
+    #' @description Get skin object.
+    #' @param skin Skin number.
+    #' @return Skin object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
+    getSkin = function(skin)
+      structure(private$skins[[skin + 1]], class = "gltfSkin"),
+
+    #' @description Set skin object.
+    #' @param n Skin number.
+    #' @param skin New skin object.
+    setSkin = function(n, skin)
+      private$skins[[n + 1]] <- unclass(skin),
+
+    #' @description Get joint node.
+    #' @param skin Skin number.
+    #' @param num Joint number.
+    #' @return Node object
+    getJoint = function(skin, num)
+      skin$joints[[num + 1]],
+
+    getInverseBindMatrices = function(skin)
+      self$readAccessor(skin$inverseBindMatrices),
+
     #' @description Get camera object.
     #' @param cam Camera number.
     #' @return Camera object, documented here:
@@ -338,7 +374,9 @@ Gltf <- R6Class("gltf",
     #' @param node Node object.
     #' @param parentTransform Matrix transform of parent object.
     #' @return 4x4 matrix of local transform.
-    getTransform = function(node, parentTransform) {
+    getTransform = function(n, parent = NULL) {
+
+      node <- self$getNode(n)
       if (!is.null(node$matrix)) {
         transform <- matrix(unlist(node$matrix), 4, 4)
       } else {
@@ -349,13 +387,22 @@ Gltf <- R6Class("gltf",
         }
         if (!is.null(node$rotation)) {
           rot <- unlist(node$rotation)
-          transform <- t(rotationMatrix(rot[4], rot[1], rot[2], rot[3])) %*% transform
+          theta <- quaternionAngle(rot)
+          axis <- rot[1:3]
+          transform <- t(rotationMatrix(theta, axis[1], axis[2], axis[3] )) %*% transform
         }
         if (!is.null(node$translation)) {
           trans <- unlist(node$translation)
           transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
         }
       }
+      if (is.null(parent) && !is.null(node$parent))
+        parent <- node$parent
+
+      if (!is.null(parent))
+        parentTransform <- self$getTransform(parent)
+      else
+        parentTransform <- diag(4)
       parentTransform %*% transform
     },
 
@@ -469,7 +516,7 @@ Gltf <- R6Class("gltf",
     #' @param ani Animation number.
     #' @param time Time to set.
     #' @return Vector of node numbers that were changed.
-    settime = function(ani, time) {
+    settime = function(time, ani = 0) {
       result <- c()
       animation <- self$getAnimation(ani)
       if (!isTRUE(animation$initialized))
@@ -482,11 +529,11 @@ Gltf <- R6Class("gltf",
         value <- sampler$fn(time)
         oldnode <- node <- self$getNode(channel$target$node)
         if (channel$target$path == "translation")
-          node$translation <- value
+          node$translation <- as.list(value)
         else if (channel$target$path == "rotation")
-          node$rotation <- value
+          node$rotation <- as.list(value)
         else if (channel$target$path == "scale")
-          node$scale <- value
+          node$scale <- as.list(value)
         if (!identical(node, oldnode)) {
           self$setNode(channel$target$node, node)
           result <- c(result, channel$target$node)

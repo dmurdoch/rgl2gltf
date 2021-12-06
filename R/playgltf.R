@@ -1,19 +1,23 @@
 playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation)) {
-  gltf <- gltf$clone()
-  plot3d(gltf)
+  if (packageVersion("rgl") < "0.108.5")
+    stop("glTF animation requires rgl 0.108.5 or higher")
+  clone <- gltf$clone()
+  clone$setParents()
+  time <- start
+  plot3d(clone, time = time)
   clockstart <- Sys.time()
   save <- par3d(skipRedraw = TRUE)
   on.exit(par3d(save))
   repeat {
-    time <- unclass(Sys.time() - clockstart + start)
+    time <- time + 1 # unclass(Sys.time() - clockstart + start)
     if (time > stop)
       break
-    nodes <- gltf$settime(animation, time)
-    cat("Time = ", time, ": ")
-    print(nodes)
+    nodes <- clone$settime(time, animation)
+    cat("Time = ", time, "\n")
     if (length(nodes)) {
-      plot3d(gltf)
+      rgl::clear3d()
+      plot3d(clone, time = time, add = TRUE)
       par3d(save)
       par3d(skipRedraw = TRUE)
     }

@@ -1,8 +1,8 @@
 as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
 
-  processNode <- function(n, parentTransform) {
+  processNode <- function(n, parent) {
     node <- x$getNode(n)
-    transform <- x$getTransform(node, parentTransform)
+    transform <- x$getTransform(n, parent)
     if (!is.null(node$mesh) && n %in% convertNodes) {
       inmesh <- x$getMesh(node$mesh)
       for (p in seq_along(inmesh$primitives)) {
@@ -99,7 +99,7 @@ as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
       convertNodes <<- union(convertNodes, children)
 
     for (child in children)
-      processNode(child, transform)
+      processNode(child, n)
   }
 
   if (is.null(scene))
@@ -120,7 +120,7 @@ as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
   nextmesh <- 1
   nodes <- x$getScene(scene)$nodes
   for (n in nodes) {
-    processNode(n, parentTransform = diag(4))
+    processNode(n, NULL)
   }
   shapelist3d(outmeshes, plot = FALSE)
 }

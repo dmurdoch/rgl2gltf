@@ -131,3 +131,18 @@ isValidConnection <- function(con) {
   }
   FALSE
 }
+
+quaternionAngle <- function(q) {
+  cosThetaby2 <- q[4]
+  u <- quaternionAxis(q)
+  i <- which.max(abs(u))
+  sinThetaby2 <- if (u[i] == 0) 0 else
+                 q[i]/u[i]
+  2*atan2(sinThetaby2, cosThetaby2)
+}
+
+quaternionAxis <- function(q) {
+  len <- sqrt(sum(q[1:3]^2))
+  if (len == 0) c(1,0,0)
+  else q[1:3]/len
+}
