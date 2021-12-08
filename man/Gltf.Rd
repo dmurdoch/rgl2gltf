@@ -41,6 +41,11 @@ gltf$print(names = "meshes")
 \item \href{#method-setNode}{\code{Gltf$setNode()}}
 \item \href{#method-addNode}{\code{Gltf$addNode()}}
 \item \href{#method-addChild}{\code{Gltf$addChild()}}
+\item \href{#method-setParents}{\code{Gltf$setParents()}}
+\item \href{#method-getSkin}{\code{Gltf$getSkin()}}
+\item \href{#method-setSkin}{\code{Gltf$setSkin()}}
+\item \href{#method-getJoint}{\code{Gltf$getJoint()}}
+\item \href{#method-getInverseBindMatrices}{\code{Gltf$getInverseBindMatrices()}}
 \item \href{#method-getCamera}{\code{Gltf$getCamera()}}
 \item \href{#method-getExtras}{\code{Gltf$getExtras()}}
 \item \href{#method-setExtras}{\code{Gltf$setExtras()}}
@@ -310,6 +315,102 @@ Add node as child of another.
 \item{\code{node}}{Node number(s) to add as children.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setParents"></a>}}
+\if{latex}{\out{\hypertarget{method-setParents}{}}}
+\subsection{Method \code{setParents()}}{
+Set parent member for all nodes
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$setParents()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getSkin"></a>}}
+\if{latex}{\out{\hypertarget{method-getSkin}{}}}
+\subsection{Method \code{getSkin()}}{
+Get skin object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getSkin(skin)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{skin}}{Skin number.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Skin object, documented here:
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setSkin"></a>}}
+\if{latex}{\out{\hypertarget{method-setSkin}{}}}
+\subsection{Method \code{setSkin()}}{
+Set skin object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$setSkin(n, skin)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Skin number.}
+
+\item{\code{skin}}{New skin object.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getJoint"></a>}}
+\if{latex}{\out{\hypertarget{method-getJoint}{}}}
+\subsection{Method \code{getJoint()}}{
+Get joint node.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getJoint(skin, num)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{skin}}{Skin number.}
+
+\item{\code{num}}{Joint number.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Node object
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getInverseBindMatrices"></a>}}
+\if{latex}{\out{\hypertarget{method-getInverseBindMatrices}{}}}
+\subsection{Method \code{getInverseBindMatrices()}}{
+Get "inverse bind matrices".
+
+These matrices undo the existing
+transformation before applying the skin
+transformations.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getInverseBindMatrices(skin)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{skin}}{Skin number.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A 4x4xn array of matrices, one per joint.
 }
 }
 \if{html}{\out{<hr>}}
@@ -659,15 +760,13 @@ Set asset list.
 \subsection{Method \code{getTransform()}}{
 Get local transform.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$getTransform(node, parentTransform)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getTransform(n)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{node}}{Node object.}
-
-\item{\code{parentTransform}}{Matrix transform of parent object.}
+\item{\code{n}}{Node number.}
 }
 \if{html}{\out{</div>}}
 }
@@ -787,15 +886,15 @@ Set time for an animation.
 This evaluates all the interpolators and modifies
 self to reflect the specified time point.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$settime(ani, time)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$settime(time, ani = 0)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{ani}}{Animation number.}
-
 \item{\code{time}}{Time to set.}
+
+\item{\code{ani}}{Animation number.}
 }
 \if{html}{\out{</div>}}
 }

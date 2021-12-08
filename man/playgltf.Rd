@@ -10,7 +10,8 @@ This function interprets them and plays them.
 \usage{
 playgltf(gltf, animation = 0,
          start = times[1], stop = times[2],
-         times = gltf$timerange(animation))
+         times = gltf$timerange(animation),
+         method = "wholeScene")
 }
 \arguments{
   \item{gltf}{
@@ -26,31 +27,37 @@ Starting and stopping times.
   \item{times}{
 An alternate way to specify \code{start} and \code{stop}.
 }
+  \item{method}{
+Which drawing method to use?  Currently only \code{"wholeScene"} is implemented.
+  }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+GLTF files are animated by time dependent changes to the
+transformations in their nodes.  Those transformations
+correspond to RGL \code{par3d("userMatrix")} settings in
+subscenes and can sometimes be directly imported as such.
+
+However, GLTF files also support "skins", a computer graphics
+concept not supported in RGL.  A skin is a way to say that
+different vertices of the same object (typically a triangle mesh)
+respond to different nodes.  This allows shapes to be stretched,
+similar to skin on a moving body.  RGL assumes that all
+graphics objects are rigid.
+
+The \code{playgltf} function provides partial support for
+skins.  Using the \code{"wholeScene"} method, it can modify the vertices of an entire scene
+and redraw the scene.  Typically this is quite slow, and
+not very satisfactory.  Future plans will allow only the
+changed objects to be redrawn, which might help speed things up,
+or to make the skins rigid, but allow a single transformation to be changed in real time.  It remains to be seen which
+approach will be preferred.
+
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+Called for the side effect of drawing the animation.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 
 \examples{
 gltf <- readGLB("~/temp/BrainStem.glb")
-playgltf(gltf)
+playgltf(gltf, start = 0, stop = 3)
 }

@@ -2,7 +2,18 @@
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE,
                              time = NULL,
-                             ani = 0, ...) {
+                             ani = 0, clone = TRUE, ...) {
+
+  if (clone) {
+    # We'll be caching various things, so make a
+    # copy to avoid messing up the original.
+    x$closeBuffers()  # Can't clone connections
+    gltf <- x$clone()
+    on.exit(gltf$closeBuffers())
+  } else
+    gltf <- x
+
+  gltf$setParents()
 
   saveTranslation <- function(oldid, newid) {
     idTranslations <<- c(idTranslations, newid)
@@ -103,12 +114,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       # What are prim targets????
       browser()
     }
-    mat <- x$getRglMaterial(prim$material)
+    mat <- gltf$getRglMaterial(prim$material)
 
     normals <- positions <- texcoords <- joints <- weights <- NULL
     for (a in seq_along(prim$attributes)) {
       attr <- unlist(prim$attributes[a])
-      values <- x$readAccessor(attr[1])
+      values <- gltf$readAccessor(attr[1])
       switch (names(attr),
               NORMAL = normals <- values,
               POSITION = positions <- values,
@@ -131,11 +142,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (is.null(prim$indices))
       indices <- seq_len(nrow(positions))
     else {
-      indices <- x$readAccessor(prim$indices) + 1 # R indices start at 1
+      indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
     }
 
     if (!is.null(joints) && !is.null(skinnum)) {
-      skin <- x$getSkin(skinnum)
+      skin <- gltf$getSkin(skinnum)
       jnt <- unique(as.numeric(joints))
 
       if (is.null(time)) {
@@ -181,8 +192,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
         bothfirst <- both[!duplicated(both),,drop=FALSE]
         matrices <- skin$matrices
         if (is.null(matrices)) {
-          skin$matrices <- matrices <- x$getInverseBindMatrices(skin)
-          x$setSkin(skinnum, skin)
+          skin$matrices <- matrices <- gltf$getInverseBindMatrices(skin)
+          gltf$setSkin(skinnum, skin)
         }
         for (i in seq_len(nrow(bothfirst))) {
           joint <- bothfirst[i, 1:nj]
@@ -191,8 +202,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
           transform <- matrix(0, 4,4)
           for (j in seq_along(joint)) {
             if (wt[j] == 0) next
-            n <- x$getJoint(skin, joint[j])
-            transform <- transform + wt[j] * x$getTransform(n) %*% matrices[,,joint[j]+1]
+            n <- gltf$getJoint(skin, joint[j])
+            transform <- transform + wt[j] * gltf$getTransform(n) %*% matrices[,,joint[j]+1]
           }
           sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
           positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
@@ -205,17 +216,16 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
           }
         }
       }
+    } else {
+      positions <- asEuclidean(asHomogeneous(positions) %*% t(transform))
+      if (!is.null(normals)) {
+        nt <- transform
+        nt[4,1:3] <- nt[1:3, 4] <- 0
+        nt <- solve(nt)
+        normals <- normalize(asEuclidean(rotate3d(cbind(normals,1), matrix = nt)))
+      }
     }
-#
-#     positions <- asEuclidean(asHomogeneous(positions) %*% t(transform))
     colnames(positions) <- c("x", "y", "z")
-
-    # if (!is.null(normals)) {
-    #   nt <- transform
-    #   nt[4,1:3] <- nt[1:3, 4] <- 0
-    #   nt <- solve(nt)
-    #   normals <- normalize(asEuclidean(rotate3d(cbind(normals,1), matrix = nt)))
-    # }
 
     if (is.null(mode <- prim$mode))
       mode <- 4
@@ -274,10 +284,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   mergeRanges <- function(r1, r2) {
-    i <- c(1, 3, 5)
-    r1[i] <- pmin(r1[i], r2[i])
-    i <- c(2, 4, 6)
-    r1[i] <- pmax(r1[i], r2[i])
+    if (!is.null(r2)) {
+      i <- c(1, 3, 5)
+      r1[i] <- pmin(r1[i], r2[i])
+      i <- c(2, 4, 6)
+      r1[i] <- pmax(r1[i], r2[i])
+    }
     r1
   }
 
@@ -289,7 +301,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       newbbox <- newobj$par3d$bbox
     } else {
       parent$objects <- union(activeSubscene$objects, newobj$id)
-      newbbox <- as.numeric(apply(newobj$vertices, 2, range))
+      newbbox <- NULL
+      if (!is.null(newobj$vertices)) {
+        vertices <- newobj$vertices
+        vertices <- vertices[complete.cases(newobj$vertices),,drop = FALSE]
+        if (nrow(vertices))
+          newbbox <- as.numeric(apply(vertices, 2, range))
+      }
       objects <- c(rglscene$objects, list(newobj))
       names(objects)[length(objects)] <- newobj$id
       rglscene$objects <<- objects
@@ -303,7 +321,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processMesh <- function(m, transform, skin) {
-    mesh <- x$getMesh(m)
+    mesh <- gltf$getMesh(m)
     for (p in seq_along(mesh$primitives)) {
       processPrimitive(mesh$primitives[[p]], transform, skin)
     }
@@ -337,7 +355,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processCamera <- function(cam) {
-    camera <- x$getCamera(cam)
+    camera <- gltf$getCamera(cam)
 
     if (camera$type == "orthographic")
       processOrthographic(camera$orthographic)
@@ -359,13 +377,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     obj
   }
 
-  processSprites <- function(n, parent) {
-    node <- self$getNode(n)
+  processSprites <- function(n) {
+    node <- gltf$getNode(n)
     main <- restoreRGLclass(node$extras$RGL_obj)
     main$id <- getId(main$id)
     children <- node$children
     if (!is.null(children)) {
-      firstborn <- x$getNode(children[[1]])
+      firstborn <- gltf$getNode(children[[1]])
       children <- unlist(firstborn$children)
     }
     saveSubscene <- activeSubscene
@@ -373,7 +391,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     activeSubscene <<- main
 
     for (child in children)
-      processNode(child, parent)
+      processNode(child)
 
     main <- activeSubscene
     main$ids <- main$objects
@@ -383,19 +401,19 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     activeSubscene$objects <<- c(activeSubscene$objects, main$id)
   }
 
-  processSpecial <- function(n, parent) {
-    node <- x$getNode(n)
+  processSpecial <- function(n) {
+    node <- gltf$getNode(n)
     primobj <- NULL
     m <- node$mesh
     if (!is.null(m)) {
-      mesh <- x$getMesh(m)
+      mesh <- gltf$getMesh(m)
       if (!is.null(mesh$primitives)) {
-        primobj <- primToRglobj(mesh$primitives[[1]], parentTransform)
+        primobj <- primToRglobj(mesh$primitives[[1]], gltf$getTransform(n))
       }
     }
     newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
-    if (!is.null(primobj)) {
+    if (!is.null(primobj) && newobj$type != "bboxdeco") {
       newobj <- merge(newobj, primobj)
       newobj$type <- primobj$type # quads may have changed to triangles
     }
@@ -403,21 +421,20 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processSubscene <- function(n) {
-    node <- x$getNode(n)
+    node <- gltf$getNode(n)
     newobj <- restoreRGLclass(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
     newobj$objects <- c()
     activeSubscene <<- newobj
   }
 
-  processNode <- function(n, parent) {
-    node <- x$getNode(n)
+  processNode <- function(n) {
+    node <- gltf$getNode(n)
     if (!is.null(node$camera))
       processCamera(node$camera)
 
     skin <- node$skin
-
-    transform <- x$getTransform(n, parent)
+    transform <- gltf$getTransform(n)
 
     children <- unlist(node$children)
 
@@ -439,9 +456,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
         processSubscene(n)
         transform <- diag(4)
       } else if (isSprites) {
-        processSprites(n, parent)
+        processSprites(n)
       } else if (isSpecial) {
-        processSpecial(n, parent)
+        processSpecial(n)
       } else {
         if (is.null(activeSubscene))
           activeSubscene <<- newSubscene()
@@ -456,7 +473,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       children <- NULL
 
     for (child in children)
-      processNode(child, n)
+      processNode(child)
 
     if (isSubscene)
       activeSubscene <<- applyidTranslations(activeSubscene)
@@ -472,9 +489,9 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     scene <- 0
 
   if (is.null(convertNodes <- nodes))
-    convertNodes <- seq_len(x$listCount("nodes")) - 1
+    convertNodes <- seq_len(gltf$listCount("nodes")) - 1
 
-  sc <- x$getScene(scene)
+  sc <- gltf$getScene(scene)
   if (is.null(sc))
     return()
 
@@ -485,7 +502,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   defaultmaterial <- list()
   if (useRGLinfo &&
-      !is.null(extras <- x$getExtras()) &&
+      !is.null(extras <- gltf$getExtras()) &&
       !is.null(extras$RGL_material))
     defaultmaterial <- extras$RGL_material
 
@@ -497,7 +514,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   idTranslations <- NULL  # translations of id values
 
   for (n in nodes)
-    processNode(n, NULL)
+    processNode(n)
 
   rglscene$rootSubscene <- applyidTranslations(activeSubscene)
   rglscene$material <- defaultmaterial

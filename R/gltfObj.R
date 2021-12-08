@@ -180,6 +180,13 @@ Gltf <- R6Class("gltf",
     getJoint = function(skin, num)
       skin$joints[[num + 1]],
 
+    #' @description Get "inverse bind matrices".
+    #'
+    #' These matrices undo the existing
+    #'  transformation before applying the skin
+    #'  transformations.
+    #' @param skin Skin number.
+    #' @return A 4x4xn array of matrices, one per joint.
     getInverseBindMatrices = function(skin)
       self$readAccessor(skin$inverseBindMatrices),
 
@@ -371,10 +378,9 @@ Gltf <- R6Class("gltf",
       private$asset <- list(version = version, generator = generator),
 
     #' @description Get local transform.
-    #' @param node Node object.
-    #' @param parentTransform Matrix transform of parent object.
+    #' @param n Node number.
     #' @return 4x4 matrix of local transform.
-    getTransform = function(n, parent = NULL) {
+    getTransform = function(n) {
 
       node <- self$getNode(n)
       if (!is.null(node$matrix)) {
@@ -396,9 +402,8 @@ Gltf <- R6Class("gltf",
           transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
         }
       }
-      if (is.null(parent) && !is.null(node$parent))
-        parent <- node$parent
 
+      parent <- node$parent
       if (!is.null(parent))
         parentTransform <- self$getTransform(parent)
       else

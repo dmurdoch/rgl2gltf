@@ -10,8 +10,9 @@ a \code{"rglscene"} object, similar to what \code{\link{scene3d}}
 would produce, or a \code{"mesh3d"} object.
 }
 \usage{
-\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, ...)
-\S3method{as.mesh3d}{gltf}(x, scene = x$scene, nodes = NULL, ...)
+\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE, ...)
+\S3method{as.mesh3d}{gltf}(x, scene = x$scene, nodes = NULL,
+clone = TRUE, ...)
 }
 \arguments{
   \item{x}{
@@ -27,7 +28,17 @@ The \code{"gltf"} object to convert.
   \item{useRGLinfo}{\code{"gltf"} objects contain RGL-specific information
 in \dQuote{extra} fields.  If \code{useRGLinfo} is \code{TRUE}, we use
 that information, otherwise include only what standard glTF viewers would display.}
+  \item{time}{Set the "time" within an animation.}
+  \item{ani}{Animation number to use.}
+  \item{clone}{Whether to clone the \code{gltf} object.  See the Details below.}
   \item{...}{Currently unused.}
+}
+\details{
+These functions need to modify the GLTF object, caching
+some information to help with the conversion.  By default
+they do this on a cloned copy of it, and the original is
+left unchanged.  If the object has already been cloned
+this can be skipped by setting \code{clone = FALSE}.
 }
 \value{
 An \code{"rglscene"} object.

@@ -63,6 +63,5 @@ gltf
 # own directory
 olddir <- setwd(dirname(filename))
 rgl::plot3d(gltf)
-gltf$closeBuffers()
 setwd(olddir)
 }

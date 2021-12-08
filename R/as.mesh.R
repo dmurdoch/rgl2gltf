@@ -1,8 +1,14 @@
-as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, ...) {
+as.mesh3d.gltf <- function(x, scene = x$scene, nodes = NULL, clone = TRUE, ...) {
+
+  if (clone) {
+    x$closeBuffers()  # Can't clone connections
+    x <- x$clone()
+    x$setParents()
+  }
 
   processNode <- function(n, parent) {
     node <- x$getNode(n)
-    transform <- x$getTransform(n, parent)
+    transform <- x$getTransform(n)
     if (!is.null(node$mesh) && n %in% convertNodes) {
       inmesh <- x$getMesh(node$mesh)
       for (p in seq_along(inmesh$primitives)) {
