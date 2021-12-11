@@ -402,13 +402,7 @@ Gltf <- R6Class("gltf",
           transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
         }
       }
-
-      parent <- node$parent
-      if (!is.null(parent))
-        parentTransform <- self$getTransform(parent)
-      else
-        parentTransform <- diag(4)
-      parentTransform %*% transform
+      transform
     },
 
     #' @description Reconstruct `rgl` material.

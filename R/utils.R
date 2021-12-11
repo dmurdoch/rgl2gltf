@@ -146,3 +146,23 @@ quaternionAxis <- function(q) {
   if (len == 0) c(1,0,0)
   else q[1:3]/len
 }
+
+transformBBox <- function(transform, bbox) {
+  ix <- c(1, 1, 1, 1, 2, 2, 2, 2)
+  iy <- c(3, 3, 4, 4, 3, 3, 4, 4)
+  iz <- c(5, 6, 5, 6, 5, 6, 5, 6)
+  xyz <- asEuclidean2(transform %*% rbind(bbox[ix], bbox[iy], bbox[iz], 1))
+  c(min(xyz[1,]), max(xyz[1,]),
+    min(xyz[2,]), max(xyz[2,]),
+    min(xyz[3,]), max(xyz[3,]))
+}
+
+mergeBBox <- function(r1, r2) {
+  if (!is.null(r2)) {
+    i <- c(1, 3, 5)
+    r1[i] <- pmin(r1[i], r2[i])
+    i <- c(2, 4, 6)
+    r1[i] <- pmax(r1[i], r2[i])
+  }
+  r1
+}

@@ -1,5 +1,5 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
-       showtree, playgltf, plot3d, writeglTF, writeGLB, findName)
+       showtree, playgltf, plot3d, transformBBox, writeglTF, writeGLB, findName)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.rglscene",
