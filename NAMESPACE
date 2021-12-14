@@ -31,3 +31,6 @@ S3method("as.gltf", "rglscene")
 S3method("as.rglscene", "gltf")
 
 S3method("merge", "rglobject")
+
+S3method("showtree", "gltf")
+S3method("showtree", "rglscene")

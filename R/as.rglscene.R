@@ -93,7 +93,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     } else {
       result$embeddings <- c(viewport = "inherit",
                              projection = "inherit",
-                             model = "replace",
+                             model = "modify",
                              mouse = "inherit")
       result$par3d$userMatrix <- diag(4)
     }
@@ -278,6 +278,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       return(parent)
     }
     if (newobj$type == "subscene") {
+      newobj$par3d$listeners <- parent$par3d$listeners
       subscenes <- c(parent$subscenes, list(newobj))
       names(subscenes)[length(subscenes)] <- newobj$id
       parent$subscenes <- subscenes
@@ -318,6 +319,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result <- vector("list", length(mesh$primitives))
     for (p in seq_along(mesh$primitives)) {
       result[[p]] <- processPrimitive(mesh$primitives[[p]], skin)
+      result[[p]]$material$tag <- paste(mesh$name, p)
     }
     result
   }
@@ -518,6 +520,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   } else
     rootSubscene <- processNode(nodes, root = TRUE)
 
+  if (is.null(rootSubscene$par3d$scale)) {
+    bbox <- rootSubscene$par3d$bbox
+    scale <- max(bbox[c(2,4,6)] - bbox[c(1,3,5)])
+    rootSubscene$par3d$scale <- c(2/scale, 2/scale, 2/scale)
+  }
   rglscene$rootSubscene <- rootSubscene
   rglscene$material <- defaultmaterial
 

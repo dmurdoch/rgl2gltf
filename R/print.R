@@ -334,7 +334,11 @@ print.gltfSkin <- function(x, ...) {
   catother(x)
 }
 
-showtree <- function(gltf) {
+showtree <- function(x, ...)
+  UseMethod("showtree", x)
+
+showtree.gltf <- function(x, ...) {
+  gltf <- x
   showNode <- function(n) {
     node <- gltf$getNode(n)
     cat(paste(rep(" ", indent), collapse = ""))
@@ -368,4 +372,31 @@ showtree <- function(gltf) {
       showNode(n)
     }
   }
+}
+
+showtree.rglscene <- function(x, transform = FALSE, ...) {
+  s <- x
+  showSubscene <- function(sub) {
+    indstr <- paste(rep(" ", indent), collapse = "")
+    cat(indstr, "Subscene ", sub$id, "\n")
+    if (transform) {
+      if (!is.null(scale <- sub$par3d$scale) &&
+          !all(scale == 1))
+        cat(indstr, "scale: ", scale, "\n")
+      if (!is.null(mat <- sub$par3d$userMatrix) &&
+          !all(mat == diag(4))) {
+        cat(indstr, "userMatrix:\n")
+        cat(paste(indstr, "  ", capture.output(print(round(mat, 2)))), sep="\n")
+      }
+    }
+    if (length(objects <- sub$objects)) {
+      cat(indstr, "  Objects: ", paste(objects, collapse = ", "), "\n")
+    }
+    indent <<- indent + 2
+    for (i in sub$subscenes)
+      showSubscene(i)
+    indent <<- indent - 2
+  }
+  indent <- 0
+  showSubscene(s$rootSubscene)
 }
