@@ -390,7 +390,17 @@ showtree.rglscene <- function(x, transform = FALSE, ...) {
       }
     }
     if (length(objects <- sub$objects)) {
-      cat(indstr, "  Objects: ", paste(objects, collapse = ", "), "\n")
+      cat(indstr, "  Objects: ")
+      for (i in seq_along(objects)) {
+        cat(objects[i])
+        obj <- s$objects[[as.character(objects[i])]]
+        if (!is.null(tag <- obj$material$tag) &&
+            nchar(tag))
+          cat(" (", tag, ")", sep = "")
+        if (i < length(objects))
+          cat(", ")
+      }
+      cat("\n")
     }
     indent <<- indent + 2
     for (i in sub$subscenes)

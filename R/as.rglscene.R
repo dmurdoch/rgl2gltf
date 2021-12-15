@@ -319,7 +319,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result <- vector("list", length(mesh$primitives))
     for (p in seq_along(mesh$primitives)) {
       result[[p]] <- processPrimitive(mesh$primitives[[p]], skin)
-      result[[p]]$material$tag <- paste(mesh$name, p)
+      result[[p]]$material$tag <- paste(mesh$name, p, sep = ":")
     }
     result
   }

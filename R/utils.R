@@ -166,3 +166,20 @@ mergeBBox <- function(r1, r2) {
   }
   r1
 }
+
+# Find subscene chains containing a given ID
+findSubscenes <- function(s, id) {
+
+  addSubscenes <- function(sub, chain, transform) {
+    chain <- c(chain, sub$id)
+    transform <- transform %*% sub$par3d$userMatrix
+    if (id %in% sub$objects)
+      result <<- c(result, list(list(chain, transform)))
+    for (child in sub$subscenes)
+      addSubscenes(child, chain, transform)
+  }
+
+  result <- list()
+  addSubscenes(s$rootSubscene, numeric(0), diag(4))
+  result
+}
