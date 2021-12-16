@@ -24,6 +24,16 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     sub
   }
 
+  setListeners <- function(sub, listeners) {
+    if (is.null(sub$par3d$listeners))
+      sub$par3d$listeners <- listeners
+    else
+      listeners <- sub$par3d$listeners
+    for (i in seq_along(sub$subscenes))
+      sub$subscenes[[i]] <- setListeners(sub$subscenes[[i]], listeners)
+    sub
+  }
+
   getId <- function(oldid = NULL) {
     lastid <<- lastid + 1L
     if (!is.null(oldid))
@@ -100,7 +110,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result$par3d$windowRect <- getDefaults("par3d", "windowRect",
                                            c(x = 0, y = 40, width = 512, height = 512))
     result$par3d$viewport <- getDefaults("par3d", "windowRect", result$par3d$windowRect - c(0, 40, 0, 0))
-    result$par3d$listeners <- result$id
     result
   }
 
@@ -278,7 +287,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       return(parent)
     }
     if (newobj$type == "subscene") {
-      newobj$par3d$listeners <- parent$par3d$listeners
       subscenes <- c(parent$subscenes, list(newobj))
       names(subscenes)[length(subscenes)] <- newobj$id
       parent$subscenes <- subscenes
@@ -519,6 +527,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     rootSubscene <- applyidTranslations(rootSubscene)
   } else
     rootSubscene <- processNode(nodes, root = TRUE)
+
+  rootSubscene <- setListeners(rootSubscene, rootSubscene$id)
 
   if (is.null(rootSubscene$par3d$scale)) {
     bbox <- rootSubscene$par3d$bbox
