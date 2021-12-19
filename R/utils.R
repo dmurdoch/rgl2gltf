@@ -141,6 +141,34 @@ quaternionAngle <- function(q) {
   2*atan2(sinThetaby2, cosThetaby2)
 }
 
+quaternionToMatrix <- function(q) {
+  xx <- q[1]^2
+  xy <- q[1]*q[2]
+  xz <- q[1]*q[3]
+  xw <- q[1]*q[4]
+  yy <- q[2]^2
+  yz <- q[2]*q[3]
+  yw <- q[2]*q[4]
+  zz <- q[3]^2
+  zw <- q[3]*q[4]
+  matrix(c(1 - 2*(yy + zz),
+           2*(xy + zw),
+           2*(xz - yw),
+           0,
+             2*(xy - zw),
+             1 - 2*(xx + zz),
+             2*(yz + xw),
+             0,
+               2*(xz + yw),
+               2*(yz - xw),
+               1 - 2*(xx + yy),
+               0,
+                 0,
+                 0,
+                 0,
+                 1), 4,4)
+}
+
 quaternionAxis <- function(q) {
   len <- sqrt(sum(q[1:3]^2))
   if (len == 0) c(1,0,0)

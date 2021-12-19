@@ -190,6 +190,26 @@ Gltf <- R6Class("gltf",
     getInverseBindMatrices = function(skin)
       self$readAccessor(skin$inverseBindMatrices),
 
+    getForwardBindMatrices = function(skin, skinnode) {
+      self$setParents()
+      joints <- unlist(skin$joints)
+      skeleton <- unlist(skin$skeleton)
+      result <- array(NA, c(4, 4, length(joints)))
+
+      for (i in seq_along(joints)) {
+        n <- joints[i]
+        transform <- diag(4)
+        while (!is.null(n)) {
+          transform <- self$getTransform(n) %*% transform
+          if (n %in% skeleton)
+            break
+          n <- self$getNode(n)$parent
+        }
+        result[,,i] <- transform
+      }
+      result
+    },
+
     #' @description Get camera object.
     #' @param cam Camera number.
     #' @return Camera object, documented here:
@@ -393,9 +413,7 @@ Gltf <- R6Class("gltf",
         }
         if (!is.null(node$rotation)) {
           rot <- unlist(node$rotation)
-          theta <- quaternionAngle(rot)
-          axis <- rot[1:3]
-          transform <- t(rotationMatrix(theta, axis[1], axis[2], axis[3] )) %*% transform
+          transform <- quaternionToMatrix(rot) %*% transform
         }
         if (!is.null(node$translation)) {
           trans <- unlist(node$translation)
@@ -527,11 +545,14 @@ Gltf <- R6Class("gltf",
         sampler <- animation$samplers[[channel$sampler + 1]]
         value <- sampler$fn(time)
         oldnode <- node <- self$getNode(channel$target$node)
-        if (channel$target$path == "translation")
+        if (channel$target$path == "translation" &&
+            (!is.null(node$translation) || any(value != 0)))
           node$translation <- as.list(value)
-        else if (channel$target$path == "rotation")
+        else if (channel$target$path == "rotation" &&
+            (!is.null(node$rotation) || any(value != c(0,0,0,1))))
           node$rotation <- as.list(value)
-        else if (channel$target$path == "scale")
+        else if (channel$target$path == "scale" &&
+            (!is.null(node$scale) || any(value != 1)))
           node$scale <- as.list(value)
         if (!identical(node, oldnode)) {
           self$setNode(channel$target$node, node)
