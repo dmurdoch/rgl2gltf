@@ -11,7 +11,7 @@ This function interprets them and plays them.
 playgltf(gltf, animation = 0,
          start = times[1], stop = times[2],
          times = gltf$timerange(animation),
-         method = "wholeScene")
+         method = "wholeScene", ...)
 }
 \arguments{
   \item{gltf}{
@@ -29,6 +29,10 @@ An alternate way to specify \code{start} and \code{stop}.
 }
   \item{method}{
 Which drawing method to use?  Currently only \code{"wholeScene"} is implemented.
+  }
+  \item{...}{
+Parameter settings to pass to \code{\link{plot3d.rglscene}} (and hence
+to \code{\link{open3d}}).
   }
 }
 \details{

@@ -46,6 +46,7 @@ gltf$print(names = "meshes")
 \item \href{#method-setSkin}{\code{Gltf$setSkin()}}
 \item \href{#method-getJoint}{\code{Gltf$getJoint()}}
 \item \href{#method-getInverseBindMatrices}{\code{Gltf$getInverseBindMatrices()}}
+\item \href{#method-getForwardBindMatrices}{\code{Gltf$getForwardBindMatrices()}}
 \item \href{#method-getCamera}{\code{Gltf$getCamera()}}
 \item \href{#method-getExtras}{\code{Gltf$getExtras()}}
 \item \href{#method-setExtras}{\code{Gltf$setExtras()}}
@@ -400,6 +401,29 @@ transformation before applying the skin
 transformations.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$getInverseBindMatrices(skin)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{skin}}{Skin number.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A 4x4xn array of matrices, one per joint.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-getForwardBindMatrices"></a>}}
+\if{latex}{\out{\hypertarget{method-getForwardBindMatrices}{}}}
+\subsection{Method \code{getForwardBindMatrices()}}{
+Get "forward bind matrices".
+
+These matrices applying the skin
+transformations.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$getForwardBindMatrices(skin)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -190,7 +190,13 @@ Gltf <- R6Class("gltf",
     getInverseBindMatrices = function(skin)
       self$readAccessor(skin$inverseBindMatrices),
 
-    getForwardBindMatrices = function(skin, skinnode) {
+    #' @description Get "forward bind matrices".
+    #'
+    #' These matrices applying the skin
+    #'  transformations.
+    #' @param skin Skin number.
+    #' @return A 4x4xn array of matrices, one per joint.
+    getForwardBindMatrices = function(skin) {
       self$setParents()
       joints <- unlist(skin$joints)
       skeleton <- unlist(skin$skeleton)

@@ -1,5 +1,5 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
-       showtree, playgltf, plot3d, transformBBox, writeglTF, writeGLB, findName)
+       showtree, playgltf, plot3d, writeglTF, writeGLB, findName)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.rglscene",
@@ -12,11 +12,11 @@ importFrom("rgl", "as.rglscene",
            "translate3d", "translationMatrix",
            "rotate3d", "shapelist3d", "Buffer")
 importFrom("grDevices", "col2rgb", "rgb", "xyz.coords")
-importFrom("utils", "packageVersion")
+importFrom("utils", "capture.output", "packageVersion")
 importFrom("tools", "file_ext")
 importFrom("R6", "R6Class")
 importFrom("base64enc", "dataURI")
-importFrom("stats", "approxfun")
+importFrom("stats", "approxfun", "complete.cases")
 
 S3method("plot3d", "gltf")
 S3method("as.mesh3d", "gltf")

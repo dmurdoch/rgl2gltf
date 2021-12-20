@@ -176,6 +176,8 @@ quaternionAxis <- function(q) {
 }
 
 transformBBox <- function(transform, bbox) {
+  if (is.null(bbox) || !all(is.finite(bbox)))
+    return(bbox)
   ix <- c(1, 1, 1, 1, 2, 2, 2, 2)
   iy <- c(3, 3, 4, 4, 3, 3, 4, 4)
   iz <- c(5, 6, 5, 6, 5, 6, 5, 6)

@@ -440,7 +440,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (!is.null(skinnum)) {
       skin <- gltf$getSkin(skinnum)
       if (is.null(skin$forward)) {
-        skin$forward <- gltf$getForwardBindMatrices(skin, n)
+        skin$forward <- gltf$getForwardBindMatrices(skin)
         gltf$setSkin(skinnum, skin)
       }
     }
