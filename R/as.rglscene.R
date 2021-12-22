@@ -304,11 +304,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       names(objects)[length(objects)] <- newobj$id
       rglscene$objects <<- objects
     }
-    if (all(is.finite(newbbox)))
-      parent$par3d$bbox <- mergeBBox(parent$par3d$bbox, transformBBox(parent$par3d$userMatrix, newbbox))
-    else
-      parent$par3d$bbox <- mergeBBox(parent$par3d$bbox, newbbox)
-
+    if (parent$type == "subscene") {
+      if (all(is.finite(newbbox)))
+        parent$par3d$bbox <- mergeBBox(parent$par3d$bbox, transformBBox(parent$par3d$userMatrix, newbbox))
+      else
+        parent$par3d$bbox <- mergeBBox(parent$par3d$bbox, newbbox)
+    }
     parent
   }
 
@@ -394,13 +395,15 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       firstborn <- gltf$getNode(children[[1]])
       children <- unlist(firstborn$children)
     }
-
-    for (child in children)
-      main <- insertObject(processNode(child), main)
-
+    objects <- list()
+    for (child in children) {
+      objects <- c(objects, list(processNode(child)))
+      main <- insertObject(objects[[length(objects)]], main)
+    }
     main$ids <- main$objects
-    main$objects <- NULL
-    rglscene$objects[[as.character(main$id)]] <<- main
+    main$objects <- objects
+
+    main
   }
 
   processSpecial <- function(n) {
@@ -462,6 +465,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
       }
       if (isSubscene) {
         result <- processSubscene(n)
+        result$objects <- NULL # They'll be inserted below
       } else if (isSprites) {
         result <- processSprites(n)
       } else if (isSpecial) {

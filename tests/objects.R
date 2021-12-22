@@ -1,11 +1,13 @@
 library(rgl)
 library(rgl2gltf)
 
+set.seed(123)
+
 xyz <- matrix(rnorm(36, sd=0.5), ncol = 3)
 xyz <- scale3d(xyz, 1, 10, 100)
 col <- rainbow(12)
 
-# open3d()
+open3d()
 plot3d(xyz, type="s")
 points3d(xyz+5, col = col)
 lines3d(xyz+1, col = col)
