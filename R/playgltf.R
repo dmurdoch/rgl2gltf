@@ -2,8 +2,6 @@ playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation), method = "wholeScene", ...) {
   if (method != "wholeScene")
     stop("Only the 'wholeScene' method is implemented.")
-  if (packageVersion("rgl") < "0.108.5")
-    stop("glTF animation requires rgl 0.108.5 or higher")
 
   time <- start
   plot3d(gltf, time = time, ...)

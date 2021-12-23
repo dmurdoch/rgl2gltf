@@ -11,8 +11,7 @@ would produce, or a \code{"mesh3d"} object.
 }
 \usage{
 \S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE, ...)
-\S3method{as.mesh3d}{gltf}(x, scene = x$scene, nodes = NULL,
-clone = TRUE, ...)
+\S3method{as.mesh3d}{gltf}(x, ...)
 }
 \arguments{
   \item{x}{
@@ -31,7 +30,7 @@ that information, otherwise include only what standard glTF viewers would displa
   \item{time}{Set the "time" within an animation.}
   \item{ani}{Animation number to use.}
   \item{clone}{Whether to clone the \code{gltf} object.  See the Details below.}
-  \item{...}{Currently unused.}
+  \item{...}{\code{as.mesh3d} passes these arguments to \code{as.rglscene}.}
 }
 \details{
 These functions need to modify the GLTF object, caching
