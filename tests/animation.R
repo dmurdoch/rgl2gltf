@@ -1,6 +1,6 @@
 library(rgl2gltf)
 library(rgl)
-gltf <- readGLB("~/temp/RiggedSimple.glb")
+gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
 
 plot3d(gltf, time=0, zoom = 1.3)
 save <- par3d(skipRedraw = TRUE)

@@ -16,7 +16,6 @@ s1 <- as.rglscene(g1)
 plot3d(s1)
 plot3d(g1)
 
-# Still missing some types:  sprites
 # Has bogus new window, due to calling plot3d.rglscene
 # add = TRUE puts it in the wrong place
 
