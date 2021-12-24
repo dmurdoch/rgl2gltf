@@ -1,7 +1,7 @@
 library(rgl)
 library(rgl2gltf)
 
-g <- readGLB("~/temp/2CylinderEngine.glb")
+g <- readGLB(system.file("localtests/2CylinderEngine.glb", package = "rgl2gltf"))
 s <- as.rglscene(g)
 plot3d(s)
 
