@@ -463,6 +463,7 @@ Gltf <- R6Class("gltf",
         if (!is.null(ext <- material$extras)
             && !is.null(props <- ext$RGL_material_properties)) {
           result[names(props)] <- props
+          result <- lapply(result, unlist)
         } else
           result$specular <- "gray10"
       }
