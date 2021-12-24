@@ -131,3 +131,85 @@ isValidConnection <- function(con) {
   }
   FALSE
 }
+
+quaternionAngle <- function(q) {
+  cosThetaby2 <- q[4]
+  u <- quaternionAxis(q)
+  i <- which.max(abs(u))
+  sinThetaby2 <- if (u[i] == 0) 0 else
+                 q[i]/u[i]
+  2*atan2(sinThetaby2, cosThetaby2)
+}
+
+quaternionToMatrix <- function(q) {
+  xx <- q[1]^2
+  xy <- q[1]*q[2]
+  xz <- q[1]*q[3]
+  xw <- q[1]*q[4]
+  yy <- q[2]^2
+  yz <- q[2]*q[3]
+  yw <- q[2]*q[4]
+  zz <- q[3]^2
+  zw <- q[3]*q[4]
+  matrix(c(1 - 2*(yy + zz),
+           2*(xy + zw),
+           2*(xz - yw),
+           0,
+             2*(xy - zw),
+             1 - 2*(xx + zz),
+             2*(yz + xw),
+             0,
+               2*(xz + yw),
+               2*(yz - xw),
+               1 - 2*(xx + yy),
+               0,
+                 0,
+                 0,
+                 0,
+                 1), 4,4)
+}
+
+quaternionAxis <- function(q) {
+  len <- sqrt(sum(q[1:3]^2))
+  if (len == 0) c(1,0,0)
+  else q[1:3]/len
+}
+
+transformBBox <- function(transform, bbox) {
+  if (is.null(bbox) || !all(is.finite(bbox)))
+    return(bbox)
+  ix <- c(1, 1, 1, 1, 2, 2, 2, 2)
+  iy <- c(3, 3, 4, 4, 3, 3, 4, 4)
+  iz <- c(5, 6, 5, 6, 5, 6, 5, 6)
+  xyz <- asEuclidean2(transform %*% rbind(bbox[ix], bbox[iy], bbox[iz], 1))
+  c(min(xyz[1,]), max(xyz[1,]),
+    min(xyz[2,]), max(xyz[2,]),
+    min(xyz[3,]), max(xyz[3,]))
+}
+
+mergeBBox <- function(r1, r2) {
+  if (!is.null(r2)) {
+    i <- c(1, 3, 5)
+    r1[i] <- pmin(r1[i], r2[i])
+    i <- c(2, 4, 6)
+    r1[i] <- pmax(r1[i], r2[i])
+  }
+  r1
+}
+
+# Find subscene chains containing a given ID
+findSubscenes <- function(s, id) {
+
+  addSubscenes <- function(sub, chain, transform) {
+    chain <- c(chain, sub$id)
+    transform <- transform %*% sub$par3d$userMatrix
+    if (id %in% sub$objects)
+      result <<- c(result, list(list(chain, transform)))
+    for (child in sub$subscenes)
+      addSubscenes(child, chain, transform)
+  }
+
+  result <- list()
+  addSubscenes(s$rootSubscene, numeric(0), diag(4))
+  result
+}

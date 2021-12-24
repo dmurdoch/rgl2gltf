@@ -147,6 +147,75 @@ Gltf <- R6Class("gltf",
       self$setNode(parent, parentobj)
     },
 
+    #' @description Set parent member for all nodes
+
+    setParents = function() {
+      for (n in seq_len(self$listCount("nodes")) - 1) {
+        node <- self$getNode(n)
+        for (c in node$children) {
+          child <- self$getNode(c)
+          child$parent <- unlist(n)
+          self$setNode(c, child)
+        }
+      }
+    },
+
+    #' @description Get skin object.
+    #' @param skin Skin number.
+    #' @return Skin object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
+    getSkin = function(skin)
+      structure(private$skins[[skin + 1]], class = "gltfSkin"),
+
+    #' @description Set skin object.
+    #' @param n Skin number.
+    #' @param skin New skin object.
+    setSkin = function(n, skin)
+      private$skins[[n + 1]] <- unclass(skin),
+
+    #' @description Get joint node.
+    #' @param skin Skin number.
+    #' @param num Joint number.
+    #' @return Node object
+    getJoint = function(skin, num)
+      skin$joints[[num + 1]],
+
+    #' @description Get "inverse bind matrices".
+    #'
+    #' These matrices undo the existing
+    #'  transformation before applying the skin
+    #'  transformations.
+    #' @param skin Skin number.
+    #' @return A 4x4xn array of matrices, one per joint.
+    getInverseBindMatrices = function(skin)
+      self$readAccessor(skin$inverseBindMatrices),
+
+    #' @description Get "forward bind matrices".
+    #'
+    #' These matrices applying the skin
+    #'  transformations.
+    #' @param skin Skin number.
+    #' @return A 4x4xn array of matrices, one per joint.
+    getForwardBindMatrices = function(skin) {
+      self$setParents()
+      joints <- unlist(skin$joints)
+      skeleton <- unlist(skin$skeleton)
+      result <- array(NA, c(4, 4, length(joints)))
+
+      for (i in seq_along(joints)) {
+        n <- joints[i]
+        transform <- diag(4)
+        while (!is.null(n)) {
+          transform <- self$getTransform(n) %*% transform
+          if (n %in% skeleton)
+            break
+          n <- self$getNode(n)$parent
+        }
+        result[,,i] <- transform
+      }
+      result
+    },
+
     #' @description Get camera object.
     #' @param cam Camera number.
     #' @return Camera object, documented here:
@@ -335,10 +404,11 @@ Gltf <- R6Class("gltf",
       private$asset <- list(version = version, generator = generator),
 
     #' @description Get local transform.
-    #' @param node Node object.
-    #' @param parentTransform Matrix transform of parent object.
+    #' @param n Node number.
     #' @return 4x4 matrix of local transform.
-    getTransform = function(node, parentTransform) {
+    getTransform = function(n) {
+
+      node <- self$getNode(n)
       if (!is.null(node$matrix)) {
         transform <- matrix(unlist(node$matrix), 4, 4)
       } else {
@@ -349,14 +419,14 @@ Gltf <- R6Class("gltf",
         }
         if (!is.null(node$rotation)) {
           rot <- unlist(node$rotation)
-          transform <- t(rotationMatrix(rot[4], rot[1], rot[2], rot[3])) %*% transform
+          transform <- quaternionToMatrix(rot) %*% transform
         }
         if (!is.null(node$translation)) {
           trans <- unlist(node$translation)
           transform <- t(translationMatrix(trans[1], trans[2], trans[3])) %*% transform
         }
       }
-      parentTransform %*% transform
+      transform
     },
 
     #' @description Reconstruct `rgl` material.
@@ -399,6 +469,105 @@ Gltf <- R6Class("gltf",
       result
     },
 
+    #' @description Get animation.
+    #' @param ani Animation number
+    #' @return Animation object, documented here:
+    #' \url{https://www.khronos.org/registry/glTF/specsparam/2.0/glTF-2.0.html#reference-animation}.
+    getAnimation = function(ani)
+      structure(private$animations[[ani + 1]], class = "gltfAnimation"),
+
+    #' @description Set animation.
+    #' @param ani Animation number
+    #' @param animation New animation object
+    setAnimation = function(ani, animation)
+        private$animations[[ani + 1]] <- unclass(animation),
+
+    #' @description Find time range of an animation
+    #' @param ani Animation number
+    #' @return Min and max times from the samplers in the animation.
+    timerange = function(ani) {
+      animation <- self$getAnimation(ani)
+      samplers <- animation$samplers
+      min <- Inf
+      max <- -Inf
+      for (i in seq_along(samplers)) {
+        sampler <- samplers[[i]]
+        accessor <- self$getAccessor(sampler$input)
+        min <- min(min, unlist(accessor$min))
+        max <- max(max, unlist(accessor$max))
+      }
+      c(min, max)
+    },
+
+    #' @description Initialize animation.
+    #'
+    #' This builds all of the interpolation functions
+    #' in the samplers.
+    #' @param ani Animation number
+    #' @return Modified animation object
+    initAnimation = function(ani) {
+      animation <- self$getAnimation(ani)
+      if (isTRUE(animation$initialized))
+        return()
+      for (i in seq_along(animation$channels)) {
+        channel <- animation$channels[[i]]
+        if (is.null(channel$target$node))
+          next
+        sampler <- animation$samplers[[channel$sampler + 1]]
+        if (is.null(sampler$fn)) {
+          inputs <- self$readAccessor(sampler$input)
+          outputs <- self$readAccessor(sampler$output)
+          if (!is.null(sampler$interpolation) &&
+              sampler$interpolation == "STEP")
+            sampler$fn <- stepfun(inputs, outputs)
+          else if (channel$target$path == "rotation")
+            sampler$fn <- slerpfun(inputs, outputs)
+          else
+            sampler$fn <- lerpfun(inputs, outputs)
+        }
+        animation$samplers[[channel$sampler + 1]] <- sampler
+      }
+      animation$initialized <- TRUE
+      self$setAnimation(ani, animation)
+      animation
+    },
+
+    #' @description Set time for an animation.
+    #'
+    #' This evaluates all the interpolators and modifies
+    #' self to reflect the specified time point.
+    #' @param ani Animation number.
+    #' @param time Time to set.
+    #' @return Vector of node numbers that were changed.
+    settime = function(time, ani = 0) {
+      result <- c()
+      animation <- self$getAnimation(ani)
+      if (!isTRUE(animation$initialized))
+        animation <- self$initAnimation(ani)
+      for (i in seq_along(animation$channels)) {
+        channel <- animation$channels[[i]]
+        if (is.null(channel$target$node))
+          next
+        sampler <- animation$samplers[[channel$sampler + 1]]
+        value <- sampler$fn(time)
+        oldnode <- node <- self$getNode(channel$target$node)
+        if (channel$target$path == "translation" &&
+            (!is.null(node$translation) || any(value != 0)))
+          node$translation <- as.list(value)
+        else if (channel$target$path == "rotation" &&
+            (!is.null(node$rotation) || any(value != c(0,0,0,1))))
+          node$rotation <- as.list(value)
+        else if (channel$target$path == "scale" &&
+            (!is.null(node$scale) || any(value != 1)))
+          node$scale <- as.list(value)
+        if (!identical(node, oldnode)) {
+          self$setNode(channel$target$node, node)
+          result <- c(result, channel$target$node)
+        }
+      }
+      unique(result) # nodes that changed
+    },
+
     #' @description Print `gltf` objects with various levels of detail.
     #' @param verbose Logical indicator of verbose printing, or
     #' character vector of components to print verbosely.
@@ -424,7 +593,7 @@ Gltf <- R6Class("gltf",
       saveopt <- options(rgl2gltf.showExtras = showExtras)
       on.exit(options(saveopt))
 
-      knowntoplevel <- c("accessors", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "textures", "images")
+      knowntoplevel <- c("accessors", "animations", "asset", "scene", "scenes", "nodes", "buffers", "bufferViews", "meshes", "cameras", "materials", "skins", "textures", "images")
       if (!is.logical(verbose)) {
         verbosefields <- match.arg(verbose, knowntoplevel, several.ok = TRUE)
         verbose <- TRUE
@@ -609,6 +778,36 @@ Gltf <- R6Class("gltf",
         }
       }
 
+      if (length(animations <- private$animations)) {
+        if ("animations" %in% verbosefields) {
+          cat("Animations:\n")
+          for (i in seq_along(animations)) {
+            catstring(i-1, "  Animation %s:\n")
+            animation <- animations[[i]]
+            class(animation) <- "gltfAnimation"
+            print(animation)
+          }
+        } else {
+          cat("Animations (", length(animations), ")\n")
+          shownames("animations")
+        }
+      }
+
+      if (length(skins <- private$skins)) {
+        if ("skins" %in% verbosefields) {
+          cat("Skins:\n")
+          for (i in seq_along(skins)) {
+            catstring(i-1, "  Skin %s:\n")
+            skin <- skins[[i]]
+            class(skin) <- "gltfSkin"
+            print(skin)
+          }
+        } else {
+          cat("Skins (", length(skins), ")\n")
+          shownames("skins")
+        }
+      }
+
       others <- setdiff(names(private), "finalize")
       others <- Filter(function(n) length(private[[n]]) > 0, others)
 
@@ -626,16 +825,20 @@ Gltf <- R6Class("gltf",
   ),
 
   private = list(
+    animations = list(),
     asset = list(),
     cameras = list(),
     extras = list(),
     extensions = list(),
+    extensionsUsed = list(),
+    extensionsRequired = list(),
     images = list(),
-    meshes = list(),
     materials = list(),
+    meshes = list(),
     nodes = list(),
     samplers = list(),
     scenes = list(),
+    skins = list(),
     textures = list()
   )
 )

@@ -1,20 +1,22 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
-       showtree, plot3d, writeglTF, writeGLB, findName)
+       showtree, playgltf, plot3d, writeglTF, writeGLB, findName)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.rglscene",
            "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
            "as.tmesh3d",
            "cube3d", "getr3dDefaults",
-           "as.mesh3d", "material3d", "mesh3d", "plot3d", "rgl.primitive",
+           "as.mesh3d", "material3d", "mesh3d",
+           "par3d", "plot3d", "rgl.primitive",
            "rotationMatrix", "scale3d", "scaleMatrix",
            "translate3d", "translationMatrix",
            "rotate3d", "shapelist3d", "Buffer")
 importFrom("grDevices", "col2rgb", "rgb", "xyz.coords")
-importFrom("utils", "packageVersion")
+importFrom("utils", "capture.output", "packageVersion")
 importFrom("tools", "file_ext")
 importFrom("R6", "R6Class")
 importFrom("base64enc", "dataURI")
+importFrom("stats", "approxfun", "complete.cases")
 
 S3method("plot3d", "gltf")
 S3method("as.mesh3d", "gltf")
@@ -29,3 +31,22 @@ S3method("as.gltf", "rglscene")
 S3method("as.rglscene", "gltf")
 
 S3method("merge", "rglobject")
+
+S3method("showtree", "gltf")
+S3method("showtree", "rglscene")
+
+S3method("print", "gltfNode")
+S3method("print", "gltfMesh")
+S3method("print", "gltfSkin")
+S3method("print", "gltfScene")
+S3method("print", "gltfImage")
+S3method("print", "gltfCamera")
+S3method("print", "gltfBuffer")
+S3method("print", "gltfTexture")
+S3method("print", "gltfChannel")
+S3method("print", "gltfAccessor")
+S3method("print", "gltfMaterial")
+S3method("print", "gltfPrimitive")
+S3method("print", "gltfAnimation")
+S3method("print", "gltfBufferview")
+S3method("print", "gltfAnimationSampler")

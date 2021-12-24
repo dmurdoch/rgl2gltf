@@ -144,6 +144,35 @@ catocclusion <- function(occlusion, string) {
   }
 }
 
+catchannels <- function(obj, string) {
+  cat(string)
+  for (i in seq_along(obj)) {
+    channel <- obj[[i]]
+    class(channel) <- "gltfChannel"
+    catstring(i-1,"      channel %s:\n")
+    print(channel)
+  }
+}
+
+catchanneltarget <- function(obj, string) {
+  cat(string)
+  catstring(obj$node, "          node: %s\n")
+  catstring(obj$path, "          path: %s\n")
+  catother(obj)
+}
+
+catsamplers <- function(obj, string) {
+    cat(string)
+    for (i in seq_along(obj)) {
+      sampler <- obj[[i]]
+      class(sampler) <- "gltfAnimationSampler"
+      catstring(i-1,"      sampler %s:\n")
+      print(sampler)
+    }
+  }
+
+
+
 catindices <- catvalues <- function(obj, string) {
   if (!is.null(obj))
     cat(string, "      not implemented\n")
@@ -277,9 +306,41 @@ print.gltfImage <- function(x, ...) {
             "    Other image fields:  %s.\n")
 }
 
-showtree <- function(gltf) {
+print.gltfAnimation <- function(x, ...) {
+  catchannels(x$channels,    "    channels:\n")
+  catsamplers(x$samplers,    "    samplers:\n")
+  catother(x)
+  catstring(setdiff(names(x), c(other, "channels", "samplers")),
+            "    Other animation fields:  %s.\n")
+}
+
+print.gltfChannel <- function(x, ...) {
+  catstring(x$sampler, "        sampler: %s\n")
+  catchanneltarget(x$target,  "        target:\n")
+  catother(x)
+}
+
+print.gltfAnimationSampler <- function(x, ...) {
+  catstring(x$input,         "        input: %s\n")
+  catstring(x$interpolation, "        interpolation: %s\n")
+  catstring(x$output,        "        output: %s\n")
+  catother(x)
+}
+
+print.gltfSkin <- function(x, ...) {
+  catstring(x$inverseBindMatrices, "        inverseBindMatrices: %s\n")
+  catstring(x$skeleton,            "        skeleton: %s\n")
+  catstring(x$joints,              "        joints: %s\n")
+  catother(x)
+}
+
+showtree <- function(x, ...)
+  UseMethod("showtree", x)
+
+showtree.gltf <- function(x, ...) {
+  gltf <- x
   showNode <- function(n) {
-    node <- nodes[[n+1]]
+    node <- gltf$getNode(n)
     cat(paste(rep(" ", indent), collapse = ""))
     cat("Node ", n)
     if (!is.null(extras <- node$extras) &&
@@ -288,7 +349,7 @@ showtree <- function(gltf) {
     if (!is.null(name <- node$name))
       cat(" ", name)
     if (!is.null(meshnum <- node$mesh)) {
-      mesh <- gltf$meshes[[meshnum + 1]]
+      mesh <- gltf$getMesh(meshnum)
       if (!is.null(mesh$name))
         cat(" (mesh ", mesh$name, ")")
     }
@@ -298,11 +359,11 @@ showtree <- function(gltf) {
       showNode(i)
     indent <<- indent - 2
   }
-  if (!is.null(gltf$nodes)) {
-    nodes <- gltf$nodes
-    isChild <- rep(FALSE, length(nodes))
-    for (i in seq_along(nodes)) {
-      if (!is.null(children <- unlist(nodes[[i]]$children)))
+  if ((n <- gltf$listCount("nodes")) > 0) {
+    isChild <- rep(FALSE, n)
+    for (i in seq_len(n)) {
+      node <- gltf$getNode(i - 1)
+      if (!is.null(children <- unlist(node$children)))
         isChild[children + 1] <- TRUE
     }
     roots <- which(!isChild) - 1
@@ -311,4 +372,41 @@ showtree <- function(gltf) {
       showNode(n)
     }
   }
+}
+
+showtree.rglscene <- function(x, transform = FALSE, ...) {
+  s <- x
+  showSubscene <- function(sub) {
+    indstr <- paste(rep(" ", indent), collapse = "")
+    cat(indstr, "Subscene ", sub$id, "\n")
+    if (transform) {
+      if (!is.null(scale <- sub$par3d$scale) &&
+          !all(scale == 1))
+        cat(indstr, "scale: ", scale, "\n")
+      if (!is.null(mat <- sub$par3d$userMatrix) &&
+          !all(mat == diag(4))) {
+        cat(indstr, "userMatrix:\n")
+        cat(paste(indstr, "  ", capture.output(print(round(mat, 2)))), sep="\n")
+      }
+    }
+    if (length(objects <- sub$objects)) {
+      cat(indstr, "  Objects: ")
+      for (i in seq_along(objects)) {
+        cat(objects[i])
+        obj <- s$objects[[as.character(objects[i])]]
+        if (!is.null(tag <- obj$material$tag) &&
+            nchar(tag))
+          cat(" (", tag, ")", sep = "")
+        if (i < length(objects))
+          cat(", ")
+      }
+      cat("\n")
+    }
+    indent <<- indent + 2
+    for (i in sub$subscenes)
+      showSubscene(i)
+    indent <<- indent - 2
+  }
+  indent <- 0
+  showSubscene(s$rootSubscene)
 }
