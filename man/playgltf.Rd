@@ -1,5 +1,6 @@
 \name{playgltf}
 \alias{playgltf}
+\alias{showNodes}
 \title{
 Play an animated glTF object.
 }
@@ -12,6 +13,9 @@ playgltf(gltf, animation = 0,
          start = times[1], stop = times[2],
          times = gltf$timerange(animation),
          method = "wholeScene", ...)
+showNodes(gltf, animation = 0,
+          start = times[1], stop = times[2],
+          times = gltf$timerange(animation))
 }
 \arguments{
   \item{gltf}{
@@ -56,6 +60,10 @@ changed objects to be redrawn, which might help speed things up,
 or to make the skins rigid, but allow a single transformation to be changed in real time.  It remains to be seen which
 approach will be preferred.
 
+The \code{showNodes} function displays each node number as
+text at the origin for that node.  By default it plays the
+animation showing how the nodes move.
+
 }
 \value{
 Called for the side effect of drawing the animation.
@@ -63,5 +71,6 @@ Called for the side effect of drawing the animation.
 
 \examples{
 gltf <- readGLB("~/temp/BrainStem.glb")
+showNodes(gltf, start = 0, stop = 3)
 playgltf(gltf, start = 0, stop = 3)
 }
