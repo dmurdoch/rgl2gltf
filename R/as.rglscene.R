@@ -1,3 +1,190 @@
+newObj <- function(xyz, material = NULL, normals = NULL,
+                   texcoords = NULL,
+                   type, attribs = NULL,
+                   indices = indices,
+                   id = NULL) {
+
+  result <- list(id=id, type=type)
+
+  if (!(type %in% c("light", "clipplanes")))
+    result$material <- material
+
+  result$vertices <- xyz
+  result$normals <- normals
+  result$texcoords <- texcoords
+  result$indices <- indices
+
+  result <- c(result, attribs)
+
+  class(result) <- c(paste0("rgl", type), "rglobject")
+  result
+}
+
+primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL) {
+  class(prim) <- "gltfPrimitive"
+
+  if (!is.null(prim$targets)) {
+    print(prim)
+    # What are prim targets????
+    browser()
+  }
+  mat <- gltf$getRglMaterial(prim$material)
+
+  normals <- positions <- texcoords <- joints <- weights <- NULL
+  for (a in seq_along(prim$attributes)) {
+    attr <- unlist(prim$attributes[a])
+    values <- gltf$readAccessor(attr[1])
+    switch (names(attr),
+            NORMAL = normals <- values,
+            POSITION = positions <- values,
+            COLOR_0 = {
+              mat$color <- rgb(values[,1], values[,2], values[,3])
+              if (ncol(values) == 4)
+                mat$alpha <- values[,4]
+            },
+            JOINTS_0 = joints <- values,
+            WEIGHTS_0 = weights <- values
+    )
+    if (!is.null(mat$texture)) {
+      if (is.null(coord <- mat$gltftexCoord))
+        coord <- 0
+      mat$gltftexCoord <- NULL
+      if (names(attr) == paste0("TEXCOORD_", coord))
+        texcoords <- cbind(values[,1], -values[,2])
+    }
+  }
+  if (is.null(prim$indices))
+    indices <- seq_len(nrow(positions))
+  else {
+    indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
+  }
+
+  if (!is.null(joints) && !is.null(skinnum)) {
+    skin <- gltf$getSkin(skinnum)
+    jnt <- unique(as.numeric(joints))
+
+    if (is.null(time)) {
+      #   # if we're doing dynamic updates, we can
+      #   # only work with one transformation per
+      #   # rgl object, so we'll use the one with the
+      #   # highest total weight.  But for
+      #   # static updates (specified time) we can
+      #   # modify the individual vertices as specified.
+      #
+      #   wt <- 0*jnt
+      #   for (j in seq_along(jnt)) {
+      #     wt[j] <- sum(weights[joints == jnt[j]])
+      #   }
+      #   tag <- jnt[which.max(wt)]
+      #
+      #   # For dynamic updates, we need to put this in
+      #   # its own subscene
+      #   wrapper <- newSubscene(activeSubscene)
+      #   wrapper$par3d$userMatrix <- transform
+      #   wrapper$par3d$listeners <- activeSubscene$id
+      #   transformed <- asEuclidean(asHomogeneous(positions) %*% t(transform))
+      #   ranges <- apply(transformed, 2, range)
+      #   wrapper$par3d$bbox <- as.numeric(ranges)
+      #   wrapper$embeddings["model"] <- "modify"
+      #   transform <- diag(4)
+      #   saveActive <- activeSubscene
+      #   activeSubscene <<- wrapper
+      #   on.exit(activeSubscene <<- saveActive)
+      #
+      #   mat$tag <- paste(tag, wrapper$id)
+    } else {
+      # If time is non-NULL, we'll use the
+      # animation values for the specified time
+      # to modify the vertices
+
+      # We compute transforms for all the different
+      # combinations in this primitive.
+      nj <- ncol(joints)
+      if (ncol(weights) != nj)
+        stop("joints and weights don't match")
+      both <- cbind(joints, weights)
+      bothfirst <- both[!duplicated(both),,drop=FALSE]
+      backward <- gltf$getInverseBindMatrices(skin)
+      forward <- skin$forward
+      for (i in seq_len(nrow(bothfirst))) {
+        joint <- bothfirst[i, 1:nj]
+        wt <- bothfirst[i, nj + 1:nj]
+        wt <- wt/sum(wt)
+        transform <- matrix(0, 4,4)
+        for (j in seq_along(joint)) {
+          if (wt[j] == 0) next
+          n <- gltf$getJoint(skin, joint[j])
+          transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
+        }
+        sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
+        positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
+
+        if (!is.null(normals)) {
+          nt <- transform
+          nt[4,1:3] <- nt[1:3, 4] <- 0
+          nt <- solve(nt)
+          normals[sel,] <- normalize(asEuclidean(rotate3d(cbind(normals[sel,,drop=FALSE],1), matrix = nt)))
+        }
+      }
+    }
+  }
+  colnames(positions) <- c("x", "y", "z")
+
+  if (is.null(mode <- prim$mode))
+    mode <- 4
+  ninds <- length(indices)
+
+  mat <- matdiff(mat, defaultmaterial)
+
+  result <- switch(as.character(mode),
+                   "0" = newObj(xyz = positions,    # points
+                                normals = normals,
+                                texcoords = texcoords,
+                                material = mat,
+                                indices = indices,
+                                type = "points"),
+                   "1" = newObj(xyz = positions,    # segments
+                                normals = normals,
+                                texcoords = texcoords,
+                                material = mat,
+                                indices = indices,
+                                type = "lines"),
+                   "2" = newObj(xyz = positions,    # loop
+                                normals = normals,
+                                texcoords = texcoords,
+                                material = mat,
+                                indices = c(indices, indices[1]),
+                                type = "linestrip"),
+                   "3" = newObj(xyz = positions,    # strip
+                                normals = normals,
+                                texcoords = texcoords,
+                                material = mat,
+                                indices = indices,
+                                type = "linestrip"),
+                   "4" = newObj(xyz = positions,    # triangles
+                                normals = normals,
+                                texcoords = texcoords,
+                                material = mat,
+                                indices = indices,
+                                type = "triangles"),
+                   "5" = newObj(xyz = positions,    # triangle strip
+                                normals = normals,
+                                texcoords = texcoords,
+                                indices = rbind(indices[-c(ninds, ninds-1)],
+                                                indices[-c(1, ninds)],
+                                                indices[-c(1,2)]),
+                                material = mat),
+                   "6" = newObj(xyz = positions,    # triangle fan
+                                normals = normals,
+                                texcoords = texcoords,
+                                indices = rbind(indices[1],
+                                                indices[-c(1, ninds)],
+                                                indices[-c(1,2)]),
+                                material = mat))
+  if (!is.null(id))
+    result$id <- id
+  result
+}
 
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE,
@@ -44,53 +231,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     lastid
   }
 
-  newObj <- function(xyz, material = NULL, normals = NULL,
-                           texcoords = NULL,
-                           type, flags = NULL, attribs = NULL,
-                           indices = indices,
-                           oldid = NULL) {
-
-    result <- list(id=getId(oldid), type=type)
-
-    if (!(type %in% c("light", "clipplanes"))) {
-      result$material <- matdiff(material, defaultmaterial)
-    } else
-      lit <- FALSE
-
-    result$vertices <- xyz
-    result$normals <- normals
-    result$texcoords <- texcoords
-    result$indices <- indices
-
-    result <- c(result, attribs)
-
-    if (length(flags)) {
-      if ("ignoreExtent" %in% rownames(flags))
-        result$ignoreExtent <- flags["ignoreExtent", 1]
-      if ("fixedSize" %in% rownames(flags))
-        result$fixedSize <- flags["fixedSize", 1]
-      if ("fastTransparency" %in% rownames(flags))
-        result$fastTransparency <- flags["fastTransparency", 1]
-      if ("flipped" %in% rownames(flags))
-        result$flipped <- flags["flipped", 1]
-      if (type == "background") {
-        result$sphere <- flags["sphere", 1]
-        result$fogtype <- if (flags["linear_fog", 1]) "linear"
-        else if (flags["exp_fog", 1]) "exp"
-        else if (flags["exp2_fog", 1]) "exp2"
-        else "none"
-        result$fogscale <- attribs$fogscale
-      } else if (type == "bboxdeco") {
-        result$draw_front <- flags["draw_front", 1]
-      } else if (type == "light") {
-        result$viewpoint <- flags["viewpoint", 1]
-        result$finite    <- flags["finite", 1]
-      }
-    }
-    class(result) <- c(paste0("rgl", type), "rglobject")
-    result
-  }
-
   newSubscene <- function(id, root = FALSE) {
     result <- structure(list(id = id,
                              type = "subscene",
@@ -113,172 +253,6 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result$par3d$windowRect <- getDefaults("par3d", "windowRect",
                                            c(x = 0, y = 40, width = 512, height = 512))
     result$par3d$viewport <- getDefaults("par3d", "windowRect", result$par3d$windowRect - c(0, 40, 0, 0))
-    result
-  }
-
-  primToRglobj <- function(prim, skinnum) {
-    class(prim) <- "gltfPrimitive"
-
-    if (!is.null(prim$targets)) {
-      print(prim)
-      # What are prim targets????
-      browser()
-    }
-    mat <- gltf$getRglMaterial(prim$material)
-
-    normals <- positions <- texcoords <- joints <- weights <- NULL
-    for (a in seq_along(prim$attributes)) {
-      attr <- unlist(prim$attributes[a])
-      values <- gltf$readAccessor(attr[1])
-      switch (names(attr),
-              NORMAL = normals <- values,
-              POSITION = positions <- values,
-              COLOR_0 = {
-                mat$color <- rgb(values[,1], values[,2], values[,3])
-                if (ncol(values) == 4)
-                  mat$alpha <- values[,4]
-              },
-              JOINTS_0 = joints <- values,
-              WEIGHTS_0 = weights <- values
-      )
-      if (!is.null(mat$texture)) {
-        if (is.null(coord <- mat$gltftexCoord))
-          coord <- 0
-        mat$gltftexCoord <- NULL
-        if (names(attr) == paste0("TEXCOORD_", coord))
-          texcoords <- cbind(values[,1], -values[,2])
-      }
-    }
-    if (is.null(prim$indices))
-      indices <- seq_len(nrow(positions))
-    else {
-      indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
-    }
-
-    if (!is.null(joints) && !is.null(skinnum)) {
-      skin <- gltf$getSkin(skinnum)
-      jnt <- unique(as.numeric(joints))
-
-      if (is.null(time)) {
-      #   # if we're doing dynamic updates, we can
-      #   # only work with one transformation per
-      #   # rgl object, so we'll use the one with the
-      #   # highest total weight.  But for
-      #   # static updates (specified time) we can
-      #   # modify the individual vertices as specified.
-      #
-      #   wt <- 0*jnt
-      #   for (j in seq_along(jnt)) {
-      #     wt[j] <- sum(weights[joints == jnt[j]])
-      #   }
-      #   tag <- jnt[which.max(wt)]
-      #
-      #   # For dynamic updates, we need to put this in
-      #   # its own subscene
-      #   wrapper <- newSubscene(activeSubscene)
-      #   wrapper$par3d$userMatrix <- transform
-      #   wrapper$par3d$listeners <- activeSubscene$id
-      #   transformed <- asEuclidean(asHomogeneous(positions) %*% t(transform))
-      #   ranges <- apply(transformed, 2, range)
-      #   wrapper$par3d$bbox <- as.numeric(ranges)
-      #   wrapper$embeddings["model"] <- "modify"
-      #   transform <- diag(4)
-      #   saveActive <- activeSubscene
-      #   activeSubscene <<- wrapper
-      #   on.exit(activeSubscene <<- saveActive)
-      #
-      #   mat$tag <- paste(tag, wrapper$id)
-      } else {
-        # If time is non-NULL, we'll use the
-        # animation values for the specified time
-        # to modify the vertices
-
-        # We compute transforms for all the different
-        # combinations in this primitive.
-        nj <- ncol(joints)
-        if (ncol(weights) != nj)
-          stop("joints and weights don't match")
-        both <- cbind(joints, weights)
-        bothfirst <- both[!duplicated(both),,drop=FALSE]
-        backward <- gltf$getInverseBindMatrices(skin)
-        forward <- skin$forward
-        for (i in seq_len(nrow(bothfirst))) {
-          joint <- bothfirst[i, 1:nj]
-          wt <- bothfirst[i, nj + 1:nj]
-          wt <- wt/sum(wt)
-          transform <- matrix(0, 4,4)
-          for (j in seq_along(joint)) {
-            if (wt[j] == 0) next
-            n <- gltf$getJoint(skin, joint[j])
-            transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
-          }
-          sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
-          positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
-
-          if (!is.null(normals)) {
-            nt <- transform
-            nt[4,1:3] <- nt[1:3, 4] <- 0
-            nt <- solve(nt)
-            normals[sel,] <- normalize(asEuclidean(rotate3d(cbind(normals[sel,,drop=FALSE],1), matrix = nt)))
-          }
-        }
-      }
-    }
-    colnames(positions) <- c("x", "y", "z")
-
-    if (is.null(mode <- prim$mode))
-      mode <- 4
-    ninds <- length(indices)
-
-    result <- switch(as.character(mode),
-           "0" = newObj(xyz = positions,    # points
-                        normals = normals,
-                        texcoords = texcoords,
-                        material = mat,
-                        indices = indices,
-                        type = "points"),
-           "1" = newObj(xyz = positions,    # segments
-                        normals = normals,
-                        texcoords = texcoords,
-                        material = mat,
-                        indices = indices,
-                        type = "lines"),
-           "2" = newObj(x = positions,    # loop
-                        normals = normals,
-                        texcoords = texcoords,
-                        material = mat,
-                        indices = c(indices, indices[1]),
-                        type = "linestrip"),
-           "3" = newObj(x = positions,    # strip
-                        normals = normals,
-                        texcoords = texcoords,
-                        material = mat,
-                        indices = indices,
-                        type = "linestrip"),
-           "4" = newObj(x = positions,    # triangles
-                        normals = normals,
-                        texcoords = texcoords,
-                        material = mat,
-                        indices = indices,
-                        type = "triangles"),
-           "5" = newObj(x = positions,    # triangle strip
-                        normals = normals,
-                        texcoords = texcoords,
-                        indices = rbind(indices[-c(ninds, ninds-1)],
-                                        indices[-c(1, ninds)],
-                                        indices[-c(1,2)]),
-                        material = mat),
-           "6" = newObj(x = positions,    # triangle fan
-                        normals = normals,
-                        texcoords = texcoords,
-                        indices = rbind(indices[1],
-                                        indices[-c(1, ninds)],
-                                        indices[-c(1,2)]),
-                        material = mat))
-    # if (!is.null(joints)) {
-    #   wrapper <- insertObject(result, wrapper)
-    #   result <- wrapper
-    # }
     result
   }
 
@@ -320,7 +294,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   processPrimitive <- function(prim, skin) {
-    primToRglobj(prim, skin)
+    primToRglobj(prim, skin, gltf, defaultmaterial,
+                 id = getId())
   }
 
   processMesh <- function(m, skin) {
@@ -328,7 +303,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     result <- vector("list", length(mesh$primitives))
     for (p in seq_along(mesh$primitives)) {
       result[[p]] <- processPrimitive(mesh$primitives[[p]], skin)
-      result[[p]]$material$tag <- paste(mesh$name, p, sep = ":")
+      result[[p]]$material$tag <- paste(m, p, sep = ":")
     }
     result
   }
@@ -413,7 +388,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     if (!is.null(m)) {
       mesh <- gltf$getMesh(m)
       if (!is.null(mesh$primitives)) {
-        primobj <- primToRglobj(mesh$primitives[[1]], gltf$getTransform(n))
+        primobj <- primToRglobj(mesh$primitives[[1]], gltf$getTransform(n), gltf, defaultmaterial)
       }
     }
     newobj <- restoreRGLclass(node$extras$RGL_obj)

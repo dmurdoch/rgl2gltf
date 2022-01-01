@@ -566,6 +566,14 @@ Gltf <- R6Class("gltf",
           result <- c(result, channel$target$node)
         }
       }
+      for (n in seq_len(self$listCount("nodes")) - 1) {
+        node <- self$getNode(n)
+        if (!is.null(node$skin)) {
+          skin <- self$getSkin(node$skin)
+          skin$forward <- self$getForwardBindMatrices(skin)
+          self$setSkin(node$skin, skin)
+        }
+      }
       unique(result) # nodes that changed
     },
 
