@@ -1,4 +1,5 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
+       showNodes,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findName)
 
 importFrom("jsonlite", "read_json")
@@ -7,10 +8,11 @@ importFrom("rgl", "as.rglscene",
            "as.tmesh3d",
            "cube3d", "getr3dDefaults",
            "as.mesh3d", "material3d", "mesh3d",
-           "par3d", "plot3d", "rgl.primitive",
+           "par3d", "plot3d", "pop3d", "rgl.primitive",
            "rotationMatrix", "scale3d", "scaleMatrix",
+           "text3d",
            "translate3d", "translationMatrix",
-           "rotate3d", "shapelist3d", "Buffer")
+           "rotate3d", "shapelist3d", "useSubscene3d", "Buffer")
 importFrom("grDevices", "col2rgb", "rgb", "xyz.coords")
 importFrom("utils", "capture.output", "packageVersion")
 importFrom("tools", "file_ext")
