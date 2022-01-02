@@ -63,68 +63,33 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL)
     skin <- gltf$getSkin(skinnum)
     jnt <- unique(as.numeric(joints))
 
-    if (is.null(time)) {
-      #   # if we're doing dynamic updates, we can
-      #   # only work with one transformation per
-      #   # rgl object, so we'll use the one with the
-      #   # highest total weight.  But for
-      #   # static updates (specified time) we can
-      #   # modify the individual vertices as specified.
-      #
-      #   wt <- 0*jnt
-      #   for (j in seq_along(jnt)) {
-      #     wt[j] <- sum(weights[joints == jnt[j]])
-      #   }
-      #   tag <- jnt[which.max(wt)]
-      #
-      #   # For dynamic updates, we need to put this in
-      #   # its own subscene
-      #   wrapper <- newSubscene(activeSubscene)
-      #   wrapper$par3d$userMatrix <- transform
-      #   wrapper$par3d$listeners <- activeSubscene$id
-      #   transformed <- asEuclidean(asHomogeneous(positions) %*% t(transform))
-      #   ranges <- apply(transformed, 2, range)
-      #   wrapper$par3d$bbox <- as.numeric(ranges)
-      #   wrapper$embeddings["model"] <- "modify"
-      #   transform <- diag(4)
-      #   saveActive <- activeSubscene
-      #   activeSubscene <<- wrapper
-      #   on.exit(activeSubscene <<- saveActive)
-      #
-      #   mat$tag <- paste(tag, wrapper$id)
-    } else {
-      # If time is non-NULL, we'll use the
-      # animation values for the specified time
-      # to modify the vertices
+    # We compute transforms for all the different
+    # combinations in this primitive.
+    nj <- ncol(joints)
+    if (ncol(weights) != nj)
+      stop("joints and weights don't match")
+    both <- cbind(joints, weights)
+    bothfirst <- both[!duplicated(both),,drop=FALSE]
+    backward <- gltf$getInverseBindMatrices(skin)
+    forward <- skin$forward
+    for (i in seq_len(nrow(bothfirst))) {
+      joint <- bothfirst[i, 1:nj]
+      wt <- bothfirst[i, nj + 1:nj]
+      wt <- wt/sum(wt)
+      transform <- matrix(0, 4,4)
+      for (j in seq_along(joint)) {
+        if (wt[j] == 0) next
+        n <- gltf$getJoint(skin, joint[j])
+        transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
+      }
+      sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
+      positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
 
-      # We compute transforms for all the different
-      # combinations in this primitive.
-      nj <- ncol(joints)
-      if (ncol(weights) != nj)
-        stop("joints and weights don't match")
-      both <- cbind(joints, weights)
-      bothfirst <- both[!duplicated(both),,drop=FALSE]
-      backward <- gltf$getInverseBindMatrices(skin)
-      forward <- skin$forward
-      for (i in seq_len(nrow(bothfirst))) {
-        joint <- bothfirst[i, 1:nj]
-        wt <- bothfirst[i, nj + 1:nj]
-        wt <- wt/sum(wt)
-        transform <- matrix(0, 4,4)
-        for (j in seq_along(joint)) {
-          if (wt[j] == 0) next
-          n <- gltf$getJoint(skin, joint[j])
-          transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
-        }
-        sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
-        positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
-
-        if (!is.null(normals)) {
-          nt <- transform
-          nt[4,1:3] <- nt[1:3, 4] <- 0
-          nt <- solve(nt)
-          normals[sel,] <- normalize(asEuclidean(rotate3d(cbind(normals[sel,,drop=FALSE],1), matrix = nt)))
-        }
+      if (!is.null(normals)) {
+        nt <- transform
+        nt[4,1:3] <- nt[1:3, 4] <- 0
+        nt <- solve(nt)
+        normals[sel,] <- normalize(asEuclidean(rotate3d(cbind(normals[sel,,drop=FALSE],1), matrix = nt)))
       }
     }
   }

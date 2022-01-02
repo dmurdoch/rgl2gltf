@@ -48,7 +48,7 @@ getAffectedObjects <- function(gltf) {
 }
 
 playgltf <- function(gltf, animation = 0, start = times[1],
-                     stop = times[2], times = gltf$timerange(animation), method = c("partialScene", "wholeScene"), ...) {
+                     stop = times[2], times = gltf$timerange(animation), method = c("wholeScene", "partialScene"), ...) {
 
   if (animation + 1 > gltf$listCount("animations"))
     stop("Animation not found")

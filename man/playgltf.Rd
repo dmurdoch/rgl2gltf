@@ -12,7 +12,7 @@ This function interprets them and plays them.
 playgltf(gltf, animation = 0,
          start = times[1], stop = times[2],
          times = gltf$timerange(animation),
-         method = "wholeScene", ...)
+         method = c("wholeScene", "partialScene"), ...)
 showNodes(gltf, animation = 0,
           start = times[1], stop = times[2],
           times = gltf$timerange(animation))
@@ -32,7 +32,7 @@ Starting and stopping times.
 An alternate way to specify \code{start} and \code{stop}.
 }
   \item{method}{
-Which drawing method to use?  Currently only \code{"wholeScene"} is implemented.
+Which drawing method to use?  See details below.
   }
   \item{...}{
 Parameter settings to pass to \code{\link{plot3d.rglscene}} (and hence
@@ -55,10 +55,14 @@ graphics objects are rigid.
 The \code{playgltf} function provides partial support for
 skins.  Using the \code{"wholeScene"} method, it can modify the vertices of an entire scene
 and redraw the scene.  Typically this is quite slow, and
-not very satisfactory.  Future plans will allow only the
-changed objects to be redrawn, which might help speed things up,
-or to make the skins rigid, but allow a single transformation to be changed in real time.  It remains to be seen which
-approach will be preferred.
+not very satisfactory.  The \code{"partialScene"} method
+allows only the
+changed objects to be redrawn, which might help speed things up.
+Future plans are to allow the skins to be made rigid, but allow a
+single transformation to be changed in real time, or to
+implement the skins entirely in shaders, which is how they
+are intended to be implemented, but which is not currently well supported
+by \pkg{rgl}.
 
 The \code{showNodes} function displays each node number as
 text at the origin for that node.  By default it plays the
