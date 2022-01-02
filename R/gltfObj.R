@@ -240,6 +240,12 @@ Gltf <- R6Class("gltf",
     getMesh = function(m)
       structure(private$meshes[[m + 1]], class = "gltfMesh"),
 
+    #' @description Set mesh object.
+    #' @param m Mesh number.
+    #' @param mesh New mesh object
+    setMesh = function(m, mesh)
+      private$meshes[[m + 1]] <- unclass(mesh),
+
     #' @description Add a mesh object.
     #' @param primitives A list of primitive objects.
     #' @return Mesh number.

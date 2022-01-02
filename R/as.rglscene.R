@@ -58,8 +58,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL)
   else {
     indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
   }
-
-  if (!is.null(joints) && !is.null(skinnum)) {
+  if (!is.null(joints) && !is.null(skinnum) && is.null(prim$usejoint)) {
     skin <- gltf$getSkin(skinnum)
     jnt <- unique(as.numeric(joints))
 
