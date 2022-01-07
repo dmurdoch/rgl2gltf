@@ -67,7 +67,21 @@ getAffectedObjects <- function(gltf, method) {
 playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation),
                      method = c("wholeScene", "partialScene", "rigid"), ...) {
-
+  
+  getMatrices <- function(n) {
+    if (n != havenode) {
+      havenode <<- n
+      forward <<- NULL
+      backward <<- NULL
+      node <- gltf$getNode(n)
+      if (!is.null(node$skin)) {
+        skin <- gltf$getSkin(node$skin)
+        forward <<- skin$forward
+        backward <<- gltf$getInverseBindMatrices(skin)
+      }
+    }
+  }
+  
   if (animation + 1 > gltf$listCount("animations"))
     stop("Animation not found")
 
@@ -103,7 +117,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
     recurse(s$rootSubscene)
   }
 
-  if (method == "rigid") {
+  if (method == "rigid") { 
       # Put each primitive into a separate subscene
       # under its original one.  Set the userMatrix
       # for that subscene to match the majority transformation
@@ -122,24 +136,15 @@ playgltf <- function(gltf, animation = 0, start = times[1],
                                                      projection = "inherit",
                                                      parent = nodeid)
         id <- tagged3d(tag, subscene = nodeid)
-        if (nodes[i] != havenode) {
-          havenode <- nodes[i]
-          forward <- NULL
-          backward <- NULL
-          node <- gltf$getNode(nodes[i])
-          if (!is.null(node$skin)) {
-            skin <- gltf$getSkin(node$skin)
-            forward <- skin$forward
-            backward <- gltf$getInverseBindMatrices(skin)
-          }
-        }
+        getMatrices(nodes[i])
+        node <- gltf$getNode(nodes[i])
         if (!is.null(forward)) {
           prim <- getPrim(gltf, tag)
           par3d(userMatrix = forward[,,prim$usejoint + 1] %*% backward[,,prim$usejoint + 1],
                 listeners = nodeid,
                 subscene = subid)
           pop3d(id = id)
-          cat("tag =", tag, " bbox=", par3d("bbox", subscene=nodeid)[1:2], "\n")
+          # cat("tag =", tag, " bbox=", par3d("bbox", subscene=nodeid)[1:2], "\n")
           newobj <- primToRglobj(prim, node$skin,
                              gltf = gltf,
                              defaultmaterial = s$material)
@@ -160,6 +165,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
       break
     time <- as.numeric(time, units = "secs") + start
     changedNodes <- gltf$settime(time, animation)
+    havenode <- -1
     if (length(changedNodes)) {
       if (method == "wholeScene") {
         rgl::clear3d()
@@ -192,6 +198,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
               id <- plot3d(newobj, add=TRUE)
             }
           } else if (method == "rigid") {
+            getMatrices(containingNodes[[o]][1])
             wrapper <- wrappers[[o]]
             for (i in seq_along(wrapper)) {
               par3d(userMatrix = forward[,,prim$usejoint + 1] %*% backward[,,prim$usejoint + 1], subscene = wrapper[i])
