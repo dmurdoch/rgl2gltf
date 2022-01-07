@@ -1,0 +1,10 @@
+Notes on rigid play method:
+
+Single primitives in BrainStem.glb sometimes combine widely separated pieces,
+e.g. mesh 0 prim 41, which is the two black elbow joints in the robot.
+
+Since rgl is slow to modify vertices, we'll do the following for triangle primitives:
+
+ - group point triplets into single objects, and compute the average of the
+ weights and joints on the whole triplet.  Split the primitive according to these averages.
+

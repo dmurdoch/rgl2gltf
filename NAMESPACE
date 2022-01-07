@@ -1,6 +1,7 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showNodes,
-       showtree, playgltf, plot3d, writeglTF, writeGLB, findName)
+       showtree, playgltf, plot3d, writeglTF, writeGLB, findName,
+       matrixSequence)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "as.rglscene", "addToSubscene3d",
@@ -53,3 +54,4 @@ S3method("print", "gltfPrimitive")
 S3method("print", "gltfAnimation")
 S3method("print", "gltfBufferview")
 S3method("print", "gltfAnimationSampler")
+S3method("print", "matrixSequence")
