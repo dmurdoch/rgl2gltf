@@ -51,6 +51,7 @@ gltf$print(names = "meshes")
 \item \href{#method-getExtras}{\code{Gltf$getExtras()}}
 \item \href{#method-setExtras}{\code{Gltf$setExtras()}}
 \item \href{#method-getMesh}{\code{Gltf$getMesh()}}
+\item \href{#method-setMesh}{\code{Gltf$setMesh()}}
 \item \href{#method-addMesh}{\code{Gltf$addMesh()}}
 \item \href{#method-getMaterial}{\code{Gltf$getMaterial()}}
 \item \href{#method-getTexture}{\code{Gltf$getTexture()}}
@@ -507,6 +508,25 @@ Get mesh object.
 \subsection{Returns}{
 Mesh object, documented here:
 \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-setMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-setMesh}{}}}
+\subsection{Method \code{setMesh()}}{
+Set mesh object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$setMesh(m, mesh)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{m}}{Mesh number.}
+
+\item{\code{mesh}}{New mesh object}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

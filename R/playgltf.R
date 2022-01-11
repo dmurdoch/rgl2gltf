@@ -103,8 +103,11 @@ getAffectedObjects <- function(gltf, method) {
 
 playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation),
-                     method = c("wholeScene", "partialScene", "rigid"),
+                     method = c("rigid", "wholeScene", "partialScene"),
                      speed = 1, by = NULL, verbose = FALSE, ...) {
+
+  forward <- NULL
+  backward <- NULL
 
   getMatrices <- function(n) {
     if (n != havenode) {
@@ -212,7 +215,6 @@ playgltf <- function(gltf, animation = 0, start = times[1],
 
   clockstart <- Sys.time()
   duration <- as.difftime(stop - start, units = "secs")
-
   time <- start
 
   repeat {
@@ -223,6 +225,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
 
     if (time > duration)
       break
+
     time <- as.numeric(time, units = "secs") + start
 
     if (verbose)
