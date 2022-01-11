@@ -101,6 +101,24 @@ getAffectedObjects <- function(gltf, method) {
   result
 }
 
+# Remove vertices that are not referenced
+cullVertices <- function(obj) {
+  if (!is.null(indices <- obj$indices)) {
+    used <- unique(indices)
+    obj$vertices <- obj$vertices[used,]
+    if (!is.null(obj$normals))
+      obj$normals <- obj$normals[used,]
+    if (!is.null(obj$texcoords))
+      obj$texcoords <- obj$texcoords[used,]
+    if (!is.null(obj$colors))
+      obj$colors <- obj$colors[used,]
+    if (length(color <- obj$material$color) > 1)
+      obj$material$color <- rep(color, length = length(indices))[used]
+    obj$indices <- match(indices, used)
+  }
+  obj
+}
+
 playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation),
                      method = c("rigid", "wholeScene", "partialScene"),
@@ -204,7 +222,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
                 listeners = nodeid)
             newobj$indices <- prim$indices_split[[j]]
             newobj$material$tag <- tags[j]
-            newid <- plot3d(newobj, add = TRUE)
+            newid <- plot3d(cullVertices(newobj), add = TRUE)
           }
           pop3d(id = id)
         }
