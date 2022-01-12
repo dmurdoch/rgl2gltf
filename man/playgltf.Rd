@@ -93,7 +93,21 @@ Called for the side effect of drawing the animation.
 }
 
 \examples{
-gltf <- readGLB("~/temp/BrainStem.glb")
-showNodes(gltf, start = 0, stop = 3)
-playgltf(gltf, start = 0, stop = 3)
+if (interactive()) {
+# This example is fast enough using the "whole" method:
+
+gltf1 <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
+playgltf(gltf1, start = 0, stop = 3, method = "whole")
+
+# It looks terrible using the "rigid" method, because some triangles
+# need to be deformed:
+
+playgltf(gltf1, start = 0, stop = 3, method = "rigid")
+
+# This example is too slow using anything but "rigid", but it's fine there:
+
+samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
+gltf2 <- readGLB(paste0(samples, "/BrainStem/glTF-Binary/BrainStem.glb?raw=true"))
+playgltf(gltf2, start = 0, stop = 2, speed = 0.25, method = "rigid")
+}
 }
