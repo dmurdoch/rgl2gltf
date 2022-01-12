@@ -13,7 +13,7 @@
     <loc>https://dmurdoch.github.io/rgl2gltf/index.html</loc>
   </url>
   <url>
-    <loc>https://dmurdoch.github.io/rgl2gltf/reference/Buffer.html</loc>
+    <loc>https://dmurdoch.github.io/rgl2gltf/news/index.html</loc>
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/Gltf.html</loc>
@@ -35,6 +35,12 @@
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/matrixSequence.html</loc>
+  </url>
+  <url>
+    <loc>https://dmurdoch.github.io/rgl2gltf/reference/playgltf.html</loc>
   </url>
   <url>
     <loc>https://dmurdoch.github.io/rgl2gltf/reference/readGLB.html</loc>

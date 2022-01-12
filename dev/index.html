@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.6</span>
       </span>
     </div>
 
@@ -55,6 +55,9 @@
       <a href="articles/shininess.html">Shininess in OpenGL 1 versus glTF PBR</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -79,8 +82,8 @@
 <div class="section level1">
 <div class="page-header"><h1 id="rgl2gltf-read-and-write-gltf-and-glb-files">rgl2gltf: Read and write .gltf and .glb files<a class="anchor" aria-label="anchor" href="#rgl2gltf-read-and-write-gltf-and-glb-files"></a>
 </h1></div>
-<p>This package contains functions to read, write and display <code>.gltf</code> and <code>.glb</code> files containing 3D models, following the <a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html" class="external-link">official spec at khronos.org</a> . It also contains functions to convert <code>rgl</code> <code>mesh3d</code> objects and scenes to and from glTF objects.</p>
-<p>It is currently in early development. Please add issues or pull requests if something important to you is missing.</p>
+<p>This R package contains functions to read, write and display <code>.gltf</code> and <code>.glb</code> files containing 3D models, following the <a href="https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html" class="external-link">official spec at khronos.org</a> . It also contains functions to convert <code>rgl</code> <code>mesh3d</code> objects and scenes to and from glTF objects.</p>
+<p>It is currently in active development. Please add issues or pull requests if something important to you is missing.</p>
 <p>A <code>pkgdown</code> website is here: <a href="https://dmurdoch.github.io/rgl2gltf/dev" class="uri">https://dmurdoch.github.io/rgl2gltf/dev</a></p>
 <p>To install, run</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -98,6 +101,27 @@
 <span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/shade3d.html" class="external-link">shade3d</a></span><span class="op">(</span><span class="va">mesh</span><span class="op">)</span>
 <span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/snapshot.html" class="external-link">snapshot3d</a></span><span class="op">(</span>webshot <span class="op">=</span> <span class="cn">FALSE</span>, filename <span class="op">=</span> <span class="st">"man/figures/engine.png"</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/engine.png"></p>
+<div class="section level2">
+<h2 id="copyright">Copyright<a class="anchor" aria-label="anchor" href="#copyright"></a>
+</h2>
+<p>Most of this package is written by Duncan Murdoch and licensed under GPL 2.0. Sample files in <code>inst/glb</code> and <code>inst/localtests</code> are unmodified copies of files from <a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0" class="external-link uri">https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0</a>, and have details of copyright and licenses listed there. All have permissive licenses, some requiring acknowledgment.</p>
+<p>Files in <code>inst/localtests</code> are in the Github repository, but are not included in the package tarball.</p>
+<p>Briefly,</p>
+<ul>
+<li>
+<code>2CylinderEngine.glb</code> was produced by Okino Computer Graphics.</li>
+<li>
+<code>Avocado.glb</code> was produced by Microsoft.</li>
+<li>
+<code>BarramundiFish.glb</code> was produced by Microsoft.</li>
+<li>
+<code>BoxAnimated.glb</code> was produced by Cesium.</li>
+<li>
+<code>BrainStem.glb</code> was created by Keith Hunter and is owned by Smith Micro Software, Inc. </li>
+<li>
+<code>NormalTangentTest.glb</code> was created by Ed Mackey and is owned by Analytical Graphics, Inc., licensed under CC-BY 4.0 <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link uri">https://creativecommons.org/licenses/by/4.0/</a>.</li>
+</ul>
+</div>
 </div>
   </div>
 
@@ -117,6 +141,13 @@
 </ul>
 </div>
 
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing rgl2gltf</a></li>
+</ul>
+</div>
 
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
@@ -139,7 +170,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
