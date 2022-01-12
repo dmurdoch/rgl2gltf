@@ -219,7 +219,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
                                            forward, backward)
             useSubscene3d(subids[j])
             par3d(userMatrix = transform,
-                listeners = nodeid)
+                listeners = root)
             newobj$indices <- prim$indices_split[[j]]
             newobj$material$tag <- tags[j]
             newid <- plot3d(cullVertices(newobj), add = TRUE)
