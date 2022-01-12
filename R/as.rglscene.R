@@ -20,7 +20,7 @@ newObj <- function(xyz, material = NULL, normals = NULL,
   result
 }
 
-primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL) {
+primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL, doTransform = TRUE) {
   class(prim) <- "gltfPrimitive"
 
   if (!is.null(prim$targets)) {
@@ -59,7 +59,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL)
     indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
   }
 
-  if (!is.null(joints) && !is.null(skinnum)) {
+  if (doTransform && !is.null(joints) && !is.null(skinnum)) {
     skin <- gltf$getSkin(skinnum)
     jnt <- unique(as.numeric(joints))
 
@@ -75,13 +75,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL)
     for (i in seq_len(nrow(bothfirst))) {
       joint <- bothfirst[i, 1:nj]
       wt <- bothfirst[i, nj + 1:nj]
-      wt <- wt/sum(wt)
-      transform <- matrix(0, 4,4)
-      for (j in seq_along(joint)) {
-        if (wt[j] == 0) next
-        n <- gltf$getJoint(skin, joint[j])
-        transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
-      }
+      transform <- weightedTransform(joint, wt, forward, backward)
       sel <- apply(both, 1, function(row) all(row == bothfirst[i,]))
       positions[sel,] <- asEuclidean(asHomogeneous(positions[sel,,drop = FALSE]) %*% t(transform))
 
@@ -267,8 +261,10 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     mesh <- gltf$getMesh(m)
     result <- vector("list", length(mesh$primitives))
     for (p in seq_along(mesh$primitives)) {
-      result[[p]] <- processPrimitive(mesh$primitives[[p]], skin)
-      result[[p]]$material$tag <- paste(m, p, sep = ":")
+      tag <- paste(m, p, sep = ":")
+      prim <- mesh$primitives[[p]]
+      result[[p]] <- processPrimitive(prim, skin)
+      result[[p]]$material$tag <- tag
     }
     result
   }

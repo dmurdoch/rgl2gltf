@@ -1,4 +1,4 @@
-showNodes <- function(gltf, animation = 0, start = times[1], stop = times[2], times = gltf$timerange(animation)) {
+showNodes <- function(gltf, animation = 0, start = times[1], stop = times[2], times = gltf$timerange(animation), speed = 1, by = NULL) {
   gltf <- gltf$clone()
   gltf$settime(start)
   s <- as.rglscene(gltf)
@@ -17,12 +17,22 @@ showNodes <- function(gltf, animation = 0, start = times[1], stop = times[2], ti
     if (!(i %in% subscenes))
       pop3d(id = i)
   }
+
   clockstart <- Sys.time()
+  duration <- as.difftime(stop - start, units = "secs")
+  time <- start
   repeat {
-    time <- unclass(Sys.time() - clockstart + start)
-    if (time > stop)
+    if (is.null(by))
+      time <- (Sys.time() - clockstart)*speed
+    else
+      time <- time + by
+    if (time > duration)
       break
-    gltf$settime(time)
+
+    time <- as.numeric(time, units = "secs") + start
+
+    gltf$settime(time, animation)
+
     for (i in seq_along(subscenes)) {
       node <- as.numeric(sub("subscene", "", subnm[i]))
       par3d(userMatrix = gltf$getTransform(node),

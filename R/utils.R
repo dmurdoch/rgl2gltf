@@ -213,3 +213,74 @@ findSubscenes <- function(s, id) {
   addSubscenes(s$rootSubscene, numeric(0), diag(4))
   result
 }
+
+weightedTransform <- function(joint, weight, forward, backward){
+  wt <- weight/sum(weight)
+  transform <- matrix(0, 4,4)
+  for (j in seq_along(joint)) {
+    if (wt[j] == 0) next
+    transform <- transform + wt[j] * forward[,,joint[j] + 1] %*% backward[,,joint[j]+1]
+  }
+  transform
+}
+
+# Get the sequence of userMatrix transformations applying
+# to a particular tag
+
+# The same tag may appear in more than one place, so this
+# needs to be a list.
+
+matrixSequence <- function(tag, scene = scene3d()) {
+  # First, find the id(s) for that tag
+  ids <- integer()
+  objs <- scene$objects
+  for (i in seq_along(objs)) {
+    if (!is.null(thistag <- objs[[i]]$material$tag) &&
+        tag == thistag)
+      ids <- c(ids, objs[[i]]$id)
+  }
+  # Now walk through the subscenes
+  recurse <- function(sub) {
+    result <- list()
+    children <- sub$subscenes
+    for (i in seq_along(children)) {
+      downstream <- recurse(children[[i]])
+      result <- c(result, downstream)
+    }
+    # Add records if any ids are here
+    hits <- intersect(sub$objects, ids)
+    for (i in seq_along(hits)) {
+      obj <- scene$objects[[as.character(hits[i])]]
+      here <- list(id = hits[i],
+                   vertices = obj$vertices,
+                   indices = obj$indices)
+      result <- c(result, list(here))
+    }
+    # Add this subscene's info to results
+    for (i in seq_along(result)) {
+      result[[i]]$userMatrix <- c(list(sub$par3d$userMatrix), result[[i]]$userMatrix)
+      names(result[[i]]$userMatrix)[1] <- sub$id
+    }
+    result
+  }
+  structure(recurse(scene$rootSubscene),
+            class = "matrixSequence")
+}
+
+print.matrixSequence <- function(x, n = 5, ...) {
+  for (i in seq_along(x)) {
+    cat("Id: ", x[[i]]$id, ":", paste(head(x[[i]]$indices, n), collapse = ", "), ", ...\n")
+    print(round(head(x[[i]]$vertices, n), 3))
+    userMatrix <- x[[i]]$userMatrix
+    for (j in seq_along(userMatrix)) {
+      cat("Matrix ", names(userMatrix)[j], ":\n")
+      print(round(userMatrix[[j]], 3))
+    }
+    cat("Transformed:\n")
+    vertices <- rbind(t(x[[i]]$vertices), 1)
+    for (j in rev(seq_along(userMatrix)))
+      vertices <- userMatrix[[j]] %*% vertices
+    vertices <- t(rgl::asEuclidean2(vertices))
+    print(round(head(vertices, n), 3))
+  }
+}
