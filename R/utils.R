@@ -175,6 +175,21 @@ quaternionAxis <- function(q) {
   else q[1:3]/len
 }
 
+getObjBBox <- function(obj) {
+  bbox <- NULL
+  if (!is.null(obj$vertices)) {
+    vertices <- obj$vertices
+    vertices <- vertices[complete.cases(obj$vertices),,drop = FALSE]
+    if (nrow(vertices))
+      bbox <- as.numeric(apply(vertices, 2, range))
+  }
+}
+
+bboxRadius <- function(bbox, scale) {
+  diag <- (bbox[c(2,4,6)] - bbox[c(1,3,5)])*scale/2
+  sqrt(sum(diag^2))
+}
+
 transformBBox <- function(transform, bbox) {
   if (is.null(bbox) || !all(is.finite(bbox)))
     return(bbox)

@@ -1,7 +1,7 @@
-newObj <- function(xyz, material = NULL, normals = NULL,
+newObj <- function(xyz = NULL, material = NULL, normals = NULL,
                    texcoords = NULL,
                    type, attribs = NULL,
-                   indices = indices,
+                   indices = NULL,
                    id = NULL) {
 
   result <- list(id=id, type=type)
@@ -12,6 +12,8 @@ newObj <- function(xyz, material = NULL, normals = NULL,
   result$vertices <- xyz
   result$normals <- normals
   result$texcoords <- texcoords
+  if (!is.null(indices))
+    indices <- matrix(indices, ncol = 1, dimnames = list(NULL, "vertex"))
   result$indices <- indices
 
   result <- c(result, attribs)
@@ -141,7 +143,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                                 indices[-c(1,2)]),
                                 material = mat))
   if (!is.null(id))
-    result$id <- id
+    result$id <- as.numeric(id)
   result
 }
 
@@ -187,11 +189,11 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     lastid <<- lastid + 1L
     if (!is.null(oldid))
       saveTranslation(oldid, lastid)
-    lastid
+    as.numeric(lastid)
   }
 
   newSubscene <- function(id, root = FALSE) {
-    result <- structure(list(id = id,
+    result <- structure(list(id = as.numeric(id),
                              type = "subscene",
                              par3d = list(bbox = c(Inf, -Inf, Inf, -Inf, Inf, -Inf),
                                           userMatrix = diag(4))),
@@ -221,18 +223,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     }
     if (newobj$type == "subscene") {
       subscenes <- c(parent$subscenes, list(newobj))
-      names(subscenes)[length(subscenes)] <- newobj$id
+      # names(subscenes)[length(subscenes)] <- newobj$id
       parent$subscenes <- subscenes
       newbbox <- newobj$par3d$bbox
     } else {
-      parent$objects <- union(parent$objects, newobj$id)
-      newbbox <- NULL
-      if (!is.null(newobj$vertices)) {
-        vertices <- newobj$vertices
-        vertices <- vertices[complete.cases(newobj$vertices),,drop = FALSE]
-        if (nrow(vertices))
-          newbbox <- as.numeric(apply(vertices, 2, range))
-      }
+      parent$objects <- as.numeric(union(parent$objects, newobj$id))
+      newbbox <- getObjBBox(newobj)
       objects <- c(rglscene$objects, list(newobj))
       names(objects)[length(objects)] <- newobj$id
       rglscene$objects <<- objects
@@ -479,4 +475,144 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   rglscene$material <- defaultmaterial
 
   structure(rglscene, class = "rglscene")
+}
+
+colorsMatch <- function(c1, c2) {
+    length(c1) == length(c2) &&
+    !inherits(c1 <- try(col2rgb(c1), silent = TRUE), "try-error") &&
+    !inherits(c2 <- try(col2rgb(c2), silent = TRUE), "try-error") &&
+    isTRUE(all(c1 == c2))
+}
+
+setSceneDefaults <- function(s) {
+  updateFrom <- function(old, new) {
+    old[names(new)] <- new
+    class(old) <- class(new)
+    old
+  }
+
+  setpar3dDefaults <- function(sub) {
+    for (i in seq_along(sub$subscenes))
+      sub$subscenes[[i]] <- setpar3dDefaults(sub$subscenes[[i]])
+
+    def <- list(userMatrix = diag(4),
+                userProjection = diag(4),
+                # antialias = 8,
+                FOV = 30,
+                # ignoreExtent = FALSE,
+                mouseMode = c(none = "none",
+                              left = "trackball",
+                              right = "zoom",
+                              middle = "fov",
+                              wheel = "pull"),
+                # skipRedraw = FALSE,
+                # viewport = c(x=0, y=0, width=512, height = 512),
+                # listeners = sub$id,
+                scale = c(1,1,1),
+                zoom = 1)
+
+    sub$par3d <- updateFrom(def, sub$par3d)
+
+    if (!is.null(sub$par3d$windowRect))
+      names(sub$par3d$windowRect) <- NULL
+
+    if (is.null(sub$objects))
+      sub$objects <- integer()
+
+    if (is.null(sub$par3d$observer))
+      sub$par3d$observer <- c(0, 0, bboxRadius(sub$par3d$bbox, sub$par3d$scale)/sin(sub$par3d$FOV*pi/180))
+
+    sub
+  }
+
+  setObjDefaults <- function(obj) {
+    margin <- obj$material$margin
+    if (is.character(margin) && margin == "")
+      obj$material$margin <- NULL
+    # clear out values that match defaults
+    for (n in names(obj$material)) {
+      if (identical(obj$material[[n]], mat[[n]]) ||
+          colorsMatch(obj$material[[n]], mat[[n]]))
+        obj$material[[n]] <- NULL
+    }
+    objcolor <- obj$material$color
+    objalpha <- obj$material$alpha
+    if (is.null(objalpha))
+      objalpha <- mat$alpha
+    if (!is.null(objcolor)) {
+      colors <- cbind(t(col2rgb(objcolor)/255), objalpha)
+      colnames(colors) <- c("r", "g", "b", "a")
+    }
+    if (is.null(obj$centers) &&
+        !is.null(obj$vertices)) {
+      # need centers for transparent objects
+      nper <- switch(obj$type,
+          triangles = c(3, 3),
+          quads = c(4, 4),
+          lines = c(2, 2),
+          linestrip = c(2, 1),
+          c(1,1))
+      vertices <- obj$vertices
+      if (!is.null(obj$indices))
+        vertices <- vertices[obj$indices,]
+      centers <- matrix(NA_real_, nrow(vertices)/nper[2],3)
+      i <- 0
+      j <- 0
+      while (i <= nrow(vertices) - nper[1]) {
+        j <- j + 1
+        centers[j,] <- colMeans(vertices[i + 1:nper[1],,drop = FALSE ])
+        i <- i + nper[2]
+      }
+      colnames(centers) <- c("x", "y", "z")
+      obj$centers <- centers[seq_len(j),]
+    }
+    def <- list(
+      colors = colors,
+      ignoreExtent = FALSE
+    )
+    obj <- updateFrom(def, obj)
+    obj
+  }
+
+  mat <- as.list(args(rgl.material))
+  mat[[length(mat)]] <- NULL
+  mat[["..."]] <- NULL
+  mat$isTransparent <- FALSE
+  mat$polygon_offset <- eval(mat$polygon_offset)
+  mat <- updateFrom(mat, getr3dDefaults("material"))
+  #if (!is.null(mat$margin) && mat$margin < 0)
+  #  mat$margin <- NULL
+  colors <- cbind(t(col2rgb(mat$color[1])/255), mat$alpha)
+  colnames(colors) <- c("r", "g", "b", "a")
+  mat <- updateFrom(mat, s$material)
+  s$material <- mat
+  s$rootSubscene <- setpar3dDefaults(s$rootSubscene)
+  hasBackground <- FALSE
+  maxID <- -1
+  for (i in seq_along(s$objects)) {
+    s$objects[[i]] <- setObjDefaults(s$objects[[i]])
+    if (s$objects[[i]]$type == "background")
+      hasBackground <- TRUE
+    maxID <- max(maxID, s$objects[[i]]$id)
+  }
+  if (!hasBackground) {
+    bg <- as.list(args(rgl.bg))
+    bg[[length(bg)]] <- NULL
+    bg[["..."]] <- NULL
+    bg <- updateFrom(bg, getr3dDefaults("bg"))
+    obj <- structure(newObj(id = maxID + 1,
+                             type = "background",
+                             attribs = list(
+                               fogtype = bg$fogtype,
+                               sphere = bg$sphere),
+                             material = list(
+                               color = bg$color,
+                               back = bg$back,
+                               fogScale = bg$fogScale)),
+                             class = c("rglbackground", "rglobject"))
+    obj <- setObjDefaults(obj)
+    s$objects[[as.character(obj$id)]] <- obj
+    s$rootSubscene$objects <- c(s$rootSubscene$objects, obj$id)
+  }
+  s
 }

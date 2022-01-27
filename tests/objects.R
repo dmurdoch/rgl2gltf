@@ -26,3 +26,27 @@ s1 <- as.rglscene(g)
 plot3d(s1)
 s2 <- as.rglscene(g, useRGLinfo = FALSE)
 plot3d(s2)
+s1 <- scene3d()
+w1 <- rglwidget(s1)
+s3 <- setSceneDefaults(s2)
+w3 <- rglwidget(s3)
+w3
+
+plot3d(s3)
+s4 <- scene3d()
+w4 <- rglwidget(s4)
+
+class(s3$objects) <- "rgllist"
+class(s4$objects) <- "rgllist"
+
+library(waldo)
+
+compare_proxy.rgllist <- function(x, path = "x") {
+  names(x) <- NULL; list(object=x, path=path)}
+
+compare_proxy.rglobject <- function(x, path = "x") {x$id <- NULL; list(object=x, path=path)}
+
+class(s3) <- NULL
+class(s4) <- NULL
+
+waldo::compare(s4, s3, list_as_map = TRUE, tolerance = 1e-7)
