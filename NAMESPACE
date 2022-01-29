@@ -1,5 +1,4 @@
 export(Gltf, extractTexture, gltfwidget, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
-       setSceneDefaults,
        showNodes,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findName,
        matrixSequence)
@@ -7,7 +6,7 @@ export(Gltf, extractTexture, gltfwidget, readglTF, readGLB, as.gltf, as.mesh3d, 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "%>%", "as.rglscene", "addToSubscene3d",
            "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
-           "as.tmesh3d",
+           "as.tmesh3d", "close3d",
            "cube3d", "currentSubscene3d",
            "delFromSubscene3d", "getr3dDefaults",
            "as.mesh3d", "material3d", "mesh3d",
