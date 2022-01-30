@@ -165,14 +165,24 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   if (!is.null(time))
     gltf$settime(time)
 
-  saveTranslation <- function(oldid, newid) {
-    idTranslations[nrow(idTranslations) + 1,] <<- c(oldid, newid)
+  saveTranslation <- function(from, to) {
+    if (from %in% idTranslations[, 1])
+      stop("internal error saving from=", from, " to=", to)
+    idTranslations[nrow(idTranslations) + 1,] <<- c(from, to)
   }
 
-  applyidTranslations <- function(sub) {
-    if (!is.null(idTranslations))
-      sub$par3d$listeners <- with(idTranslations,
-                                  newid[match(sub$par3d$listeners, oldid)])
+  applyidTranslations <- function(sub, translations = idTranslations) {
+    if (!is.null(translations))
+      sub$par3d$listeners <- with(translations,
+                                  to[match(sub$par3d$listeners, from)])
+    sub
+  }
+
+  applyAllidTranslations <- function(sub, translations = idTranslations) {
+    sub <- applyidTranslations(sub, translations)
+    sub$id <- with(translations, to[match(sub$id, from)])
+    for (i in seq_along(sub$subscenes))
+      sub$subscenes[[i]] <- applyAllidTranslations(sub$subscenes[[i]], translations)
     sub
   }
 
@@ -188,7 +198,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   getId <- function(oldid = NULL) {
     lastid <<- lastid + 1L
-    if (!is.null(oldid))
+    if (!is.null(oldid) && !(oldid %in% idTranslations$from))
       saveTranslation(oldid, lastid)
     as.numeric(lastid)
   }
@@ -452,7 +462,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   nodes <- unlist(sc$nodes)
 
-  idTranslations <- data.frame(oldid = numeric(), newid = numeric())  # translations of id values
+  idTranslations <- data.frame(from = numeric(), to = numeric())  # translations of id values
 
   if (length(nodes) > 1) {
     rootSubscene <- newSubscene(getId(), root = TRUE)
@@ -487,6 +497,8 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     close3d()
     oldids <- getSubsceneIds(rglscene$rootSubscene)
     newids <- getSubsceneIds(newscene$rootSubscene)
+    newscene$rootSubscene <- applyAllidTranslations(newscene$rootSubscene,
+                                                    data.frame(from = newids, to = oldids))
     rglscene <- newscene
   }
 
