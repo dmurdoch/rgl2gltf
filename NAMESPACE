@@ -1,7 +1,7 @@
-export(Gltf, extractTexture, gltfwidget, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
+export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showNodes,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findName,
-       matrixSequence)
+       matrixSequence, animationControl, gltfWidget)
 
 importFrom("jsonlite", "read_json")
 importFrom("rgl", "%>%", "as.rglscene", "addToSubscene3d",
@@ -9,7 +9,8 @@ importFrom("rgl", "%>%", "as.rglscene", "addToSubscene3d",
            "as.tmesh3d", "close3d",
            "cube3d", "currentSubscene3d",
            "delFromSubscene3d", "getr3dDefaults",
-           "as.mesh3d", "material3d", "mesh3d",
+           "as.mesh3d",
+           "makeDependency", "material3d", "mesh3d",
            "newSubscene3d", "open3d",
            "par3d", "par3dinterp", "par3dinterpControl",
            "playwidget",
