@@ -284,3 +284,33 @@ print.matrixSequence <- function(x, n = 5, ...) {
     print(round(head(vertices, n), 3))
   }
 }
+
+# Restoring from JSON turns some vectors and matrices
+# into lists; these functions restore them.
+
+fixVector <- function(v) {
+  if (!is.null(v))
+    unlist(v)
+}
+
+fixMatrix <- function(m) {
+  if (is.list(m) && is.list(m[[1]]))
+    matrix(unlist(m), length(m), length(m[[1]]), byrow = TRUE)
+  else
+    m
+}
+
+fixList <- function(l, vectors = NULL, matrices = NULL, nulls = NULL) {
+  if (!is.null(l)) {
+    for (n in vectors)
+      if (!is.null(l[[n]]))
+        l[[n]] <- fixVector(l[[n]])
+    for (n in matrices)
+      if (!is.null(l[[n]]))
+        l[[n]] <- fixMatrix(l[[n]])
+    for (n in nulls)
+      if (!is.null(l[[n]]) && !length(l[[n]]))
+          l[[n]] <- NULL
+  }
+  l
+}
