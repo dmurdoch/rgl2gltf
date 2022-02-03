@@ -290,7 +290,8 @@ as.gltf.rglsubscene <- function(x, previous = Gltf$new(), rglscene = list(), par
     transform <- transform %*% scaleMatrix(scale[1], scale[2], scale[3])
   else
     scale <- c(1,1,1)
-
+  subscenes <- x$subscenes
+  x$subscenes <- NULL
   previous <- as.gltf.default(vertices = NULL,
                   transform = transform,
                   previous = previous,
@@ -305,8 +306,8 @@ as.gltf.rglsubscene <- function(x, previous = Gltf$new(), rglscene = list(), par
                         parentNode = thisNode,
                         scale = scale)
   }
-  for (i in seq_along(x$subscenes)) {
-    previous <- as.gltf(x$subscenes[[i]],
+  for (i in seq_along(subscenes)) {
+    previous <- as.gltf(subscenes[[i]],
                         previous = previous,
                         rglscene = rglscene,
                         parentNode = thisNode)

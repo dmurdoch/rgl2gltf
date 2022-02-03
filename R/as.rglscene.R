@@ -324,6 +324,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
         vectors = c("mouseMode", "observer",
                     "scale", "viewport",
                     "bbox", "windowRect"),
+        vNames = par3dNames,
         matrices = c("modelMatrix", "projMatrix",
                     "userMatrix", "userProjection"))
       obj$material <- fixList(obj$material,
@@ -338,10 +339,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                                  "offsets", "family",
                                  "font", "pos",
                                  "fogscale", "indices"),
+                     vNames = attribVNames,
                      matrices = c("centers", "colors",
                                   "vertices", "normals",
                                   "texcoords", "dim",
-                                  "adj", "usermatrix", "axes"))
+                                  "adj", "usermatrix", "axes"),
+                     colNames = attribColNames,
+                     rowNames = attribRowNames)
       class(obj) <- c(obj$class1, obj$class2)
       obj$class1 <- obj$class2 <- NULL
     }

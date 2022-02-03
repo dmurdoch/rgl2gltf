@@ -7,6 +7,8 @@ if (require(misc3d)) {
   library(rgl)
   library(rgl2gltf)
 
+  mfrow3d(2,1)
+
   nmix3 <- function(x, y, z, m, s) {
     0.4 * dnorm(x, m, s) * dnorm(y, m, s) * dnorm(z, m, s) +
       0.3 * dnorm(x, -m, s) * dnorm(y, -m, s) * dnorm(z, -m, s) +
@@ -22,7 +24,8 @@ if (require(misc3d)) {
     rgl::bg3d(col="white")
   }
   g(40,5)
-
+  next3d()
+  g(40,4)
   s <- scene3d()
   gltf <- as.gltf(s)
   f <- tempfile(fileext = ".glb")
