@@ -39,6 +39,7 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
     change = obj.change.translation;
     if (typeof change !== "undefined")
       M.translate(change[0], change[1], change[2]);
+
     obj.par3d.userMatrix = M;
   }
 
@@ -47,9 +48,21 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
 rglwidgetClass.prototype.rgl2gltfWeighted = function(el, control) {
   var sub = this.getObj(control.subid),
     result = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0], M, i, j, node;
+  if (typeof control.initialized === "undefined") {
+    control.weights = [].concat(control.weights);
+    control.nodes   = [].concat(control.nodes);
+    for (i = 0; i < control.weights.length; i++) {
+      M = new CanvasMatrix4();
+      M.load(control.backtransform[i]);
+      control.backtransform[i] = M;
+    }
+    control.initialized = true;
+  }
   for (i = 0; i < control.weights.length; i++) {
     node = this.getObj(control.nodes[i]);
-    M = node.par3d.userMatrix.getAsArray();
+    M = new CanvasMatrix4(node.forward);
+    M.multLeft(control.backtransform[i]);
+    M = M.getAsArray();
     for (j = 0; j < 16; j++)
       result[j] += control.weights[i]*M[j];
   }
@@ -61,7 +74,7 @@ rglwidgetClass.prototype.rgl2gltfSkeleton = function(el, control) {
       recurse = function(subid, transform) {
         var obj = self.getObj(subid), i;
         obj.forward = new CanvasMatrix4(transform);
-        obj.forward.multRight(obj.par3d.userMatrix);
+        obj.forward.multLeft(obj.par3d.userMatrix);
         for (i = 0; i < obj.subscenes.length; i++) {
           recurse(obj.subscenes[i], obj.forward);
         }

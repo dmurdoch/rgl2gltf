@@ -217,6 +217,12 @@ playgltf <- function(gltf, animation = 0, start = times[1],
                                        parent = nodeid)
             transform <- weightedTransform(joints, weights[j,],
                                            forward, backward)
+            # if (!is.na(w <- match(subids[j], toWatch$rgl))) {
+            #   cat("weighted userMatrix of ", paste(toWatch[w,], sep = ":"), "\n")
+            #   print(transform)
+            #   weightedTransform(joints, weights[j,],
+            #                     forward, backward, show=TRUE)
+            # }
             useSubscene3d(subids[j])
             par3d(userMatrix = transform,
                 listeners = root)

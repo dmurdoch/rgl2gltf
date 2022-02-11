@@ -136,9 +136,6 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   names(subscene) <- NULL
   translations <- data.frame(node, subscene)
 
-  save <- par3d(skipRedraw = TRUE)
-  on.exit(par3d(save), add = TRUE)
-
   if (method != "rigid")
     stop("only rigid method is supported")
 
@@ -178,8 +175,6 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   # under its original one.  Each one will hold a rigid
   # part of the primitive
 
-  #wrappers <- vector("list", length(containingNodes))
-  #names(wrappers) <- allNames <- names(containingNodes)
   skeleton <- -1
   for (tag in allNames) {
     nodes <- containingNodes[[tag]]
@@ -223,40 +218,24 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                                      viewport = "inherit",
                                      projection = "inherit",
                                      parent = nodeid)
-          # transform <- weightedTransform(joints, weights[j,],
-          #                                forward, backward)
-          # useSubscene3d(subids[j])
-          # par3d(userMatrix = transform,
-          #       listeners = root)
+
           newobj$indices <- prim$indices_split[[j]]
           newobj$material$tag <- tags[j]
           newid <- plot3d(cullVertices(newobj), add = TRUE)
           keepjoints <- which(weights[j,] > 0)
-          controls <- c(controls, list(weightedControl(subids[j], jointnodes[keepjoints], weights[j, keepjoints], translations, backward[,,keepjoints, drop = FALSE])))
+          controls <- c(controls, list(weightedControl(subids[j], jointnodes[keepjoints], weights[j, keepjoints], translations, backward[,,joints[keepjoints]+1, drop = FALSE])))
         }
         pop3d(id = id)
       }
     }
-    #wrappers[[tag]] <- subids
   }
 
-  # for (o in allNames) {
-  #   cat("object ", o, "\n")
-  #   getMatrices(containingNodes[[o]][1])
-  #   prim <- getPrim(gltf, o)
-  #   weights <- prim$unique_weights
-  #   # The colnames are indices into the skin$joints vector
-  #   # First, the index
-  #   joints <- as.numeric(colnames(weights))
-  #   # Second, the node
-  #   skin <- gltf$getSkin(node$skin)
-  #   jointnodes <- unlist(skin$joints[joints + 1])
-  #   for (i in seq_along(wrappers[[o]])) {
-  #     keepjoints <- which(weights[i,] > 0)
-  #     controls <- c(controls, list(skinControl()))
-  #   }
-  # }
-
   widget <- rglwidget()
-  widget %>% playwidget(controls, start = start, stop = stop,                         interval = (stop - start)/100)
+  interval <- 1/20
+  widget %>%
+    playwidget(controls,
+               start = start,
+               stop = stop,
+               interval = interval,
+               step = interval)
 }
