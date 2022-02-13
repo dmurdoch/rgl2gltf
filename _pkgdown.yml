@@ -26,7 +26,9 @@ reference:
 - contents:
   - extractTexture
   - findName
+  - matrixSequence
   - showtree
+  - playgltf
   - plot3d
 - title: R6 classes used for internal storage
 - contents:

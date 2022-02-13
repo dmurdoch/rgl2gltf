@@ -14,7 +14,8 @@ URL: https://github.com/dmurdoch/rgl2gltf
 BugReports: https://github.com/dmurdoch/rgl2gltf/issues
 Suggests: 
     rmarkdown,
-    knitr
+    knitr,
+    misc3d
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)

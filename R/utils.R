@@ -299,3 +299,61 @@ print.matrixSequence <- function(x, n = 5, ...) {
     print(round(head(vertices, n), 3))
   }
 }
+
+# Restoring from JSON turns some vectors and matrices
+# into lists; these functions restore them.
+
+fixVector <- function(v, vNames) {
+  if (!is.null(v)) {
+    v <- unlist(v)
+    if (is.null(names(v)))
+      names(v) <- vNames
+  }
+  v
+}
+
+fixMatrix <- function(m, rowNames, colNames) {
+  if (is.list(m) && is.list(m[[1]])) {
+    m <- matrix(unlist(m), length(m), length(m[[1]]), byrow = TRUE)
+    if (is.null(dimnames(m)))
+      dimnames(m) <- list(rowNames, colNames)
+  }
+  m
+}
+
+par3dNames <- list(
+  viewport = c("x", "y", "width", "height"),
+  mouseMode = c("none", "left", "right", "middle", "wheel")
+)
+xyzNames <- c("x", "y", "z")
+attribVNames <- list(
+  embeddings = c("viewport", "projection", "model", "mouse")
+)
+attribColNames <- list(
+  vertices = xyzNames,
+  normals = xyzNames,
+  colors = c("r", "g", "b", "a"),
+  texcoords = c("s", "t"),
+  dim = c("r", "c"),
+  adj = xyzNames,
+  centers = xyzNames,
+  usermatrix = c("x", "y", "z", "w"),
+  axes = xyzNames)
+attribRowNames <- list(
+  axes = c("mode", "step", "nticks", "marklen", "expand")
+)
+
+fixList <- function(l, vectors = NULL, matrices = NULL, nulls = NULL, vNames = list(), rowNames = list(), colNames = list()) {
+  if (!is.null(l)) {
+    for (n in vectors)
+      if (!is.null(l[[n]]))
+        l[[n]] <- fixVector(l[[n]], vNames[[n]])
+    for (n in matrices)
+      if (!is.null(l[[n]]))
+        l[[n]] <- fixMatrix(l[[n]], rowNames[[n]], colNames[[n]])
+    for (n in nulls)
+      if (!is.null(l[[n]]) && !length(l[[n]]))
+          l[[n]] <- NULL
+  }
+  l
+}

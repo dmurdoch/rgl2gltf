@@ -321,8 +321,34 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   # rgl2gltf ignores those, but other software (e.g. blender)
   # could use it to approximate the special.
 
-  restoreRGLclass <- function(obj) {
+  restoreRGLobject <- function(obj) {
     if (!is.null(obj)) {
+      obj$par3d <- fixList(obj$par3d,
+        vectors = c("mouseMode", "observer",
+                    "scale", "viewport",
+                    "bbox", "windowRect"),
+        vNames = par3dNames,
+        matrices = c("modelMatrix", "projMatrix",
+                    "userMatrix", "userProjection"))
+      obj$material <- fixList(obj$material,
+        vectors = c("alpha", "color",  "polygon_offset"),
+        nulls = "texture")
+
+      obj <- fixList(obj,
+                     vectors = c("embeddings", "objects",
+                                 "texts", "cex",
+                                 "radii", "ids",
+                                 "types", "flags",
+                                 "offsets", "family",
+                                 "font", "pos",
+                                 "fogscale", "indices"),
+                     vNames = attribVNames,
+                     matrices = c("centers", "colors",
+                                  "vertices", "normals",
+                                  "texcoords", "dim",
+                                  "adj", "usermatrix", "axes"),
+                     colNames = attribColNames,
+                     rowNames = attribRowNames)
       class(obj) <- c(obj$class1, obj$class2)
       obj$class1 <- obj$class2 <- NULL
     }
@@ -331,7 +357,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   processSprites <- function(n) {
     node <- gltf$getNode(n)
-    main <- restoreRGLclass(node$extras$RGL_obj)
+    main <- restoreRGLobject(node$extras$RGL_obj)
     main$id <- getId(main$id)
     children <- node$children
     if (!is.null(children)) {
@@ -359,7 +385,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
         primobj <- primToRglobj(mesh$primitives[[1]], gltf$getTransform(n), gltf, defaultmaterial)
       }
     }
-    newobj <- restoreRGLclass(node$extras$RGL_obj)
+    newobj <- restoreRGLobject(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
     if (!is.null(primobj) && newobj$type != "bboxdeco") {
       newobj <- merge(newobj, primobj)
@@ -370,7 +396,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   processSubscene <- function(n) {
     node <- gltf$getNode(n)
-    newobj <- restoreRGLclass(node$extras$RGL_obj)
+    newobj <- restoreRGLobject(node$extras$RGL_obj)
     newobj$id <- getId(newobj$id)
     newobj
   }
@@ -458,7 +484,10 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   if (useRGLinfo &&
       !is.null(extras <- gltf$getExtras()) &&
       !is.null(extras$RGL_material))
-    defaultmaterial <- extras$RGL_material
+    defaultmaterial <- fixList(extras$RGL_material,
+                               vectors = c("alpha", "polygon_offset"),
+                               nulls = "texture")
+
 
   nodes <- unlist(sc$nodes)
 

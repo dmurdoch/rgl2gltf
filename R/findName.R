@@ -31,3 +31,33 @@ findName <- function(pattern, x, path = c()) {
     }
   result
 }
+
+# Find elements with a specific class in a recursive object
+
+findClass <- function(class, x, path = c()) {
+  toIndex <- function(s) {
+    if (nchar(s) &&
+        substr(s, 1, 1) %in% c(letters, LETTERS, ".", "_") &&
+        grepl("^[[:alnum:]_.]*$", s)) {
+      if (is.recursive(x))
+        paste0("$", s)
+      else
+        paste0("['", s, "']" )
+    } else
+      paste0("[['", s, "']]")
+  }
+  result <- list()
+  if (inherits(x, class)) {
+    result <- c(result, list(path))
+  }
+  if (is.recursive(x))
+    for (i in seq_along(x)) {
+      newpath <- c(path, i)
+      if (!is.null(names(x)))
+        names(newpath)[length(newpath)] <- toIndex(names(x)[i])
+      else
+        names(newpath)[length(newpath)] <- paste0("[[", i, "]]")
+      result <- c(result, findClass(class, x[[i]], newpath))
+    }
+  result
+}
