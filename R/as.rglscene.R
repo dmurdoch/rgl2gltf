@@ -1,7 +1,7 @@
-newObj <- function(xyz, material = NULL, normals = NULL,
+newObj <- function(xyz = NULL, material = NULL, normals = NULL,
                    texcoords = NULL,
                    type, attribs = NULL,
-                   indices = indices,
+                   indices = NULL,
                    id = NULL) {
 
   result <- list(id=id, type=type)
@@ -12,6 +12,8 @@ newObj <- function(xyz, material = NULL, normals = NULL,
   result$vertices <- xyz
   result$normals <- normals
   result$texcoords <- texcoords
+  if (!is.null(indices))
+    indices <- matrix(indices, ncol = 1, dimnames = list(NULL, "vertex"))
   result$indices <- indices
 
   result <- c(result, attribs)
@@ -141,14 +143,15 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                                 indices[-c(1,2)]),
                                 material = mat))
   if (!is.null(id))
-    result$id <- id
+    result$id <- as.numeric(id)
   result
 }
 
 as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE,
                              time = NULL,
-                             ani = 0, clone = TRUE, ...) {
+                             ani = 0, clone = TRUE,
+                             quick = FALSE, ...) {
 
   if (clone) {
     # We'll be caching various things, so make a
@@ -162,14 +165,24 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   if (!is.null(time))
     gltf$settime(time)
 
-  saveTranslation <- function(oldid, newid) {
-    idTranslations <<- c(idTranslations, newid)
-    names(idTranslations)[length(idTranslations)] <<- oldid
+  saveTranslation <- function(from, to) {
+    if (from %in% idTranslations[, 1])
+      stop("internal error saving from=", from, " to=", to)
+    idTranslations[nrow(idTranslations) + 1,] <<- c(from, to)
   }
 
-  applyidTranslations <- function(sub) {
-    if (!is.null(idTranslations))
-      sub$par3d$listeners <- as.integer(idTranslations[as.character(sub$par3d$listeners)])
+  applyidTranslations <- function(sub, translations = idTranslations) {
+    if (!is.null(translations))
+      sub$par3d$listeners <- with(translations,
+                                  to[match(sub$par3d$listeners, from)])
+    sub
+  }
+
+  applyAllidTranslations <- function(sub, translations = idTranslations) {
+    sub <- applyidTranslations(sub, translations)
+    sub$id <- with(translations, to[match(sub$id, from)])
+    for (i in seq_along(sub$subscenes))
+      sub$subscenes[[i]] <- applyAllidTranslations(sub$subscenes[[i]], translations)
     sub
   }
 
@@ -185,13 +198,13 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   getId <- function(oldid = NULL) {
     lastid <<- lastid + 1L
-    if (!is.null(oldid))
+    if (!is.null(oldid) && !(oldid %in% idTranslations$from))
       saveTranslation(oldid, lastid)
-    lastid
+    as.numeric(lastid)
   }
 
   newSubscene <- function(id, root = FALSE) {
-    result <- structure(list(id = id,
+    result <- structure(list(id = as.numeric(id),
                              type = "subscene",
                              par3d = list(bbox = c(Inf, -Inf, Inf, -Inf, Inf, -Inf),
                                           userMatrix = diag(4))),
@@ -221,22 +234,12 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     }
     if (newobj$type == "subscene") {
       subscenes <- c(parent$subscenes, list(newobj))
-      names(subscenes)[length(subscenes)] <- newobj$id
+      # names(subscenes)[length(subscenes)] <- newobj$id
       parent$subscenes <- subscenes
       newbbox <- newobj$par3d$bbox
     } else {
-      parent$objects <- union(parent$objects, newobj$id)
-      newbbox <- NULL
-      if (!is.null(newobj$vertices)) {
-        vertices <- newobj$vertices
-        if (is.character(vertices)) {
-          vertices <- suppressWarnings(as.numeric(vertices))
-          dim(vertices) <- dim(newobj$vertices)
-        }
-        vertices <- vertices[complete.cases(newobj$vertices),,drop = FALSE]
-        if (nrow(vertices))
-          newbbox <- as.numeric(apply(vertices, 2, range))
-      }
+      parent$objects <- as.numeric(union(parent$objects, newobj$id))
+      newbbox <- getObjBBox(newobj)
       objects <- c(rglscene$objects, list(newobj))
       names(objects)[length(objects)] <- newobj$id
       rglscene$objects <<- objects
@@ -488,7 +491,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   nodes <- unlist(sc$nodes)
 
-  idTranslations <- NULL  # translations of id values
+  idTranslations <- data.frame(from = numeric(), to = numeric())  # translations of id values
 
   if (length(nodes) > 1) {
     rootSubscene <- newSubscene(getId(), root = TRUE)
@@ -511,5 +514,28 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   rglscene$rootSubscene <- rootSubscene
   rglscene$material <- defaultmaterial
 
-  structure(rglscene, class = "rglscene")
+  class(rglscene) <- "rglscene"
+
+  # The calculations above are sufficient
+  # for plot3d(), but not sufficient for
+  # rglwidget().  If quick is TRUE, leave it
+  # at that.
+  if (!quick) {
+    plot3d(rglscene, useNULL = TRUE)
+    newscene <- scene3d()
+    close3d()
+    oldids <- getSubsceneIds(rglscene$rootSubscene)
+    newids <- getSubsceneIds(newscene$rootSubscene)
+    newscene$rootSubscene <- applyAllidTranslations(newscene$rootSubscene,
+                                                    data.frame(from = newids, to = oldids))
+    rglscene <- newscene
+  }
+
+  rglscene
+}
+
+getSubsceneIds <- function(sub) {
+  result <- c(sub$id,
+                 if (!is.null(sub$subscenes))
+                   unlist(lapply(sub$subscenes, getSubsceneIds)))
 }

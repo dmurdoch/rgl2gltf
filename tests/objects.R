@@ -26,3 +26,12 @@ s1 <- as.rglscene(g)
 plot3d(s1)
 s2 <- as.rglscene(g, useRGLinfo = FALSE)
 plot3d(s2)
+s1 <- scene3d()
+w1 <- rglwidget(s1)
+s3 <- s2
+w3 <- rglwidget(s3)
+w3
+
+plot3d(s3)
+s4 <- scene3d()
+w4 <- rglwidget(s4)

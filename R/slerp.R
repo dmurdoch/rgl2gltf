@@ -38,19 +38,23 @@ slerpfun <- function(x, q) {
     isna <- apply(cbind(p0, p1), 1, is.na)
     drop(isna)
     if (!length(j)) return(result)
-    # If the vals are constant, don't bother interpolating
-    const <- apply(p0 == p1, 1, all)
-    result[j[const], ] <- p0[const, ]
-    drop(const)
-    if (!length(j)) return(result)
 
     dot <- apply(p0*p1, 1, sum)
     neg <- dot < 0
     p1[neg, ] <- -p1[neg, ]
     dot[neg] <- -dot[neg]
+
+    # If the vals are constant, don't bother interpolating
+    const <- dot >= 1
+    result[j[const], ] <- p0[const, ]
+    drop(const)
+    if (!length(j)) return(result)
+
+    dot <- dot[!const]
     Omega <- acos(dot)
     t0 <- (t - x[i0])/(x[i1] - x[i0])
     result[j, ] <- (sin((1-t0)*Omega)*p0 + sin(t0*Omega)*p1)/sin(Omega)
+
     result
   }
 }

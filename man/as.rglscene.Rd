@@ -10,7 +10,8 @@ a \code{"rglscene"} object, similar to what \code{\link{scene3d}}
 would produce, or a \code{"mesh3d"} object.
 }
 \usage{
-\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE, ...)
+\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE,
+quick = FALSE, ...)
 \S3method{as.mesh3d}{gltf}(x, ...)
 }
 \arguments{
@@ -30,6 +31,9 @@ that information, otherwise include only what standard glTF viewers would displa
   \item{time}{Set the "time" within an animation.}
   \item{ani}{Animation number to use.}
   \item{clone}{Whether to clone the \code{gltf} object.  See the Details below.}
+  \item{quick}{If \code{TRUE}, \code{\link{plot3d}} will work
+  on the result, but it is not sufficiently complete to use
+  as the scene in \code{\link{rglwidget}}.}
   \item{...}{\code{as.mesh3d} passes these arguments to \code{as.rglscene}.}
 }
 \details{

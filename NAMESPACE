@@ -1,17 +1,21 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showNodes,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findName, findClass,
-       matrixSequence)
+       matrixSequence, gltfWidget)
 
 importFrom("jsonlite", "read_json")
-importFrom("rgl", "as.rglscene", "addToSubscene3d",
+importFrom("rgl", "%>%", "as.rglscene", "addToSubscene3d",
            "asEuclidean", "asEuclidean2", "asHomogeneous", "asHomogeneous2",
-           "as.tmesh3d",
+           "as.tmesh3d", "close3d",
            "cube3d", "currentSubscene3d",
            "delFromSubscene3d", "getr3dDefaults",
-           "as.mesh3d", "material3d", "mesh3d",
-           "newSubscene3d",
-           "par3d", "plot3d", "pop3d", "rgl.primitive",
+           "as.mesh3d",
+           "makeDependency", "material3d", "mesh3d",
+           "newSubscene3d", "open3d",
+           "par3d", "par3dinterp", "par3dinterpControl",
+           "playwidget",
+           "plot3d", "pop3d", "rgl.material", "rgl.primitive",
+           "rglwidget",
            "rotationMatrix", "scale3d", "scaleMatrix",
            "scene3d",
            "text3d", "tagged3d",
