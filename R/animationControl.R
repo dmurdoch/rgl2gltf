@@ -97,7 +97,9 @@ getChangeTimes <- function(joint, gltf, ani) {
 gltfWidget <- function(gltf, animation = 0, start = times[1],
                        stop = times[2], times = gltf$timerange(animation),
                        method = c("rigid"),
-                       speed = 1, by = NULL, verbose = FALSE, ...) {
+                       add = FALSE, close = !add,
+                       verbose = FALSE,
+                       open3dParams = getr3dDefaults(), ...) {
 
   backward <- NULL
   havenode <- -1
@@ -129,7 +131,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
 
-  ids <- plot3d(s, useNULL = TRUE, ...)
+  ids <- plot3d(s, useNULL = TRUE, add = add, silent = !verbose, params = open3dParams)
 
   subscene <- ids[grepl("subscene", names(ids))]
   node <- as.numeric(sub("subscene", "", names(subscene)))
@@ -229,13 +231,18 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
       }
     }
   }
-
+  gltf$closeBuffers()
   widget <- rglwidget()
+
+  if (close)
+    close3d()
+
   interval <- 1/20
   widget %>%
     playwidget(controls,
                start = start,
                stop = stop,
                interval = interval,
-               step = interval)
+               step = interval,
+               ...)
 }
