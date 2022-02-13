@@ -116,7 +116,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     }
   }
 
-  if (gltf$listCount("animations") == 0 || is.na(animation)) {
+  if (is.na(animation) || gltf$listCount("animations") == 0) {
     s <- as.rglscene(gltf)
     plot3d(s, useNULL = TRUE, add = add,
            silent = !verbose, open3dParams = open3dParams)
