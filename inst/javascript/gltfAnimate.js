@@ -39,7 +39,6 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
     change = obj.change.translation;
     if (typeof change !== "undefined")
       M.translate(change[0], change[1], change[2]);
-
     obj.par3d.userMatrix = M;
   }
 

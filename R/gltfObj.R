@@ -212,11 +212,6 @@ Gltf <- R6Class("gltf",
           n <- self$getNode(n)$parent
         }
         result[,,i] <- transform
-        # if (!is.na(w <- match(joints[i], toWatch$node))) {
-        #   cat("Node ", paste(toWatch[w,], sep = ":"), "\n")
-        #   cat("forward = \n")
-        #   print(transform)
-        # }
       }
       result
     },
