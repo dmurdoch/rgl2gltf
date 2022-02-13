@@ -119,6 +119,25 @@ cullVertices <- function(obj) {
   obj
 }
 
+getContainingNodes <- function(s, affectedObjects) {
+
+  allNames <- unique(unlist(affectedObjects))
+  containingNodes <- vector("list", length(allNames))
+  names(containingNodes) <- allNames
+  recurse <- function(sub) {
+    for (o in sub$objects) {
+      obj <- s$objects[[as.character(o)]]
+      tag <- obj$material$tag
+      if (!is.null(tag))
+        containingNodes[[tag]] <<- c(containingNodes[[tag]], sub$id)
+    }
+    for (s in sub$subscenes)
+      recurse(s)
+  }
+  recurse(s$rootSubscene)
+  containingNodes
+}
+
 playgltf <- function(gltf, animation = 0, start = times[1],
                      stop = times[2], times = gltf$timerange(animation),
                      method = c("rigid", "wholeScene", "partialScene"),
@@ -149,12 +168,15 @@ playgltf <- function(gltf, animation = 0, start = times[1],
 
   method <- match.arg(method)
   time <- start
+  gltf$closeBuffers()
   gltf <- gltf$clone()
+  on.exit(gltf$closeBuffers())
+
   s <- as.rglscene(gltf, time = time, clone = FALSE)
   res <- plot3d(s, ...)
 
   save <- par3d(skipRedraw = TRUE)
-  on.exit(par3d(save))
+  on.exit(par3d(save), add = TRUE)
 
   if (method %in% c("partialScene", "rigid")) {
     if (verbose)
@@ -166,21 +188,10 @@ playgltf <- function(gltf, animation = 0, start = times[1],
     # objects will be deleted and then redrawn in the
     # partialScene method.  In the rigid method, this
     # will be converted to subscenes that need modification
+
     affectedObjects <- getAffectedObjects(gltf, method)
-    allNames <- unique(unlist(affectedObjects))
-    containingNodes <- vector("list", length(allNames))
-    names(containingNodes) <- allNames
-    recurse <- function(sub) {
-      for (o in sub$objects) {
-        obj <- s$objects[[as.character(o)]]
-        tag <- obj$material$tag
-        if (!is.null(tag))
-          containingNodes[[tag]] <<- c(containingNodes[[tag]], sub$id)
-      }
-      for (s in sub$subscenes)
-        recurse(s)
-    }
-    recurse(s$rootSubscene)
+
+    containingNodes <- getContainingNodes(s, affectedObjects)
   }
 
   if (method == "rigid") {

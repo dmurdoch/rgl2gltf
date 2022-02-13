@@ -125,13 +125,15 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   method <- match.arg(method)
   time <- start
 
+  gltf$closeBuffers()
   gltf <- gltf$clone()
+
   s <- as.rglscene(gltf, time = time, clone = FALSE)
 
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
 
-  ids <- plot3d(s, useNULL = TRUE, add = add, silent = !verbose, params = open3dParams)
+  ids <- plot3d(s, useNULL = TRUE, add = add, silent = !verbose, open3dParams = open3dParams)
 
   subscene <- ids[grepl("subscene", names(ids))]
   node <- as.numeric(sub("subscene", "", names(subscene)))
@@ -151,21 +153,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   # partialScene method.  In the rigid method, this
   # will be converted to subscenes that need modification
   affectedObjects <- getAffectedObjects(gltf, method)
-  allNames <- unique(unlist(affectedObjects))
-  containingNodes <- vector("list", length(allNames))
-  names(containingNodes) <- allNames
-  recurse <- function(sub) {
-    for (o in sub$objects) {
-      obj <- s$objects[[as.character(o)]]
-      tag <- obj$material$tag
-      if (!is.null(tag))
-        containingNodes[[tag]] <<- c(containingNodes[[tag]], sub$id)
-    }
-    for (s in sub$subscenes)
-      recurse(s)
-  }
-
-  recurse(s$rootSubscene)
+  containingNodes <- getContainingNodes(s, affectedObjects)
 
   # Start building the output.
   # First, create a control that will update all the
@@ -178,7 +166,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   # part of the primitive
 
   skeleton <- -1
-  for (tag in allNames) {
+  for (tag in names(containingNodes)) {
     nodes <- containingNodes[[tag]]
     for (i in seq_along(nodes)) {
       subname <- paste0("subscene", nodes[i])

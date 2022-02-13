@@ -9,7 +9,7 @@ Description: GLtf is a format for 3D models.  This package adds
 License: GPL-2
 Encoding: UTF-8
 Imports: 
-    jsonlite, rgl (>= 0.108.13), grDevices, R6, base64enc
+    jsonlite, rgl (>= 0.108.14), grDevices, R6, base64enc
 URL: https://github.com/dmurdoch/rgl2gltf
 BugReports: https://github.com/dmurdoch/rgl2gltf/issues
 Suggests: 
