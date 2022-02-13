@@ -57,6 +57,9 @@ Additional parameters which will be passed to \code{rgl::\link{playwidget}}.
 See \code{\link{playgltf}} for a description of the method
 used for animation.  The \code{"fixed"} method is fast, but
 doesn't do a good job on some animations.
+
+If the \code{gltf} object doesn't contain any animations, this
+will simply display it as a widget with no controls.
 }
 \value{
 A widget suitable for display or inclusion in an
