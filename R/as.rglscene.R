@@ -174,7 +174,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   }
 
   setListeners <- function(sub, listeners) {
-    if (is.null(sub$par3d$listeners))
+    if (!length(sub$par3d$listeners))
       sub$par3d$listeners <- listeners
     else
       listeners <- sub$par3d$listeners
@@ -479,7 +479,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
 
   defaultmaterial <- list()
   if (useRGLinfo &&
-      !is.null(extras <- gltf$getExtras()) &&
+      length(extras <- gltf$getExtras()) &&
       !is.null(extras$RGL_material))
     defaultmaterial <- fixList(extras$RGL_material,
                                vectors = c("alpha", "polygon_offset"),
