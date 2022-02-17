@@ -66,3 +66,10 @@ will simply display it as a widget with no controls.
 A widget suitable for display or inclusion in an
 R Markdown document.
 }
+\examples{
+if (interactive()) {
+  gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
+  gltfWidget(gltf)
+}
+
+}
