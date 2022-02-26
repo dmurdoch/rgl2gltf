@@ -93,7 +93,7 @@ Called for the side effect of drawing the animation.
 }
 
 \examples{
-if (interactive()) {
+if (interactive() && !rgl::in_pkgdown_example()) {
 # This example is fast enough using the "whole" method:
 
 gltf1 <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
