@@ -2,7 +2,7 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
 
   var value = control.value, animation = control.animation,
   i, channel, sampler, input, output, obj, subscenes, M, change;
-  if (this.missing(value))
+  if (rglwidgetClass.missing(value))
     value = control.value = 0;
   subscenes = [];
   for (i = 0; i < animation.channels.length; i++) {
@@ -17,13 +17,13 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
       obj.change = {};
     switch(channel.target.path) {
       case "rotation":
-        obj.change.rotation = this.slerp(input, output, value);
+        obj.change.rotation = rglwidgetClass.slerp(input, output, value);
         break;
       case "translation":
-        obj.change.translation = this.lerp(input, output, value);
+        obj.change.translation = rglwidgetClass.lerp(input, output, value);
         break;
       case "scale":
-        obj.change.scale = this.lerp(input, output, value);
+        obj.change.scale = rglwidgetClass.lerp(input, output, value);
         break;
     }
   }
@@ -35,7 +35,7 @@ rglwidgetClass.prototype.rgl2gltfAnimation = function(el, control) {
       M.scale(change[0], change[1], change[2]);
     change = obj.change.rotation;
     if (typeof change !== "undefined")
-      this.rotateByQuaternion(M, change);
+      rglwidgetClass.rotateByQuaternion(M, change);
     change = obj.change.translation;
     if (typeof change !== "undefined")
       M.translate(change[0], change[1], change[2]);
