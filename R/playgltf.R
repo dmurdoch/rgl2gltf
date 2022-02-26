@@ -264,7 +264,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
     havenode <- -1
     if (length(changedNodes)) {
       if (method == "wholeScene") {
-        rgl::clear3d()
+        rgl::clear3d(type = "all")
         plot3d(gltf, time = time, clone = FALSE, add = TRUE)
 
       } else if (method %in% c("partialScene", "rigid")) {
