@@ -76,6 +76,26 @@ skeletonControl <- function(subid) {
             class = "rglControl")
 }
 
+shaderControl <- function(id, joints, backtransform) {
+
+  dependency <- makeDependency(name = "gltfAnimate",
+                               src = "javascript",
+                               script = "gltfAnimate.js",
+                               package = "rgl2gltf",
+                               debugging = TRUE
+  )
+  backtransforms <- list()
+  for (i in seq_len(dim(backtransform)[3]))
+    backtransforms[[i]] <- as.numeric(backtransform[,,i])
+  structure(list(type = "rgl2gltfShaderUniforms",
+                 value = 0,
+                 id = unname(id),
+                 joints = unname(joints),
+                 backtransform = backtransforms,
+                 dependencies = list(dependency)),
+            class = "rglControl")
+}
+
 
 getChangeTimes <- function(joint, gltf, ani) {
   animation <- gltf$getAnimation(ani)
@@ -96,7 +116,7 @@ getChangeTimes <- function(joint, gltf, ani) {
 
 gltfWidget <- function(gltf, animation = 0, start = times[1],
                        stop = times[2], times = gltf$timerange(animation),
-                       method = c("rigid"),
+                       method = c("rigid", "shader"),
                        add = FALSE, close = !add,
                        verbose = FALSE,
                        open3dParams = getr3dDefaults(), ...) {
@@ -150,8 +170,16 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   names(subscene) <- NULL
   translations <- data.frame(node, subscene)
 
-  if (method != "rigid")
-    stop("only rigid method is supported")
+  toNode <- function(sub) {
+    translations$node[match(sub, translations$subscene)]
+  }
+
+  toSubscene <- function(node) {
+    translations$subscene[match(node, translations$node)]
+  }
+
+  if (!(method %in% c("rigid", "shader")))
+    stop("only rigid and shader methods are supported")
 
   if (verbose)
     cat("Preparing skeleton...\n")
@@ -176,6 +204,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   # part of the primitive
 
   skeleton <- -1
+  if (method == "shader")
+    snew <- scene3d()
   for (tag in names(containingNodes)) {
     nodes <- containingNodes[[tag]]
     for (i in seq_along(nodes)) {
@@ -191,7 +221,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         if (is.null(skin$skeleton))
           skin$skeleton <- s$rootSubscene$id
         else
-          skin$skeleton <- translations$subscene[match(skin$skeleton, translations$node)]
+          skin$skeleton <- toSubscene(skin$skeleton)
         skin$processed <- TRUE
         gltf$setSkin(skinnum, skin)
       }
@@ -199,8 +229,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         skeleton <- skin$skeleton
         controls <- c(controls, list(skeletonControl(skeleton)))
       }
-      if (TRUE) {
-        prim <- getPrim(gltf, tag)
+      prim <- getPrim(gltf, tag)
+      if (method == "rigid") {
         subids <- numeric(length(prim$indices_split))
         weights <- prim$unique_weights
         joints <- as.numeric(colnames(weights))
@@ -226,11 +256,24 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           controls <- c(controls, list(weightedControl(subids[j], jointnodes[keepjoints], weights[j, keepjoints], translations, backward[,,joints[keepjoints]+1, drop = FALSE])))
         }
         pop3d(id = id)
+
+      } else {
+        joints <- toSubscene(skin$joints)
+        newobj <- primToRglobj(prim, node$skin,
+                               gltf = gltf,
+                               defaultmaterial = s$material,
+                               doTransform = FALSE)
+        snew$objects[[as.character(id)]] <- merge(snew$objects[[as.character(id)]], newobj)
+        snew <- modifyShader(id, snew, joints = joints)
+        controls <- c(controls, list(shaderControl(id, joints, backward)))
       }
     }
   }
   gltf$closeBuffers()
-  widget <- rglwidget()
+  if (method == "rigid")
+    snew <- scene3d()
+
+  widget <- rglwidget(snew)
 
   if (close)
     close3d()
@@ -243,4 +286,42 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                interval = interval,
                step = interval,
                ...)
+}
+
+modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader, joints) {
+  obj <- scene$objects[[as.character(id)]]
+  shader <- unlist(strsplit(shader, "\n"))
+
+  main <- grep("void main(void)", shader, fixed = TRUE)
+  position <- grep("gl_Position = prMatrix * vPosition;", shader, fixed = TRUE)
+  normal <- grep("vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));", shader, fixed = TRUE)
+  stopifnot(length(main) == 1, length(position) == 1, length(normal) == 1)
+
+  # We just keep the rotation part of the
+  # skinMatrix.  If it also scales, this is wrong.
+  newnormal <- c(
+    "    skinMat = mat4(mat3(skinMat));",
+    "    vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));")
+  shader <- append(shader[-normal], newnormal, after = normal - 1)
+
+  swiz <- c("x", "y", "z", "w")
+  n <- length(joints)
+  newpos <- c("    mat4 skinMat = mat4(0);",
+              "    for (int i = 0; i < 4; i++) {",
+paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
+              "    }",
+              "    vec4 pos = skinMat * vec4(aPos, 1.);",
+              "    gl_Position = prMatrix * mvMatrix * pos;")
+  shader <- append(shader[-position], newpos, after = position - 1)
+
+  newdecls <- sprintf("  attribute vec4 aJoint;
+  attribute vec4 aWeight;
+  uniform vec4 uJointMat[%d];", 4*length(joints))
+  shader <- append(shader, newdecls, after = main - 1)
+
+  rgl::setUserShaders(id, vertexShader = shader,
+                 scene = scene,
+                 attributes = list(aJoint = obj$joints, aWeight = obj$weights),
+                 uniforms = list(uJointMat = matrix(0, 4*length(joints), 4)))
+
 }

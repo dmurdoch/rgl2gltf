@@ -2,6 +2,8 @@ newObj <- function(xyz = NULL, material = NULL, normals = NULL,
                    texcoords = NULL,
                    type, attribs = NULL,
                    indices = NULL,
+                   joints = NULL,
+                   weights = NULL,
                    id = NULL) {
 
   result <- list(id=id, type=type)
@@ -15,6 +17,8 @@ newObj <- function(xyz = NULL, material = NULL, normals = NULL,
   if (!is.null(indices))
     indices <- matrix(indices, ncol = 1, dimnames = list(NULL, "vertex"))
   result$indices <- indices
+  result$joints <- joints
+  result$weights <- weights
 
   result <- c(result, attribs)
 
@@ -103,30 +107,40 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
+                                joints = joints,
+                                weights = weights,
                                 type = "points"),
                    "1" = newObj(xyz = positions,    # segments
                                 normals = normals,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
+                                joints = joints,
+                                weights = weights,
                                 type = "lines"),
                    "2" = newObj(xyz = positions,    # loop
                                 normals = normals,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = c(indices, indices[1]),
+                                joints = joints,
+                                weights = weights,
                                 type = "linestrip"),
                    "3" = newObj(xyz = positions,    # strip
                                 normals = normals,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
+                                joints = joints,
+                                weights = weights,
                                 type = "linestrip"),
                    "4" = newObj(xyz = positions,    # triangles
                                 normals = normals,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
+                                joints = joints,
+                                weights = weights,
                                 type = "triangles"),
                    "5" = newObj(xyz = positions,    # triangle strip
                                 normals = normals,
@@ -134,6 +148,8 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 indices = rbind(indices[-c(ninds, ninds-1)],
                                                 indices[-c(1, ninds)],
                                                 indices[-c(1,2)]),
+                                joints = joints,
+                                weights = weights,
                                 material = mat),
                    "6" = newObj(xyz = positions,    # triangle fan
                                 normals = normals,
@@ -141,6 +157,8 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 indices = rbind(indices[1],
                                                 indices[-c(1, ninds)],
                                                 indices[-c(1,2)]),
+                                joints = joints,
+                                weights = weights,
                                 material = mat))
   if (!is.null(id))
     result$id <- as.numeric(id)
