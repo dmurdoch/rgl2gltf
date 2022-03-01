@@ -116,7 +116,7 @@ getChangeTimes <- function(joint, gltf, ani) {
 
 gltfWidget <- function(gltf, animation = 0, start = times[1],
                        stop = times[2], times = gltf$timerange(animation),
-                       method = c("rigid", "shader"),
+                       method = c("shader", "rigid"),
                        add = FALSE, close = !add,
                        verbose = FALSE,
                        open3dParams = getr3dDefaults(), ...) {
