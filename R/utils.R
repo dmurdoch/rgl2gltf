@@ -295,7 +295,7 @@ print.matrixSequence <- function(x, n = 5, ...) {
     vertices <- rbind(t(x[[i]]$vertices), 1)
     for (j in rev(seq_along(userMatrix)))
       vertices <- userMatrix[[j]] %*% vertices
-    vertices <- t(rgl::asEuclidean2(vertices))
+    vertices <- t(asEuclidean2(vertices))
     print(round(head(vertices, n), 3))
   }
 }

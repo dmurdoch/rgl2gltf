@@ -319,7 +319,7 @@ paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];
   uniform vec4 uJointMat[%d];", 4*length(joints))
   shader <- append(shader, newdecls, after = main - 1)
 
-  rgl::setUserShaders(id, vertexShader = shader,
+  setUserShaders(id, vertexShader = shader,
                  scene = scene,
                  attributes = list(aJoint = obj$joints, aWeight = obj$weights),
                  uniforms = list(uJointMat = matrix(0, 4*length(joints), 4)))
