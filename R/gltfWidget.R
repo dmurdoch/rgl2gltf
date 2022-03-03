@@ -76,7 +76,7 @@ skeletonControl <- function(subid) {
             class = "rglControl")
 }
 
-shaderControl <- function(id, joints, backtransform) {
+shaderControl <- function(id, joints, usedjoints, backtransform) {
 
   dependency <- makeDependency(name = "gltfAnimate",
                                src = "javascript",
@@ -85,12 +85,13 @@ shaderControl <- function(id, joints, backtransform) {
                                debugging = TRUE
   )
   backtransforms <- list()
-  for (i in seq_len(dim(backtransform)[3]))
-    backtransforms[[i]] <- as.numeric(backtransform[,,i])
+  keep <- usedjoints + 1
+  for (i in seq_along(usedjoints))
+    backtransforms[[i]] <- as.numeric(backtransform[,,keep[i]])
   structure(list(type = "rgl2gltfShaderUniforms",
                  value = 0,
                  id = unname(id),
-                 joints = unname(joints),
+                 joints = unname(joints[keep]),
                  backtransform = backtransforms,
                  dependencies = list(dependency)),
             class = "rglControl")
@@ -262,10 +263,25 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         newobj <- primToRglobj(prim, node$skin,
                                gltf = gltf,
                                defaultmaterial = s$material,
+                               id = id,
                                doTransform = FALSE)
-        snew$objects[[as.character(id)]] <- merge(snew$objects[[as.character(id)]], newobj)
-        snew <- modifyShader(id, snew, joints = joints)
-        controls <- c(controls, list(shaderControl(id, joints, backward)))
+        newobj <- merge(newobj, snew$objects[[as.character(id)]])
+        snew$objects[[as.character(id)]] <- newobj
+
+        # The skeleton probably has far more joints
+        # than we need.  Reduce to the minimum.
+
+        obj <- snew$objects[[as.character(id)]]
+        weights0 <- as.numeric(obj$weights)
+        joints0 <- as.numeric(obj$joints)
+        usedjoints <- unique(c(0, joints0[weights0 > 0])) # Always keep joint 0
+# if (obj$material$tag == "0:50")
+# browser()
+        obj$joints <- match(obj$joints, usedjoints) - 1
+        dim(obj$joints) <- dim(obj$weights)
+        snew$objects[[as.character(id)]] <- obj
+        snew <- modifyShader(id, snew, usedjoints = usedjoints)
+        controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
       }
     }
   }
@@ -288,7 +304,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                ...)
 }
 
-modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader, joints) {
+modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader, usedjoints) {
   obj <- scene$objects[[as.character(id)]]
   shader <- unlist(strsplit(shader, "\n"))
 
@@ -305,7 +321,7 @@ modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader,
   shader <- append(shader[-normal], newnormal, after = normal - 1)
 
   swiz <- c("x", "y", "z", "w")
-  n <- length(joints)
+  n <- length(usedjoints)
   newpos <- c("    mat4 skinMat = mat4(0);",
               "    for (int i = 0; i < 4; i++) {",
 paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
@@ -316,12 +332,12 @@ paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];
 
   newdecls <- sprintf("  attribute vec4 aJoint;
   attribute vec4 aWeight;
-  uniform vec4 uJointMat[%d];", 4*length(joints))
+  uniform vec4 uJointMat[%d];", 4*n)
   shader <- append(shader, newdecls, after = main - 1)
 
   setUserShaders(id, vertexShader = shader,
                  scene = scene,
                  attributes = list(aJoint = obj$joints, aWeight = obj$weights),
-                 uniforms = list(uJointMat = matrix(0, 4*length(joints), 4)))
+                 uniforms = list(uJointMat = matrix(0, 4*n, 4)))
 
 }
