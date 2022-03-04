@@ -1,5 +1,5 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
-       showNodes,
+       showNodes, showTags,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findName, findClass,
        matrixSequence, gltfWidget)
 
@@ -9,7 +9,7 @@ importFrom("rgl", "%>%", "as.rglscene", "addToSubscene3d",
            "as.tmesh3d", "clear3d", "close3d",
            "cube3d", "currentSubscene3d",
            "delFromSubscene3d", "getr3dDefaults",
-           "as.mesh3d", "getShaders",
+           "as.mesh3d", "getShaders", "ids3d", "lowlevel",
            "makeDependency", "material3d", "mesh3d",
            "newSubscene3d", "open3d",
            "par3d", "par3dinterp", "par3dinterpControl",

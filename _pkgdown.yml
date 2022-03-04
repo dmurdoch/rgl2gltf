@@ -21,16 +21,20 @@ reference:
 - contents:
   - as.gltf
   - as.rglscene.gltf
+- title: Display functions
+  desc: Display glTF objects in `rgl` or WebGL
+- contents:
+  - plot3d
+  - playgltf
+  - gltfWidget
 - title: Miscellaneous utility functions
   desc:  Various functions used for display, debugging and internal use
 - contents:
   - extractTexture
   - findName
-  - gltfWidget
   - matrixSequence
   - showtree
-  - playgltf
-  - plot3d
+  - showTags
 - title: R6 classes used for internal storage
 - contents:
   - Gltf
