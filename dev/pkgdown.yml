@@ -3,7 +3,7 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   shininess: shininess.html
-last_built: 2022-02-26T19:10Z
+last_built: 2022-03-04T14:35Z
 urls:
   reference: https://dmurdoch.github.io/rgl2gltf/reference
   article: https://dmurdoch.github.io/rgl2gltf/articles
