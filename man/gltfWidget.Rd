@@ -12,7 +12,7 @@ gltfWidget(gltf,
            animation = 0,
            start = times[1], stop = times[2],
            times = gltf$timerange(animation),
-           method = c("rigid"),
+           method = c("shader", "rigid"),
            add = FALSE, close = !add,
            verbose = FALSE,
            open3dParams = getr3dDefaults(),
@@ -32,7 +32,10 @@ The starting and stopping times for the animation.
 An alternate way to specify the times.
 }
   \item{method}{
-Currently \code{"rigid"} is the only method supported.
+The
+\code{"shader"} method installs a custom shader to implement
+the animation in GLSL, as intended for glTF.
+The \code{"rigid"} method duplicates vertices as necessary so that all triangles remain rigid as the vertices move, and should match the corresponding method in \code{\link{playgltf}}.
 }
   \item{add}{
 Should the gltf object be added to an existing \pkg{rgl}

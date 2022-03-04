@@ -82,3 +82,26 @@ rglwidgetClass.prototype.rgl2gltfSkeleton = function(el, control) {
   recurse(control.subid, new CanvasMatrix4());
 
 };
+
+rglwidgetClass.prototype.rgl2gltfShaderUniforms = function(el, control) {
+  var obj = this.getObj(control.id),
+      joints, i, j, joint, M;
+  if (typeof control.initialized === "undefined") {
+    control.joints   = [].concat(control.joints);
+    for (i = 0; i < control.backtransform.length; i++) {
+      M = new CanvasMatrix4();
+      M.load(control.backtransform[i]);
+      control.backtransform[i] = M;
+    }
+    control.initialized = true;
+  }
+  joints = control.joints;
+  for (i = 0; i < joints.length; i++) {
+    joint = this.getObj(joints[i]);
+    M = new CanvasMatrix4(joint.forward);
+    M.multLeft(control.backtransform[i]);
+    M = M.getAsArray();
+    for (j = 0; j < 4; j++)
+      obj.userUniforms.uJointMat[4*i + j] = M.slice(4*j, 4*j+4);
+  }
+};

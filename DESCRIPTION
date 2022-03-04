@@ -1,7 +1,7 @@
 Package: rgl2gltf
 Type: Package
 Title: Read and write .gltf and .glb files
-Version: 0.1.7
+Version: 0.1.8
 Author: Duncan Murdoch
 Maintainer: Duncan Murdoch <murdoch.duncan@gmail.com>
 Description: GLtf is a format for 3D models.  This package adds
@@ -9,7 +9,7 @@ Description: GLtf is a format for 3D models.  This package adds
 License: GPL-2
 Encoding: UTF-8
 Imports: 
-    jsonlite, rgl (>= 0.108.20), grDevices, R6, base64enc
+    jsonlite, rgl (>= 0.108.21), grDevices, R6, base64enc
 URL: https://github.com/dmurdoch/rgl2gltf
 BugReports: https://github.com/dmurdoch/rgl2gltf/issues
 Suggests: 

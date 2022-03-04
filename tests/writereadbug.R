@@ -21,7 +21,7 @@ if (require(misc3d)) {
     al <- seq(alo, ahi, len = length(th))
     x <- seq(-2, 2, len=n)
     contour3d(f,th,x,x,x,color=col,alpha=al)
-    rgl::bg3d(col="white")
+    bg3d(col="white")
   }
   g(40,5)
   next3d()
