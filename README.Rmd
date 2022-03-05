@@ -32,7 +32,7 @@ This R package contains functions to read, write and display
 It is currently in active development.  Please add issues or pull requests if something 
 important to you is missing.
 
-A `pkgdown` website is here:  https://dmurdoch.github.io/rgl2gltf/dev
+A `pkgdown` website is here:  https://dmurdoch.github.io/rgl2gltf/dev/
 
 To install, run
 
