@@ -1,6 +1,7 @@
 export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showNodes, showTags,
-       showtree, playgltf, plot3d, writeglTF, writeGLB, findName, findClass,
+       showtree, playgltf, plot3d, writeglTF, writeGLB, findEntry,
+       namePattern, hasClass,
        matrixSequence, gltfWidget)
 
 importFrom("jsonlite", "read_json")
