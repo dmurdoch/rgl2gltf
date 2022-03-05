@@ -10,8 +10,9 @@ a \code{"rglscene"} object, similar to what \code{\link{scene3d}}
 would produce, or a \code{"mesh3d"} object.
 }
 \usage{
-\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL, useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE,
-quick = FALSE, ...)
+\S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL,
+         useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE,
+         quick = FALSE, ...)
 \S3method{as.mesh3d}{gltf}(x, ...)
 }
 \arguments{

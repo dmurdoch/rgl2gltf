@@ -1,6 +1,6 @@
 Package: rgl2gltf
 Type: Package
-Title: Read and write .gltf and .glb files
+Title: Read and Write .gltf and .glb Files
 Version: 0.1.8
 Author: Duncan Murdoch
 Maintainer: Duncan Murdoch <murdoch.duncan@gmail.com>
