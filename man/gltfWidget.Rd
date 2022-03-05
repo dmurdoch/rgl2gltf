@@ -71,7 +71,7 @@ R Markdown document.
 }
 \examples{
 if ((interactive() || rgl::in_pkgdown_example()) &&
-    requireNamespace("V8")) {
+    requireNamespace("V8") && requireNamespace("manipulateWidget")) {
   gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
   gltfWidget(gltf)
 }

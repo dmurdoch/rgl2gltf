@@ -17,7 +17,8 @@ Suggests:
     rmarkdown,
     knitr,
     misc3d,
-    V8
+    V8,
+    manipulateWidget
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
