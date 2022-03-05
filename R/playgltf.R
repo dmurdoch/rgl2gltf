@@ -8,87 +8,85 @@ getPrim <- function(gltf, tag) {
 getAffectedObjects <- function(gltf, method) {
   nnodes <- gltf$listCount("nodes")
   result <- vector("list", nnodes)
-  for (i in seq_len(nnodes)) {
-    node <- gltf$getNode(i-1)
-    if (!is.null(node$skin) && !is.null(node$mesh)) {
-      skin <- gltf$getSkin(node$skin)
-      joints <- unlist(skin$joints)
-      meshnum <- node$mesh
-      mesh <- gltf$getMesh(meshnum)
-      for (j in seq_along(mesh$primitives)) {
-        prim <- mesh$primitives[[j]]
-        for (a in seq_along(prim$attributes)) {
-          attr <- unlist(prim$attributes[a])
-          if (names(attr) %in% c("JOINTS_0", "WEIGHTS_0")) {
-            values <- gltf$readAccessor(attr[1])
-            switch (names(attr),
-                    JOINTS_0 = jindex <- values,
-                    WEIGHTS_0 = weights <- values
-            )
-          }
-        }
-        if (length(weights)) {
-          if (method != "shader") {
-            tag <- paste0(meshnum, ":", j)
-            jindex_vals <- unique(as.numeric(jindex[weights > 0]))
-
-            for (ji in jindex_vals) {
-              joint <- joints[ji + 1]
-              result[[joint + 1]] <- c(result[[joint + 1]], tag)
+  if (method != "shader") {
+    for (i in seq_len(nnodes)) {
+      node <- gltf$getNode(i-1)
+      if (!is.null(node$skin) && !is.null(node$mesh)) {
+        skin <- gltf$getSkin(node$skin)
+        joints <- unlist(skin$joints)
+        meshnum <- node$mesh
+        mesh <- gltf$getMesh(meshnum)
+        for (j in seq_along(mesh$primitives)) {
+          prim <- mesh$primitives[[j]]
+          for (a in seq_along(prim$attributes)) {
+            attr <- unlist(prim$attributes[a])
+            if (names(attr) %in% c("JOINTS_0", "WEIGHTS_0")) {
+              values <- gltf$readAccessor(attr[1])
+              switch (names(attr),
+                      JOINTS_0 = jindex <- values,
+                      WEIGHTS_0 = weights <- values
+              )
             }
-            if (method == "rigid") {
-              if (is.null(prim$indices))
-                indices <- seq_len(nrow(weights))
-              else
-                indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
-              if (is.null(mode <- prim$mode))
-                mode <- 4
-              primsize <- c("0" = 1, "1" = 2, "4" = 3)[as.character(mode)]
-              if (is.na(primsize))
-                stop("primitive mode ", mode, " not implemented in rigid method.")
+          }
+          if (length(weights)) {
+            if (method != "shader") {
+              tag <- paste0(meshnum, ":", j)
+              jindex_vals <- unique(as.numeric(jindex[weights > 0]))
 
-              # weights_expanded <- weights[indices,]
-              jindex_expanded <- jindex[indices,]
-
-              # Map jindex values to entries in jindex_vals
-              map <- seq_len(max(jindex_vals) + 1)
-              map[jindex_vals + 1] <- seq_along(jindex_vals)
-
-              weights_expanded <- matrix(0, ncol = length(jindex_vals), nrow = length(indices))
-              for (col in 1:4) {
-                idx <- cbind(seq_along(indices), map[jindex_expanded[, col] + 1])
-                weights_expanded[idx] <- weights_expanded[idx] + weights[indices, col, drop = FALSE]
+              for (ji in jindex_vals) {
+                joint <- joints[ji + 1]
+                result[[joint + 1]] <- c(result[[joint + 1]], tag)
               }
-              if (primsize > 1) {
-                for (gp in seq_len(length(indices)/primsize) - 1) {
-                  idx <- primsize * gp + 1:primsize
-                  weights_expanded[idx,] <-
-                    rep(colMeans(weights_expanded[idx,,drop = FALSE]), each = primsize)
+              if (method == "rigid") {
+                if (is.null(prim$indices))
+                  indices <- seq_len(nrow(weights))
+                else
+                  indices <- gltf$readAccessor(prim$indices) + 1 # R indices start at 1
+                if (is.null(mode <- prim$mode))
+                  mode <- 4
+                primsize <- c("0" = 1, "1" = 2, "4" = 3)[as.character(mode)]
+                if (is.na(primsize))
+                  stop("primitive mode ", mode, " not implemented in rigid method.")
+
+                # weights_expanded <- weights[indices,]
+                jindex_expanded <- jindex[indices,]
+
+                # Map jindex values to entries in jindex_vals
+                map <- seq_len(max(jindex_vals) + 1)
+                map[jindex_vals + 1] <- seq_along(jindex_vals)
+
+                weights_expanded <- matrix(0, ncol = length(jindex_vals), nrow = length(indices))
+                for (col in 1:4) {
+                  idx <- cbind(seq_along(indices), map[jindex_expanded[, col] + 1])
+                  weights_expanded[idx] <- weights_expanded[idx] + weights[indices, col, drop = FALSE]
                 }
+                if (primsize > 1) {
+                  for (gp in seq_len(length(indices)/primsize) - 1) {
+                    idx <- primsize * gp + 1:primsize
+                    weights_expanded[idx,] <-
+                      rep(colMeans(weights_expanded[idx,,drop = FALSE]), each = primsize)
+                  }
+                }
+                unique_weights <- unique(weights_expanded)
+                colnames(unique_weights) <- as.character(jindex_vals)
+                rownames(unique_weights) <- paste0(tag, ":", 1:nrow(unique_weights))
+                indices_split <- list()
+                if ((nw <- nrow(unique_weights)) == 1)
+                  indices_split <- list(indices)
+                else {
+                  indices_split <- vector("list", nw)
+                  for (gp in 1:nw)
+                    indices_split[[gp]] <- indices[apply(weights_expanded, 1, function(row) all(row == unique_weights[gp,]))]
+                }
+                prim$unique_weights <- unique_weights
+                prim$indices_split <- indices_split
+                mesh$primitives[[j]] <- prim
               }
-              unique_weights <- unique(weights_expanded)
-              colnames(unique_weights) <- as.character(jindex_vals)
-              rownames(unique_weights) <- paste0(tag, ":", 1:nrow(unique_weights))
-              indices_split <- list()
-              if ((nw <- nrow(unique_weights)) == 1)
-                indices_split <- list(indices)
-              else {
-                indices_split <- vector("list", nw)
-                for (gp in 1:nw)
-                  indices_split[[gp]] <- indices[apply(weights_expanded, 1, function(row) all(row == unique_weights[gp,]))]
-              }
-              prim$unique_weights <- unique_weights
-              prim$indices_split <- indices_split
-              mesh$primitives[[j]] <- prim
             }
-          } else { # shader
-            prim$jindex <- jindex
-            prim$weights <- weights
-            mesh$primitives[[j]] <- prim
           }
         }
+        gltf$setMesh(meshnum, mesh)
       }
-      gltf$setMesh(meshnum, mesh)
     }
   }
   # If an object is affected by a node, it is affected by
