@@ -12,7 +12,7 @@ scenes to and from glTF objects.
 It is currently in active development. Please add issues or pull
 requests if something important to you is missing.
 
-A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf/dev>
+A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf/dev/>
 
 To install, run
 
@@ -25,12 +25,17 @@ Sample code:
 ``` r
 library(rgl)
 library(rgl2gltf)
+#> 
+#> Attaching package: 'rgl2gltf'
+#> The following object is masked from 'package:methods':
+#> 
+#>     findClass
 
 gltf <- readGLB("https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true")
 mesh <- as.mesh3d(gltf)
 open3d(windowRect = c(0, 0, 500, 400))
 #> glX 
-#>   1
+#>   2
 shade3d(mesh)
 snapshot3d(webshot = FALSE, filename = "man/figures/engine.png")
 ```

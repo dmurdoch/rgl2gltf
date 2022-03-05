@@ -53,7 +53,8 @@ filename <- tempfile(fileext = ".gltf")
 download.file(paste0(samples, "/2CylinderEngine/glTF/2CylinderEngine.gltf"),
   destfile = filename)
 download.file(paste0(samples, "/2CylinderEngine/glTF/2CylinderEngine0.bin?raw=true"),
-  destfile = file.path(tempdir(), "2CylinderEngine0.bin"))
+  destfile = file.path(tempdir(), "2CylinderEngine0.bin"),
+  mode = "wb")
 
 gltf <- readglTF(filename)
 gltf
