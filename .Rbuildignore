@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 ^README.Rmd$
 ^inst/localtests
+^_pkgdown.yml
+^\.github

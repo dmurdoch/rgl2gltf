@@ -856,7 +856,7 @@ Get animation.
 }
 \subsection{Returns}{
 Animation object, documented here:
-\url{https://www.khronos.org/registry/glTF/specsparam/2.0/glTF-2.0.html#reference-animation}.
+\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-animation}.
 }
 }
 \if{html}{\out{<hr>}}

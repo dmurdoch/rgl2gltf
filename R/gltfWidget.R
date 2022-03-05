@@ -122,6 +122,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        verbose = FALSE,
                        open3dParams = getr3dDefaults(), ...) {
 
+  if (!requireNamespace("manipulateWidget"))
+    stop("gltfWidget requires the manipulateWidget package")
   backward <- NULL
   havenode <- -1
 

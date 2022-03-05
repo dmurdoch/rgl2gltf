@@ -8,9 +8,10 @@ This function uses \code{text3d} to display the tags
 at the centre of the objects they label.
 }
 \usage{
-showTags(tags = NULL, ids = NULL, subscenes = ids3d("subscene", subscene = 0)$id, depth_test = "always", ...)
+showTags(tags = NULL, ids = NULL,
+         subscenes = ids3d("subscene", subscene = 0)$id,
+         depth_test = "always", ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{tags, ids}{
 If non-NULL, display only these tags and ids.
