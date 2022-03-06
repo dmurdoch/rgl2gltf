@@ -1,8 +1,8 @@
 library(rgl)
 library(rgl2gltf)
 
-# gltfWidget(readGLB("~/temp/AntiqueCamera.glb"))
+# gltfWidget(readGLB("~/svn/MyR/rgl2gltf/inst/localtests/AntiqueCamera.glb"))
 
-# gltfWidget(readGLB("~/temp/Avocado.glb"))
+# gltfWidget(readGLB("~/svn/MyR/rgl2gltf/inst/localtests/Avocado.glb"))
 
-gltfWidget(readGLB("~/temp/BrainStem.glb"))
+gltfWidget(readGLB("~/svn/MyR/rgl2gltf/inst/localtests/BrainStem.glb"))
