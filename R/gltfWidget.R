@@ -282,7 +282,14 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         obj$joints <- match(obj$joints, usedjoints) - 1
         dim(obj$joints) <- dim(obj$weights)
         snew$objects[[as.character(id)]] <- obj
-        snew <- modifyShader(id, snew, usedjoints = usedjoints)
+        shaders <- getShaders(id, snew)
+        n <- length(usedjoints)
+        shaders <- modifyShaders(shaders, "skins",
+                                 swiz = c("x", "y", "z", "w"), n = n)
+        snew <- setUserShaders(id, scene = snew,
+                  vertexShader = shaders$vertexShader,
+                  attributes = list(aJoint = obj$joints, aWeight = obj$weights),
+                  uniforms = list(uJointMat = matrix(0, 4*n, 4)))
         controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
       }
     }
@@ -306,40 +313,59 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                ...)
 }
 
-modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader, usedjoints) {
-  obj <- scene$objects[[as.character(id)]]
-  shader <- unlist(strsplit(shader, "\n"))
+# These are the shader edits that GLTF displays need: "skins" applies skins.
 
-  main <- grep("void main(void)", shader, fixed = TRUE)
-  position <- grep("gl_Position = prMatrix * vPosition;", shader, fixed = TRUE)
-  normal <- grep("vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));", shader, fixed = TRUE)
-  stopifnot(length(main) == 1, length(position) == 1, length(normal) == 1)
 
-  # We just keep the rotation part of the
-  # skinMatrix.  If it also scales, this is wrong.
-  newnormal <- c(
-    "    skinMat = mat4(mat3(skinMat));",
-    "    vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));")
-  shader <- append(shader[-normal], newnormal, after = normal - 1)
-
-  swiz <- c("x", "y", "z", "w")
-  n <- length(usedjoints)
-  newpos <- c("    mat4 skinMat = mat4(0);",
-              "    for (int i = 0; i < 4; i++) {",
-paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
-              "    }",
-              "    vec4 pos = skinMat * vec4(aPos, 1.);",
-              "    gl_Position = prMatrix * mvMatrix * pos;")
-  shader <- append(shader[-position], newpos, after = position - 1)
-
-  newdecls <- sprintf("  attribute vec4 aJoint;
+shaderChanges <- list(
+  skins = list(
+    vertexShader = list(
+      decls = list(
+        old = "void main(void)",
+        new = function(n, ...) sprintf("  attribute vec4 aJoint;
   attribute vec4 aWeight;
-  uniform vec4 uJointMat[%d];", 4*n)
-  shader <- append(shader, newdecls, after = main - 1)
+  uniform vec4 uJointMat[%d];
+  void main(void) {", 4*n)),
+      pos = list(
+        old = "gl_Position = prMatrix * vPosition;",
+        new = function(swiz, ...) c("    mat4 skinMat = mat4(0);
+    for (int i = 0; i < 4; i++) {",
+        paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
+        "    }
+    vec4 pos = skinMat * vec4(aPos, 1.);
+    gl_Position = prMatrix * mvMatrix * pos;")
+      ),
+      normal = list(
+        old = "vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));",
+        new = "    skinMat = mat4(mat3(skinMat));
+    vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));"
+      )
+    )
+  )
+)
 
-  setUserShaders(id, vertexShader = shader,
-                 scene = scene,
-                 attributes = list(aJoint = obj$joints, aWeight = obj$weights),
-                 uniforms = list(uJointMat = matrix(0, 4*n, 4)))
+# obj <- scene$objects[[as.character(id)]]
 
+# shaders <- getShaders(id, scene)
+
+modifyShaders <- function(shaders, mod, ...) {
+
+  if (is.character(mod))
+    mod <- shaderChanges[[mod]]
+
+  for (type in c("vertexShader", "fragmentShader")) {
+    if (!is.null(mod[[type]])) {
+      shader <- unlist(strsplit(shaders[[type]], "\n"))
+      for (part in mod[[type]]) {
+        lines <- grep(part$old, shader, fixed = TRUE)
+        if (is.function(part$new))
+          part$new <- part$new(...)
+        for (line in rev(lines))
+          shader <- append(shader[-line],
+                           part$new, after = line - 1)
+      }
+      shaders[[type]] <- shader
+    }
+  }
+
+  shaders
 }
