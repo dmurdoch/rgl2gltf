@@ -1,11 +1,12 @@
 \name{gltfWidget}
 \alias{gltfWidget}
 \title{
-Create a widget for an animated glTF display
+Create a widget for a glTF display.
 }
 \description{
 This creates a widget holding a glTF scene, with controls
-to animate it.
+to animate it if it supports animation, and with
+shaders that implement normal textures.
 }
 \usage{
 gltfWidget(gltf,
@@ -23,19 +24,25 @@ gltfWidget(gltf,
 A \code{"gltf"} object, e.g. produced by \code{\link{readglTF}}.
 }
   \item{animation}{
-Which animation to use?
+Which animation to use?  If no animation is present,
+this is ignored.
 }
   \item{start, stop}{
-The starting and stopping times for the animation.
+The starting and stopping times for the animation.  Ignored
+if no animation.
 }
   \item{times}{
-An alternate way to specify the times.
+An alternate way to specify the times.  Ignored if no
+animation.
 }
   \item{method}{
 The
 \code{"shader"} method installs a custom shader to implement
-the animation in GLSL, as intended for glTF.
-The \code{"rigid"} method duplicates vertices as necessary so that all triangles remain rigid as the vertices move, and should match the corresponding method in \code{\link{playgltf}}.
+the animation in GLSL, as intended for glTF.  This is necessary
+for the normal texture support.
+The \code{"rigid"} method duplicates vertices as necessary so
+that all triangles remain rigid as the vertices move, and
+should match the corresponding method in \code{\link{playgltf}}.
 }
   \item{add}{
 Should the gltf object be added to an existing \pkg{rgl}

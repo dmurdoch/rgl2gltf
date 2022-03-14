@@ -452,10 +452,6 @@ Gltf <- R6Class("gltf",
           if (!is.null(texnum <- unlist(pbrm$baseColorTexture))) {
             texturefile <- extractTexture(self, texnum,
                                           verbose = FALSE)
-            mime <- attr(texturefile, "mimeType")
-            if (!is.null(mime) && mime != "image/png")
-              warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, texnum))
-            attributes(texturefile) <- NULL
             result$texture <- texturefile
             texture <- self$getTexture(texnum)
             result$gltftexCoord <- texture$texCoord
@@ -465,7 +461,11 @@ Gltf <- R6Class("gltf",
           result$emission <- rgb(col[1], col[2], col[3])
         else
           result$emission <- "black"
-
+        if (!is.null(normalTexture <- material$normalTexture)) {
+          result$normalTexture <- extractTexture(self, normalTexture$index, verbose = FALSE)
+          texture <- self$getTexture(normalTexture$index)
+          result$normalTexCoord <- texture$texCoord
+        }
         if (!is.null(ext <- material$extras)
             && !is.null(props <- ext$RGL_material_properties)) {
           result[names(props)] <- props
