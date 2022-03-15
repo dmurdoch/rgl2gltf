@@ -46,7 +46,7 @@ getAffectedObjects <- function(gltf, method) {
                   mode <- 4
                 primsize <- c("0" = 1, "1" = 2, "4" = 3)[as.character(mode)]
                 if (is.na(primsize))
-                  stop("primitive mode ", mode, " not implemented in rigid method.")
+                  base::stop("primitive mode ", mode, " not implemented in rigid method.")
 
                 # weights_expanded <- weights[indices,]
                 jindex_expanded <- jindex[indices,]
@@ -165,7 +165,7 @@ playgltf <- function(gltf, animation = 0, start = times[1],
   }
 
   if (animation + 1 > gltf$listCount("animations"))
-    stop("Animation not found")
+    base::stop("Animation not found")
 
   if (verbose)
     cat("Initial plot...\n")

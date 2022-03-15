@@ -123,7 +123,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        open3dParams = getr3dDefaults(), ...) {
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
-    stop("gltfWidget requires the manipulateWidget package")
+    base::stop("gltfWidget requires the manipulateWidget package")
   backward <- NULL
   havenode <- -1
 
@@ -161,7 +161,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (has_animations && animation + 1 > gltf$listCount("animations"))
-    stop("Animation not found")
+    base::stop("Animation not found")
 
   if (verbose)
     cat("Initial plot...\n")
@@ -195,7 +195,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (!(method %in% c("rigid", "shader")))
-    stop("only rigid and shader methods are supported")
+    base::stop("only rigid and shader methods are supported")
 
   if (has_animations) {
     if (verbose)
@@ -322,7 +322,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         id <- obj$id
         normals <- obj$normals
         if (is.null(tangents <- obj$tangents))
-          stop("Missing tangent vectors in object ", id)
+          base::stop("Missing tangent vectors in object ", id)
         if (is.null(obj$bitangents)) {
           bitangents <- matrix(0, nrow = nrow(tangents), ncol = 3)
           for (i in seq_len(nrow(obj$tangents)))
