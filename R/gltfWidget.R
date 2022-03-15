@@ -122,7 +122,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        verbose = FALSE,
                        open3dParams = getr3dDefaults(), ...) {
 
-  if (!requireNamespace("manipulateWidget"))
+  if (!requireNamespace("manipulateWidget", quietly = TRUE))
     stop("gltfWidget requires the manipulateWidget package")
   backward <- NULL
   havenode <- -1
@@ -139,7 +139,18 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     }
   }
 
-  if (is.na(animation) || gltf$listCount("animations") == 0) {
+  has_normalTextures <- FALSE
+  for (i in seq_along(gltf$listCount("materials"))) {
+    material <- gltf$getMaterial(i-1)
+    if (!is.null(material$normalTexture)) {
+      has_normalTextures <- TRUE
+      break
+    }
+  }
+
+  has_animations <- !is.na(animation) && gltf$listCount("animations") != 0
+
+  if (!has_normalTextures && !has_animations) {
     s <- as.rglscene(gltf)
     plot3d(s, useNULL = TRUE, add = add,
            silent = !verbose, open3dParams = open3dParams)
@@ -149,19 +160,21 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     return(rglwidget())
   }
 
-  if (animation + 1 > gltf$listCount("animations"))
+  if (has_animations && animation + 1 > gltf$listCount("animations"))
     stop("Animation not found")
 
   if (verbose)
     cat("Initial plot...\n")
 
   method <- match.arg(method)
-  time <- start
-
   gltf$closeBuffers()
   gltf <- gltf$clone()
 
-  s <- as.rglscene(gltf, time = time, clone = FALSE)
+  if (has_animations) {
+    time <- start
+    s <- as.rglscene(gltf, time = time, clone = FALSE)
+  } else
+    s <- as.rglscene(gltf, clone = FALSE)
 
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
@@ -184,162 +197,265 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   if (!(method %in% c("rigid", "shader")))
     stop("only rigid and shader methods are supported")
 
-  if (verbose)
-    cat("Preparing skeleton...\n")
-  root <- currentSubscene3d()
+  if (has_animations) {
+    if (verbose)
+      cat("Preparing skeleton...\n")
+    root <- currentSubscene3d()
 
-  # Make a list indexed by the node number (+1) of the
-  # objects that it affects.  When it changes, those
-  # objects will be deleted and then redrawn in the
-  # partialScene method.  In the rigid method, this
-  # will be converted to subscenes that need modification
-  affectedObjects <- getAffectedObjects(gltf, method)
-  containingNodes <- getContainingNodes(s, affectedObjects)
+    # Make a list indexed by the node number (+1) of the
+    # objects that it affects.  When it changes, those
+    # objects will be deleted and then redrawn in the
+    # partialScene method.  In the rigid method, this
+    # will be converted to subscenes that need modification
+    affectedObjects <- getAffectedObjects(gltf, method)
+    containingNodes <- getContainingNodes(s, affectedObjects)
 
-  # Start building the output.
-  # First, create a control that will update all the
-  # animated nodes.
+    # Start building the output.
+    # First, create a control that will update all the
+    # animated nodes.
 
-  controls <- list(animationControl(gltf, ani = animation, value = start, translations = translations))
+    controls <- list(animationControl(gltf, ani = animation, value = start, translations = translations))
 
-  # Break each primitive into one or more subscenes
-  # under its original one.  Each one will hold a rigid
-  # part of the primitive
+    # Break each primitive into one or more subscenes
+    # under its original one.  Each one will hold a rigid
+    # part of the primitive
 
-  skeleton <- -1
-  if (method == "shader")
-    snew <- scene3d()
-  for (tag in names(containingNodes)) {
-    nodes <- containingNodes[[tag]]
-    for (i in seq_along(nodes)) {
-      subname <- paste0("subscene", nodes[i])
-      nodeid <- ids[subname]
+    skeleton <- -1
+    if (method == "shader")
+      snew <- scene3d()
+    for (tag in names(containingNodes)) {
+      nodes <- containingNodes[[tag]]
+      for (i in seq_along(nodes)) {
+        subname <- paste0("subscene", nodes[i])
+        nodeid <- ids[subname]
 
-      id <- tagged3d(tag, subscene = nodeid)
-      getMatrices(nodes[i])
-      node <- gltf$getNode(nodes[i])
-      skinnum <- node$skin
-      skin <- gltf$getSkin(skinnum)
-      if (is.null(skin$processed)) {
-        if (is.null(skin$skeleton))
-          skin$skeleton <- s$rootSubscene$id
-        else
-          skin$skeleton <- toSubscene(skin$skeleton)
-        skin$processed <- TRUE
-        gltf$setSkin(skinnum, skin)
-      }
-      if (skin$skeleton != skeleton) {
-        skeleton <- skin$skeleton
-        controls <- c(controls, list(skeletonControl(skeleton)))
-      }
-      prim <- getPrim(gltf, tag)
-      if (method == "rigid") {
-        subids <- numeric(length(prim$indices_split))
-        weights <- prim$unique_weights
-        joints <- as.numeric(colnames(weights))
-        newobj <- primToRglobj(prim, node$skin,
-                               gltf = gltf,
-                               defaultmaterial = s$material,
-                               doTransform = FALSE)
-        tags <- rownames(weights)
-        joints <- as.numeric(colnames(weights))
-        # Second, the node
+        id <- tagged3d(tag, subscene = nodeid)
+        getMatrices(nodes[i])
+        node <- gltf$getNode(nodes[i])
+        skinnum <- node$skin
         skin <- gltf$getSkin(skinnum)
-        jointnodes <- unlist(skin$joints[joints + 1])
-        for (j in seq_along(subids)) {
-          subids[j] <- newSubscene3d(model="modify",
-                                     viewport = "inherit",
-                                     projection = "inherit",
-                                     parent = nodeid)
-
-          newobj$indices <- prim$indices_split[[j]]
-          newobj$material$tag <- tags[j]
-          newid <- plot3d(cullVertices(newobj), add = TRUE)
-          keepjoints <- which(weights[j,] > 0)
-          controls <- c(controls, list(weightedControl(subids[j], jointnodes[keepjoints], weights[j, keepjoints], translations, backward[,,joints[keepjoints]+1, drop = FALSE])))
+        if (is.null(skin$processed)) {
+          if (is.null(skin$skeleton))
+            skin$skeleton <- s$rootSubscene$id
+          else
+            skin$skeleton <- toSubscene(skin$skeleton)
+          skin$processed <- TRUE
+          gltf$setSkin(skinnum, skin)
         }
-        pop3d(id = id)
+        if (skin$skeleton != skeleton) {
+          skeleton <- skin$skeleton
+          controls <- c(controls, list(skeletonControl(skeleton)))
+        }
+        prim <- getPrim(gltf, tag)
+        if (method == "rigid") {
+          subids <- numeric(length(prim$indices_split))
+          weights <- prim$unique_weights
+          joints <- as.numeric(colnames(weights))
+          newobj <- primToRglobj(prim, node$skin,
+                                 gltf = gltf,
+                                 defaultmaterial = s$material,
+                                 doTransform = FALSE)
+          tags <- rownames(weights)
+          joints <- as.numeric(colnames(weights))
+          # Second, the node
+          skin <- gltf$getSkin(skinnum)
+          jointnodes <- unlist(skin$joints[joints + 1])
+          for (j in seq_along(subids)) {
+            subids[j] <- newSubscene3d(model="modify",
+                                       viewport = "inherit",
+                                       projection = "inherit",
+                                       parent = nodeid)
 
-      } else {
-        joints <- toSubscene(skin$joints)
-        newobj <- primToRglobj(prim, node$skin,
-                               gltf = gltf,
-                               defaultmaterial = s$material,
-                               id = id,
-                               doTransform = FALSE)
-        newobj <- merge(newobj, snew$objects[[as.character(id)]])
-        snew$objects[[as.character(id)]] <- newobj
+            newobj$indices <- prim$indices_split[[j]]
+            newobj$material$tag <- tags[j]
+            newid <- plot3d(cullVertices(newobj), add = TRUE)
+            keepjoints <- which(weights[j,] > 0)
+            controls <- c(controls, list(weightedControl(subids[j], jointnodes[keepjoints], weights[j, keepjoints], translations, backward[,,joints[keepjoints]+1, drop = FALSE])))
+          }
+          pop3d(id = id)
 
-        # The skeleton probably has far more joints
-        # than we need.  Reduce to the minimum.
+        } else {
+          joints <- toSubscene(skin$joints)
+          newobj <- primToRglobj(prim, node$skin,
+                                 gltf = gltf,
+                                 defaultmaterial = s$material,
+                                 id = id,
+                                 doTransform = FALSE)
+          newobj <- merge(newobj, snew$objects[[as.character(id)]])
+          snew$objects[[as.character(id)]] <- newobj
 
-        obj <- snew$objects[[as.character(id)]]
-        weights0 <- as.numeric(obj$weights)
-        joints0 <- as.numeric(obj$joints)
-        usedjoints <- unique(c(0, joints0[weights0 > 0])) # Always keep joint 0
-# if (obj$material$tag == "0:50")
-# browser()
-        obj$joints <- match(obj$joints, usedjoints) - 1
-        dim(obj$joints) <- dim(obj$weights)
-        snew$objects[[as.character(id)]] <- obj
-        snew <- modifyShader(id, snew, usedjoints = usedjoints)
-        controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
+          # The skeleton probably has far more joints
+          # than we need.  Reduce to the minimum.
+
+          obj <- snew$objects[[as.character(id)]]
+          weights0 <- as.numeric(obj$weights)
+          joints0 <- as.numeric(obj$joints)
+          usedjoints <- unique(c(0, joints0[weights0 > 0])) # Always keep joint 0
+          # if (obj$material$tag == "0:50")
+          # browser()
+          obj$joints <- match(obj$joints, usedjoints) - 1
+          dim(obj$joints) <- dim(obj$weights)
+          snew$objects[[as.character(id)]] <- obj
+          shaders <- getShaders(id, snew)
+          n <- length(usedjoints)
+          shaders <- modifyShaders(shaders, "skins",
+                                   swiz = c("x", "y", "z", "w"), n = n)
+          snew <- setUserShaders(id, scene = snew,
+                                 vertexShader = shaders$vertexShader,
+                                 attributes = list(aJoint = obj$joints, aWeight = obj$weights),
+                                 uniforms = list(uJointMat = matrix(0, 4*n, 4)))
+          controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
+        }
+      }
+    }
+    gltf$closeBuffers()
+    if (method == "rigid")
+      snew <- scene3d()
+  } else
+    snew <- s
+
+  if (has_normalTextures) {
+    for (i in seq_along(snew$objects)) {
+      obj <- snew$objects[[i]]
+      if (!is.null(material <- obj$material) &&
+          !is.null(normalTexture <- material$normalTexture)) {
+        id <- obj$id
+        normals <- obj$normals
+        if (is.null(tangents <- obj$tangents))
+          stop("Missing tangent vectors in object ", id)
+        if (is.null(obj$bitangents)) {
+          bitangents <- matrix(0, nrow = nrow(tangents), ncol = 3)
+          for (i in seq_len(nrow(obj$tangents)))
+            bitangents[i,] <- cross(normals[i,1:3], tangents[i,])
+        } else
+          bitangents <- obj$bitangents
+        shaders <- getShaders(id, snew)
+        # cat("Shaders before mod:\n")
+        # cat(shaders$vertexShader, sep= "\n")
+        # cat(shaders$fragmentShader, sep="\n")
+        shaders <- modifyShaders(shaders, "normalTextures")
+        # cat("\nShaders after mod:")
+        # cat(shaders$vertexShader, sep= "\n")
+        # cat(shaders$fragmentShader, sep="\n")
+        snew <- setUserShaders(id, scene = snew,
+                               vertexShader = shaders$vertexShader,
+                               fragmentShader = shaders$fragmentShader,
+                               attributes = list(aTangent = tangents, aBitangent = bitangents),
+                               textures = list(normalTexture = obj$material$normalTexture))
       }
     }
   }
-  gltf$closeBuffers()
-  if (method == "rigid")
-    snew <- scene3d()
-
-  widget <- rglwidget(snew)
 
   if (close)
     close3d()
 
-  interval <- 1/20
-  widget %>%
-    playwidget(controls,
-               start = start,
-               stop = stop,
-               interval = interval,
-               step = interval,
-               ...)
+  widget <- rglwidget(snew)
+
+  if (has_animations) {
+    interval <- 1/20
+    widget %>%
+      playwidget(controls,
+                 start = start,
+                 stop = stop,
+                 interval = interval,
+                 step = interval,
+                 ...)
+  } else
+    widget
 }
 
-modifyShader <- function(id, scene, shader = getShaders(id, scene)$vertexShader, usedjoints) {
-  obj <- scene$objects[[as.character(id)]]
-  shader <- unlist(strsplit(shader, "\n"))
+# These are the shader edits that GLTF displays
+# need: "skins" applies skins, "normalTextures" applies
+# normal textures
 
-  main <- grep("void main(void)", shader, fixed = TRUE)
-  position <- grep("gl_Position = prMatrix * vPosition;", shader, fixed = TRUE)
-  normal <- grep("vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));", shader, fixed = TRUE)
-  stopifnot(length(main) == 1, length(position) == 1, length(normal) == 1)
 
-  # We just keep the rotation part of the
-  # skinMatrix.  If it also scales, this is wrong.
-  newnormal <- c(
-    "    skinMat = mat4(mat3(skinMat));",
-    "    vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));")
-  shader <- append(shader[-normal], newnormal, after = normal - 1)
-
-  swiz <- c("x", "y", "z", "w")
-  n <- length(usedjoints)
-  newpos <- c("    mat4 skinMat = mat4(0);",
-              "    for (int i = 0; i < 4; i++) {",
-paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
-              "    }",
-              "    vec4 pos = skinMat * vec4(aPos, 1.);",
-              "    gl_Position = prMatrix * mvMatrix * pos;")
-  shader <- append(shader[-position], newpos, after = position - 1)
-
-  newdecls <- sprintf("  attribute vec4 aJoint;
+shaderChanges <- list(
+  skins = list(
+    vertexShader = list(
+      decls = list(
+        old = "void main(void)",
+        new = function(n, ...) sprintf("  attribute vec4 aJoint;
   attribute vec4 aWeight;
-  uniform vec4 uJointMat[%d];", 4*n)
-  shader <- append(shader, newdecls, after = main - 1)
+  uniform vec4 uJointMat[%d];
+  void main(void) {", 4*n)),
+      pos = list(
+        old = "gl_Position = prMatrix * vPosition;",
+        new = function(swiz, ...) c("    mat4 skinMat = mat4(0);
+    for (int i = 0; i < 4; i++) {",
+        paste(sprintf("      skinMat[i] += aWeight.%s * uJointMat[4*int(aJoint.%s) + i];", swiz, swiz), collapse = "\n"),
+        "    }
+    vec4 pos = skinMat * vec4(aPos, 1.);
+    gl_Position = prMatrix * mvMatrix * pos;")
+      ),
+      normal = list(
+        old = "vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));",
+        new = "    skinMat = mat4(mat3(skinMat));
+    vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));"
+      )
+    )
+  ),
+  normalTextures = list(
+    vertexShader = list(
+      decls = list(
+        old = "void main(void)",
+        new = "  attribute vec3 aTangent;
+  attribute vec3 aBitangent;
+  varying mat3 vtbnMatrix;
+  void main(void) {
+    vec3 tangent = normalize(aTangent);
+    vec3 bitangent = normalize(aBitangent);
+    vec3 normal = normalize(aNorm);"),
+      matrix = list(
+        old = "vTexcoord = aTexcoord;",
+        new = "    vTexcoord = aTexcoord;
+    mat3 normMatrix3x3 = mat3(normMatrix);
+    vtbnMatrix = normMatrix3x3 * mat3(
+      tangent,
+      bitangent,
+      normal);"),
+      deleteVnormal = list(
+        old = "vNormal",
+        new = character(0))),
+    fragmentShader = list(
+      decls = list(
+        old = "void main(void) {",
+        new = "  varying mat3 vtbnMatrix;
+  uniform sampler2D normalTexture;
+  void main(void) {"),
+      normals = list(
+        old = "vec3 n = normalize(vNormal.xyz);",
+        new = "    vec4 normalColor = texture2D(normalTexture, vTexcoord);
+    vec3 n = normalize(vtbnMatrix * ((normalColor.xyz * 2.0) - 1.0));"),
+      deleteVnormal = list(
+        old = "vNormal",
+        new = character(0))
+    )
+  )
+)
 
-  setUserShaders(id, vertexShader = shader,
-                 scene = scene,
-                 attributes = list(aJoint = obj$joints, aWeight = obj$weights),
-                 uniforms = list(uJointMat = matrix(0, 4*n, 4)))
+# obj <- scene$objects[[as.character(id)]]
 
+# shaders <- getShaders(id, scene)
+
+modifyShaders <- function(shaders, mod, ...) {
+
+  if (is.character(mod))
+    mod <- shaderChanges[[mod]]
+
+  for (type in c("vertexShader", "fragmentShader")) {
+    if (!is.null(mod[[type]])) {
+      shader <- unlist(strsplit(shaders[[type]], "\n"))
+      for (part in mod[[type]]) {
+        lines <- grep(part$old, shader, fixed = TRUE)
+        if (is.function(part$new))
+          part$new <- part$new(...)
+        for (line in rev(lines))
+          shader <- append(shader[-line],
+                           part$new, after = line - 1)
+      }
+      shaders[[type]] <- shader
+    }
+  }
+
+  shaders
 }

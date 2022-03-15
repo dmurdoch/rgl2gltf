@@ -16,7 +16,8 @@ extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE
       writeBin(data, outfile)
       if (verbose)
         cat("Extracted ", mime, " file ", outfile)
-      attr(outfile, "mimeType") <- mime
+      if (mime != "image/png")
+        warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, index))
       invisible(outfile)
     }
   }

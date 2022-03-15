@@ -1,4 +1,5 @@
 newObj <- function(xyz = NULL, material = NULL, normals = NULL,
+                   tangents = NULL,
                    texcoords = NULL,
                    type, attribs = NULL,
                    indices = NULL,
@@ -13,6 +14,7 @@ newObj <- function(xyz = NULL, material = NULL, normals = NULL,
 
   result$vertices <- xyz
   result$normals <- normals
+  result$tangents <- tangents
   result$texcoords <- texcoords
   if (!is.null(indices))
     indices <- matrix(indices, ncol = 1, dimnames = list(NULL, "vertex"))
@@ -35,12 +37,13 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
   }
   mat <- gltf$getRglMaterial(prim$material)
 
-  normals <- positions <- texcoords <- joints <- weights <- NULL
+  normals <- positions <- texcoords <- joints <- weights <- tangents <- NULL
   for (a in seq_along(prim$attributes)) {
     attr <- unlist(prim$attributes[a])
     values <- gltf$readAccessor(attr[1])
     switch (names(attr),
             NORMAL = normals <- values,
+            TANGENT = tangents <- values,
             POSITION = positions <- values,
             COLOR_0 = {
               mat$color <- rgb(values[,1], values[,2], values[,3])
@@ -103,6 +106,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
   result <- switch(as.character(mode),
                    "0" = newObj(xyz = positions,    # points
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
@@ -111,6 +115,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 type = "points"),
                    "1" = newObj(xyz = positions,    # segments
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
@@ -119,6 +124,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 type = "lines"),
                    "2" = newObj(xyz = positions,    # loop
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = c(indices, indices[1]),
@@ -127,6 +133,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 type = "linestrip"),
                    "3" = newObj(xyz = positions,    # strip
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
@@ -135,6 +142,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 type = "linestrip"),
                    "4" = newObj(xyz = positions,    # triangles
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 material = mat,
                                 indices = indices,
@@ -143,6 +151,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 type = "triangles"),
                    "5" = newObj(xyz = positions,    # triangle strip
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 indices = rbind(indices[-c(ninds, ninds-1)],
                                                 indices[-c(1, ninds)],
@@ -152,6 +161,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
                                 material = mat),
                    "6" = newObj(xyz = positions,    # triangle fan
                                 normals = normals,
+                                tangents = tangents,
                                 texcoords = texcoords,
                                 indices = rbind(indices[1],
                                                 indices[-c(1, ninds)],
@@ -545,6 +555,32 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
     newids <- getSubsceneIds(newscene$rootSubscene)
     newscene$rootSubscene <- applyAllidTranslations(newscene$rootSubscene,
                                                     data.frame(from = newids, to = oldids))
+    # The plotting lost all gltf specific fields
+    # so we find them and put them back now
+    for (i in seq_along(newscene$objects)) {
+      obj <- newscene$objects[[i]]
+      if (is.null(obj$material))
+        next
+      tag <- obj$material$tag
+      if (is.null(tag))
+        next
+      for (j in seq_along(rglscene$objects)) {
+        oldobj <- rglscene$objects[[j]]
+        if (is.null(oldobj$material))
+          next
+        oldtag <- oldobj$material$tag
+        if (identical(tag, oldtag))
+          break
+      }
+      if (!identical(tag, oldtag))
+        next
+      obj$weights <- oldobj$weights
+      obj$joints <- oldobj$joints
+      obj$tangents <- oldobj$tangents
+      if (!is.null(oldobj$material$normalTexture))
+        obj$material$normalTexture <- oldobj$material$normalTexture
+      newscene$objects[[i]] <- obj
+    }
     rglscene <- newscene
   }
 
