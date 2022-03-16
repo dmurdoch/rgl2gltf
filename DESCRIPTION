@@ -2,7 +2,9 @@ Package: rgl2gltf
 Type: Package
 Title: Read and Write .gltf and .glb Files
 Version: 0.1.10
-Author: Duncan Murdoch
+Authors@R: c(person("Duncan", "Murdoch", role = c("aut", "cre"),
+                     email = "murdoch.duncan@gmail.com"),
+             person("Morten", "Mikkelsen", "S.", role = c("cph")))
 Maintainer: Duncan Murdoch <murdoch.duncan@gmail.com>
 Description: GLtf is a format for 3D models.  This package adds
  read and write functions to it.
