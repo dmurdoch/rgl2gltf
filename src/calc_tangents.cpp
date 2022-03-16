@@ -1,3 +1,25 @@
+#include "calc_tangents.h"
+#include "R.h"
+#include <array>
+
+using namespace rgl2gltf;
+
+Mesh::Mesh(int in_draw_mode, int in_n_indices, int in_n_vertices,
+           int* in_indices,
+           double* in_vertices,
+           double* in_normals,
+           double* in_texcoords,
+           double* in_tangents) {
+  draw_mode = in_draw_mode;
+  n_indices = in_n_indices;
+  n_vertices = in_n_vertices;
+  indices = in_indices;
+  vertices = in_vertices;
+  normals = in_normals;
+  texcoords = in_texcoords;
+  tangents = in_tangents;
+}
+
 CalcTangents::CalcTangents() {
   iface.m_getNumFaces = get_num_faces;
   iface.m_getNumVerticesOfFace = get_num_vertices_of_face;
@@ -10,27 +32,30 @@ CalcTangents::CalcTangents() {
   context.m_pInterface = &iface;
 }
 
-void CalcTangents::calc(Mesh *mesh) {
+int CalcTangents::calc(Mesh *mesh) {
 
   context.m_pUserData = mesh;
 
   if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] with Mesh: {}", mesh->name);
+    Rprintf("[CalcTangents] with Mesh\n");
   }
 
-  genTangSpaceDefault(&this->context);
+  return (int)genTangSpaceDefault(&this->context);
 }
 
 int CalcTangents::get_num_faces(const SMikkTSpaceContext *context) {
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
-  float f_size = (float)working_mesh->indices.size() / 3.f;
-  int i_size = (int)working_mesh->indices.size() / 3;
+  int i_size = working_mesh->n_indices;
 
-  assert((f_size - (float)i_size) == 0.f);
+  if(working_mesh->draw_mode == GL_TRIANGLES) {
+    i_size /= 3;
+  } else if (working_mesh->draw_mode == GL_QUADS) {
+    i_size /= 4;
+  }
 
   if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] get_num_faces: {}", i_size);
+    Rprintf("[CalcTangents] get_num_faces: %d\n", i_size);
   }
 
   return i_size;
@@ -42,8 +67,10 @@ int CalcTangents::get_num_vertices_of_face(const SMikkTSpaceContext *context,
 
   if(working_mesh->draw_mode == GL_TRIANGLES) {
     return 3;
+  } else if (working_mesh->draw_mode == GL_QUADS) {
+    return 4;
   }
-  throw std::logic_error("no vertices with less than 3 and more than 3 supported");
+  error("no vertices with less than 3 and more than 4 supported");
 }
 
 void CalcTangents::get_position(const SMikkTSpaceContext *context,
@@ -53,16 +80,16 @@ void CalcTangents::get_position(const SMikkTSpaceContext *context,
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
   auto index = get_vertex_index(context, iFace, iVert);
-  auto vertex = working_mesh->vertices[index];
+  double* vertex = std::addressof(working_mesh->vertices[3*index]);
 
-  if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] get_position({}): {}", index,
-                  glm::to_string(vertex.position));
+  if(CALC_TANGENTS_DEBUG && index < 10) {
+    Rprintf("[CalcTangents] get_position(%d): %.4f %.4f %.4f\n", index,
+                  vertex[0], vertex[1], vertex[2]);
   }
 
-  outpos[0] = vertex.position.x;
-  outpos[1] = vertex.position.y;
-  outpos[2] = vertex.position.z;
+  outpos[0] = vertex[0];
+  outpos[1] = vertex[1];
+  outpos[2] = vertex[2];
 }
 
 void CalcTangents::get_normal(const SMikkTSpaceContext *context,
@@ -71,16 +98,16 @@ void CalcTangents::get_normal(const SMikkTSpaceContext *context,
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
   auto index = get_vertex_index(context, iFace, iVert);
-  auto vertex = working_mesh->vertices[index];
+  double *normal = std::addressof(working_mesh->normals[3*index]);
 
-  if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] get_normal({}): {}", index,
-                  glm::to_string(vertex.normal));
+  if(CALC_TANGENTS_DEBUG && index < 10) {
+    Rprintf("[CalcTangents] get_normal(%d): %.4f %.4f %.4f\n", index,
+                  normal[0], normal[1], normal[2]);
   }
 
-  outnormal[0] = vertex.normal.x;
-  outnormal[1] = vertex.normal.y;
-  outnormal[2] = vertex.normal.z;
+  outnormal[0] = normal[0];
+  outnormal[1] = normal[1];
+  outnormal[2] = normal[2];
 }
 
 void CalcTangents::get_tex_coords(const SMikkTSpaceContext *context,
@@ -89,15 +116,15 @@ void CalcTangents::get_tex_coords(const SMikkTSpaceContext *context,
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
   auto index = get_vertex_index(context, iFace, iVert);
-  auto vertex = working_mesh->vertices[index];
+  double *texcoords = std::addressof(working_mesh->texcoords[4*index]);
 
-  if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] get_tex_coords({}): {}", index,
-                  glm::to_string(vertex.tex_coords));
+  if(CALC_TANGENTS_DEBUG && index < 10) {
+    Rprintf("[CalcTangents] get_tex_coords(%d): %.4f %.4f\n", index,
+                  texcoords[0], texcoords[1]);
   }
 
-  outuv[0] = vertex.tex_coords.x;
-  outuv[1] = vertex.tex_coords.y;
+  outuv[0] = texcoords[0];
+  outuv[1] = texcoords[1];
 }
 
 void CalcTangents::set_tspace_basic(const SMikkTSpaceContext *context,
@@ -107,16 +134,16 @@ void CalcTangents::set_tspace_basic(const SMikkTSpaceContext *context,
 
 
   auto index = get_vertex_index(context, iFace, iVert);
-  auto *vertex = &working_mesh->vertices[index];
+  double *tangent = std::addressof(working_mesh->tangents[4*index]);
 
-  vertex->tangent.x = tangentu[0];
-  vertex->tangent.y = tangentu[1];
-  vertex->tangent.z = tangentu[2];
-  vertex->tangent.w = fSign;
+  tangent[0] = tangentu[0];
+  tangent[1] = tangentu[1];
+  tangent[2] = tangentu[2];
+  tangent[3] = fSign;
 
-  if(CALC_TANGENTS_DEBUG) {
-    spdlog::debug("[CalcTangents] set_tspace_basic({}) fSign:{}  {}", index, fSign,
-                  glm::to_string(vertex->tangent));
+  if(CALC_TANGENTS_DEBUG && index < 10) {
+    Rprintf("[CalcTangents] set_tspace_basic(%d) fSign: %.4f %.4f %.4f %.4f \n", index, fSign,
+                  tangent[0], tangent[1], tangent[2]);
   }
 }
 

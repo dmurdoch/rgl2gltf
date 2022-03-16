@@ -1,18 +1,32 @@
-#pragma once
+#ifndef CALC_TANGENTS_H
+#define CALC_TANGENTS_H
 
 #include "mikktspace.h"
+#include <vector>
+#include "gl.h" // This is just an extract
 
-#define CALC_TANGENTS_DEBUG 1
+#define CALC_TANGENTS_DEBUG 0
 
-namespace Pretzel {
+namespace rgl2gltf {
 
-class Mesh;
+class Mesh {
+
+public:
+  Mesh(int in_draw_mode, int in_n_indices, int in_n_vertices,
+       int* in_indices,
+       double* in_vertices,
+       double* in_normals,
+       double* in_texcoords,
+       double* in_tangents);
+  int draw_mode, n_indices, n_vertices, *indices;
+  double *vertices, *normals, *texcoords, *tangents;
+};
 
 class CalcTangents {
 
 public:
   CalcTangents();
-  void calc(Mesh *mesh);
+  int calc(Mesh *mesh);
 
 private:
 
@@ -37,4 +51,6 @@ private:
                                                    float fSign, int iFace, int iVert);
 
 };
-}
+} // namespace rgl2gltf
+
+#endif // SPHERE_MESH_H

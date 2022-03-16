@@ -321,12 +321,24 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           !is.null(normalTexture <- material$normalTexture)) {
         id <- obj$id
         normals <- obj$normals
-        if (is.null(tangents <- obj$tangents))
-          base::stop("Missing tangent vectors in object ", id)
+        if (is.null(tangents <- obj$tangents)) {
+          if (is.null(indices <- obj$indices))
+            indices <- seq_len(nrow(obj$vertices))
+          if (obj$type == "triangles")
+            edges <- 3
+          else if (obj$type == "quads")
+            edges <- 4
+          else
+            edges <- NA
+          tangents <- obj$tangents <-
+            getTangents(edges, indices, obj$vertices,
+                        obj$normals,
+                        obj$texcoords)
+        }
         if (is.null(obj$bitangents)) {
           bitangents <- matrix(0, nrow = nrow(tangents), ncol = 3)
           for (i in seq_len(nrow(obj$tangents)))
-            bitangents[i,] <- cross(normals[i,1:3], tangents[i,])
+            bitangents[i,] <- tangents[i,4]*cross(normals[i,1:3], tangents[i,1:3])
         } else
           bitangents <- obj$bitangents
         shaders <- getShaders(id, snew)
