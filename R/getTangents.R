@@ -25,5 +25,5 @@ getTangents <- function(edges, indices, vertices, normals, texcoords) {
                tangents = double(4*nv))$tangents
 
   matrix(tangents, ncol = 4, nrow = nv, byrow = TRUE,
-         dimnames = list(NULL, c("x", "y", "z", "sign")))
+         dimnames = list(NULL, c("x", "y", "z", "w")))
 }
