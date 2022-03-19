@@ -172,9 +172,9 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
 
   if (has_animations) {
     time <- start
-    s <- as.rglscene(gltf, time = time, clone = FALSE)
+    s <- as.rglscene(gltf, time = time, clone = FALSE, add = add)
   } else
-    s <- as.rglscene(gltf, clone = FALSE)
+    s <- as.rglscene(gltf, clone = FALSE, add = add)
 
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
