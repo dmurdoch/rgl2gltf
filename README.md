@@ -28,10 +28,7 @@ library(rgl2gltf)
 
 gltf <- readGLB("https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true")
 mesh <- as.mesh3d(gltf)
-open3d(windowRect = c(0, 0, 500, 400))
-#> glX 
-#>   2
-shade3d(mesh)
+plot3d(gltf)
 snapshot3d(webshot = FALSE, filename = "man/figures/engine.png")
 ```
 
