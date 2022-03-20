@@ -59,8 +59,9 @@ Briefly,
 -   `BoxAnimated.glb` was produced by Cesium.
 -   `BrainStem.glb` was created by Keith Hunter and is owned by Smith
     Micro Software, Inc. 
--   `NormalTangentTest.glb` was created by Ed Mackey and is owned by
-    Analytical Graphics, Inc., licensed under CC-BY 4.0
+-   `NormalTangentTest.glb` and `NormalTangentMirrorTest.glb` were
+    created by Ed Mackey and are owned by Analytical Graphics, Inc.,
+    licensed under CC-BY 4.0
     <https://creativecommons.org/licenses/by/4.0/>.
 
 Files `src/mikktspace.c` and `src/mikktspace.h` are written by Morten S.

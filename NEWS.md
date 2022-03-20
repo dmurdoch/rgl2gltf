@@ -1,4 +1,4 @@
-# rgl2gltf 0.1.10
+# rgl2gltf 0.1.11
 
 * Added a `NEWS.md` file to track changes to the package.
 * Added "rigid" method animation to `playgltf()`.
@@ -8,3 +8,4 @@
 * Added `findEntry()` debugging function.
 * Added `modifyShaders()` function to edit shaders.
 * Added shader for normal textures.
+* Added MikkTSpace code to assign tangents if they are not specified.
