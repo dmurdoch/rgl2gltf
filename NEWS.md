@@ -8,4 +8,5 @@
 * Added `findEntry()` debugging function.
 * Added `modifyShaders()` function to edit shaders.
 * Added shader for normal textures.
-* Added MikkTSpace code to assign tangents if they are not specified.
+* Added `getTangents()` to use MikkTSpace code to assign tangents 
+if they are not specified.  These can be used in normal textures.
