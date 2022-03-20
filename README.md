@@ -25,11 +25,6 @@ Sample code:
 ``` r
 library(rgl)
 library(rgl2gltf)
-#> 
-#> Attaching package: 'rgl2gltf'
-#> The following object is masked from 'package:methods':
-#> 
-#>     findClass
 
 gltf <- readGLB("https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true")
 mesh <- as.mesh3d(gltf)
@@ -45,8 +40,10 @@ snapshot3d(webshot = FALSE, filename = "man/figures/engine.png")
 ## Copyright
 
 Most of this package is written by Duncan Murdoch and licensed under GPL
-2.0. Sample files in `inst/glb` and `inst/localtests` are unmodified
-copies of files from
+2.0.
+
+Sample files in `inst/glb` and `inst/localtests` are unmodified copies
+of files from
 <https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0>,
 and have details of copyright and licenses listed there. All have
 permissive licenses, some requiring acknowledgment.
@@ -62,6 +59,10 @@ Briefly,
 -   `BoxAnimated.glb` was produced by Cesium.
 -   `BrainStem.glb` was created by Keith Hunter and is owned by Smith
     Micro Software, Inc. 
--   `NormalTangentTest.glb` was created by Ed Mackey and is owned by
-    Analytical Graphics, Inc., licensed under CC-BY 4.0
+-   `NormalTangentTest.glb` and `NormalTangentMirrorTest.glb` were
+    created by Ed Mackey and are owned by Analytical Graphics, Inc.,
+    licensed under CC-BY 4.0
     <https://creativecommons.org/licenses/by/4.0/>.
+
+Files `src/mikktspace.c` and `src/mikktspace.h` are written by Morten S.
+Mikkelsen and used under the permissive license included within them.

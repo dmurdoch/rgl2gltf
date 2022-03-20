@@ -12,7 +12,7 @@ would produce, or a \code{"mesh3d"} object.
 \usage{
 \S3method{as.rglscene}{gltf}(x, scene = x$scene, nodes = NULL,
          useRGLinfo = TRUE, time = NULL, ani = 0, clone = TRUE,
-         quick = FALSE, ...)
+         quick = FALSE, add = FALSE, ...)
 \S3method{as.mesh3d}{gltf}(x, ...)
 }
 \arguments{
@@ -35,6 +35,8 @@ that information, otherwise include only what standard glTF viewers would displa
   \item{quick}{If \code{TRUE}, \code{\link{plot3d}} will work
   on the result, but it is not sufficiently complete to use
   as the scene in \code{\link{rglwidget}}.}
+  \item{add}{If \code{quick = FALSE}, the scene will be plotted
+  in an existing rgl scene, and both old and new parts will be returned.}
   \item{...}{\code{as.mesh3d} passes these arguments to \code{as.rglscene}.}
 }
 \details{

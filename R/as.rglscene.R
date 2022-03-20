@@ -178,7 +178,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
                              useRGLinfo = TRUE,
                              time = NULL,
                              ani = 0, clone = TRUE,
-                             quick = FALSE, ...) {
+                             quick = FALSE, add = FALSE, ...) {
 
   if (clone) {
     # We'll be caching various things, so make a
@@ -548,7 +548,7 @@ as.rglscene.gltf <- function(x, scene = x$scene, nodes = NULL,
   # rglwidget().  If quick is TRUE, leave it
   # at that.
   if (!quick) {
-    plot3d(rglscene, useNULL = TRUE)
+    plot3d(rglscene, useNULL = TRUE, add = add)
     newscene <- scene3d()
     close3d()
     oldids <- getSubsceneIds(rglscene$rootSubscene)

@@ -493,6 +493,8 @@ Gltf <- R6Class("gltf",
     #' @param ani Animation number
     #' @return Min and max times from the samplers in the animation.
     timerange = function(ani) {
+      if (ani >= self$listCount("animations"))
+        return(c(NA, NA))
       animation <- self$getAnimation(ani)
       samplers <- animation$samplers
       min <- Inf

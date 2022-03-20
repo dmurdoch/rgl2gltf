@@ -123,7 +123,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        open3dParams = getr3dDefaults(), ...) {
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
-    base::stop("gltfWidget requires the manipulateWidget package")
+    stop("gltfWidget requires the manipulateWidget package")
   backward <- NULL
   havenode <- -1
 
@@ -161,7 +161,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (has_animations && animation + 1 > gltf$listCount("animations"))
-    base::stop("Animation not found")
+    stop("Animation not found")
 
   if (verbose)
     cat("Initial plot...\n")
@@ -172,9 +172,9 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
 
   if (has_animations) {
     time <- start
-    s <- as.rglscene(gltf, time = time, clone = FALSE)
+    s <- as.rglscene(gltf, time = time, clone = FALSE, add = add)
   } else
-    s <- as.rglscene(gltf, clone = FALSE)
+    s <- as.rglscene(gltf, clone = FALSE, add = add)
 
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
@@ -195,7 +195,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (!(method %in% c("rigid", "shader")))
-    base::stop("only rigid and shader methods are supported")
+    stop("only rigid and shader methods are supported")
 
   if (has_animations) {
     if (verbose)
@@ -321,14 +321,27 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           !is.null(normalTexture <- material$normalTexture)) {
         id <- obj$id
         normals <- obj$normals
-        if (is.null(tangents <- obj$tangents))
-          base::stop("Missing tangent vectors in object ", id)
-        if (is.null(obj$bitangents)) {
-          bitangents <- matrix(0, nrow = nrow(tangents), ncol = 3)
-          for (i in seq_len(nrow(obj$tangents)))
-            bitangents[i,] <- cross(normals[i,1:3], tangents[i,])
-        } else
-          bitangents <- obj$bitangents
+        if (is.null(tangents <- obj$tangents)) {
+          if (is.null(indices <- obj$indices))
+            indices <- seq_len(nrow(obj$vertices))
+          if (obj$type == "triangles")
+            edges <- 3
+          else if (obj$type == "quads")
+            edges <- 4
+          else
+            edges <- NA
+          obj$vertices <- obj$vertices[as.integer(indices),]
+          obj$normals <- obj$normals[as.integer(indices),]
+          obj$texcoords <- obj$texcoords[as.integer(indices),]
+          indices <- seq_len(nrow(obj$vertices))
+          obj$indices <- NULL
+          obj$centers <- NULL
+          tangents <- obj$tangents <-
+            getTangents(edges, indices, obj$vertices,
+                        obj$normals,
+                        obj$texcoords)
+          snew$objects[[i]] <- obj
+        }
         shaders <- getShaders(id, snew)
         # cat("Shaders before mod:\n")
         # cat(shaders$vertexShader, sep= "\n")
@@ -340,7 +353,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         snew <- setUserShaders(id, scene = snew,
                                vertexShader = shaders$vertexShader,
                                fragmentShader = shaders$fragmentShader,
-                               attributes = list(aTangent = tangents, aBitangent = bitangents),
+                               attributes = list(aTangent = tangents),
                                textures = list(normalTexture = obj$material$normalTexture))
       }
     }
@@ -398,18 +411,16 @@ shaderChanges <- list(
     vertexShader = list(
       decls = list(
         old = "void main(void)",
-        new = "  attribute vec3 aTangent;
-  attribute vec3 aBitangent;
+        new = "  attribute vec4 aTangent;
   varying mat3 vtbnMatrix;
   void main(void) {
-    vec3 tangent = normalize(aTangent);
-    vec3 bitangent = normalize(aBitangent);
-    vec3 normal = normalize(aNorm);"),
+    vec3 tangent = normalize(vec3(mvMatrix * vec4(aTangent.xyz, 0.0)));
+    vec3 normal = normalize(vec3(normMatrix * vec4(aNorm, 0.0)));
+    vec3 bitangent = cross(normal, tangent) * aTangent.w;"),
       matrix = list(
         old = "vTexcoord = aTexcoord;",
         new = "    vTexcoord = aTexcoord;
-    mat3 normMatrix3x3 = mat3(normMatrix);
-    vtbnMatrix = normMatrix3x3 * mat3(
+    vtbnMatrix = mat3(
       tangent,
       bitangent,
       normal);"),
