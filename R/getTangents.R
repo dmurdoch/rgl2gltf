@@ -22,8 +22,11 @@ getTangents <- function(edges, indices, vertices, normals, texcoords) {
                as.double(vertices),
                as.double(normals),
                as.double(texcoords),
-               tangents = double(4*nv))$tangents
+               tangents = double(4*ni))$tangents
 
-  matrix(tangents, ncol = 4, nrow = nv, byrow = TRUE,
+  result <- matrix(tangents, ncol = 4, nrow = ni, byrow = TRUE,
          dimnames = list(NULL, c("x", "y", "z", "w")))
+  result[,"w"] <- result[,"w"]
+
+  result
 }

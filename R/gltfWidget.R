@@ -123,7 +123,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        open3dParams = getr3dDefaults(), ...) {
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
-    base::stop("gltfWidget requires the manipulateWidget package")
+    stop("gltfWidget requires the manipulateWidget package")
   backward <- NULL
   havenode <- -1
 
@@ -161,7 +161,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (has_animations && animation + 1 > gltf$listCount("animations"))
-    base::stop("Animation not found")
+    stop("Animation not found")
 
   if (verbose)
     cat("Initial plot...\n")
@@ -195,7 +195,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   }
 
   if (!(method %in% c("rigid", "shader")))
-    base::stop("only rigid and shader methods are supported")
+    stop("only rigid and shader methods are supported")
 
   if (has_animations) {
     if (verbose)
@@ -330,19 +330,26 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
             edges <- 4
           else
             edges <- NA
+          obj$vertices <- obj$vertices[as.integer(indices),]
+          obj$normals <- obj$normals[as.integer(indices),]
+          obj$texcoords <- obj$texcoords[as.integer(indices),]
+          indices <- seq_len(nrow(obj$vertices))
+          obj$indices <- NULL
+          obj$centers <- NULL
           tangents <- obj$tangents <-
             getTangents(edges, indices, obj$vertices,
                         obj$normals,
                         obj$texcoords)
+          snew$objects[[i]] <- obj
         }
         shaders <- getShaders(id, snew)
-        cat("Shaders before mod:\n")
-        cat(shaders$vertexShader, sep= "\n")
-        cat(shaders$fragmentShader, sep="\n")
+        # cat("Shaders before mod:\n")
+        # cat(shaders$vertexShader, sep= "\n")
+        # cat(shaders$fragmentShader, sep="\n")
         shaders <- modifyShaders(shaders, "normalTextures")
-        cat("\nShaders after mod:")
-        cat(shaders$vertexShader, sep= "\n")
-        cat(shaders$fragmentShader, sep="\n")
+        # cat("\nShaders after mod:")
+        # cat(shaders$vertexShader, sep= "\n")
+        # cat(shaders$fragmentShader, sep="\n")
         snew <- setUserShaders(id, scene = snew,
                                vertexShader = shaders$vertexShader,
                                fragmentShader = shaders$fragmentShader,

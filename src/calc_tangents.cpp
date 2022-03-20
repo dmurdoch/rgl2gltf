@@ -116,7 +116,7 @@ void CalcTangents::get_tex_coords(const SMikkTSpaceContext *context,
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
   auto index = get_vertex_index(context, iFace, iVert);
-  double *texcoords = std::addressof(working_mesh->texcoords[4*index]);
+  double *texcoords = std::addressof(working_mesh->texcoords[2*index]);
 
   if(CALC_TANGENTS_DEBUG && index < 10) {
     Rprintf("[CalcTangents] get_tex_coords(%d): %.4f %.4f\n", index,
@@ -132,8 +132,9 @@ void CalcTangents::set_tspace_basic(const SMikkTSpaceContext *context,
                                     const float fSign, const int iFace, const int iVert) {
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
+  auto face_size = get_num_vertices_of_face(context, iFace);
 
-  auto index = get_vertex_index(context, iFace, iVert);
+  auto index = (iFace * face_size) + iVert;
   double *tangent = std::addressof(working_mesh->tangents[4*index]);
 
   tangent[0] = tangentu[0];
