@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Read and write .gltf and .glb files • rgl2gltf</title>
+<title>Read and Write .gltf and .glb Files • rgl2gltf</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Read and write .gltf and .glb files">
+<script src="pkgdown.js"></script><meta property="og:title" content="Read and Write .gltf and .glb Files">
 <meta property="og:description" content="GLtf is a format for 3D models.  This package adds
  read and write functions to it.">
 <meta name="robots" content="noindex">
@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.8</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.11</span>
       </span>
     </div>
 
@@ -45,7 +45,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -90,7 +90,7 @@ spec at khronos.org</a> . It also contains functions to convert
 objects.</p>
 <p>It is currently in active development. Please add issues or pull
 requests if something important to you is missing.</p>
-<p>A <code>pkgdown</code> website is here: <a href="https://dmurdoch.github.io/rgl2gltf/dev" class="uri">https://dmurdoch.github.io/rgl2gltf/dev</a></p>
+<p>A <code>pkgdown</code> website is here: <a href="https://dmurdoch.github.io/rgl2gltf/dev/" class="uri">https://dmurdoch.github.io/rgl2gltf/dev/</a></p>
 <p>To install, run</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"dmurdoch/rgl2gltf"</span><span class="op">)</span></code></pre></div>
@@ -101,17 +101,15 @@ requests if something important to you is missing.</p>
 
 <span class="va">gltf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/readGLB.html">readGLB</a></span><span class="op">(</span><span class="st">"https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"</span><span class="op">)</span>
 <span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/imports.html">as.mesh3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span>
-<span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/open3d.html" class="external-link">open3d</a></span><span class="op">(</span>windowRect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">500</span>, <span class="fl">400</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; glX </span>
-<span class="co">#&gt;   1</span>
-<span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/shade3d.html" class="external-link">shade3d</a></span><span class="op">(</span><span class="va">mesh</span><span class="op">)</span>
+<span class="fu"><a href="reference/imports.html">plot3d</a></span><span class="op">(</span><span class="va">gltf</span><span class="op">)</span>
 <span class="fu"><a href="https://dmurdoch.github.io/rgl/dev/reference/snapshot.html" class="external-link">snapshot3d</a></span><span class="op">(</span>webshot <span class="op">=</span> <span class="cn">FALSE</span>, filename <span class="op">=</span> <span class="st">"man/figures/engine.png"</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/engine.png"></p>
 <div class="section level2">
 <h2 id="copyright">Copyright<a class="anchor" aria-label="anchor" href="#copyright"></a>
 </h2>
 <p>Most of this package is written by Duncan Murdoch and licensed under
-GPL 2.0. Sample files in <code>inst/glb</code> and
+GPL 2.0.</p>
+<p>Sample files in <code>inst/glb</code> and
 <code>inst/localtests</code> are unmodified copies of files from <a href="https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0" class="external-link uri">https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0</a>,
 and have details of copyright and licenses listed there. All have
 permissive licenses, some requiring acknowledgment.</p>
@@ -132,9 +130,13 @@ Graphics.</li>
 <code>BrainStem.glb</code> was created by Keith Hunter and is owned
 by Smith Micro Software, Inc. </li>
 <li>
-<code>NormalTangentTest.glb</code> was created by Ed Mackey and is
-owned by Analytical Graphics, Inc., licensed under CC-BY 4.0 <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link uri">https://creativecommons.org/licenses/by/4.0/</a>.</li>
+<code>NormalTangentTest.glb</code> and
+<code>NormalTangentMirrorTest.glb</code> were created by Ed Mackey and
+are owned by Analytical Graphics, Inc., licensed under CC-BY 4.0 <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link uri">https://creativecommons.org/licenses/by/4.0/</a>.</li>
 </ul>
+<p>Files <code>src/mikktspace.c</code> and <code>src/mikktspace.h</code>
+are written by Morten S. Mikkelsen and used under the permissive license
+included within them.</p>
 </div>
 </div>
   </div>
@@ -155,6 +157,12 @@ owned by Analytical Graphics, Inc., licensed under CC-BY 4.0 <a href="https://cr
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -167,7 +175,8 @@ owned by Analytical Graphics, Inc., licensed under CC-BY 4.0 <a href="https://cr
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://github.com/dmurdoch" class="external-link">Duncan Murdoch</a> <br><small class="roles"> Maintainer </small>  </li>
+<a href="https://github.com/dmurdoch" class="external-link">Duncan Murdoch</a> <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -186,7 +195,7 @@ Murdoch</a>.</p>
 <div class="pkgdown">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+2.0.2.9000.</p>
 </div>
 
       </footer>

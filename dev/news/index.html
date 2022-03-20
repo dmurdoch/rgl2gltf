@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.8</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.11</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -58,12 +58,19 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.8" id="rgl2gltf-018">rgl2gltf 0.1.8<a class="anchor" aria-label="anchor" href="#rgl2gltf-018"></a></h2>
+<h2 class="page-header" data-toc-text="0.1.11" id="rgl2gltf-0111">rgl2gltf 0.1.11<a class="anchor" aria-label="anchor" href="#rgl2gltf-0111"></a></h2>
 <ul><li>Added a <code>NEWS.md</code> file to track changes to the
 package.</li>
 <li>Added “rigid” method animation to <code><a href="../reference/playgltf.html">playgltf()</a></code>.</li>
 <li>Added <code>gltfwidget()</code> to play in WebGL.</li>
 <li>Added debugging function <code><a href="../reference/showTags.html">showTags()</a></code>.</li>
+<li>Added shader support for skins.</li>
+<li>Added <code><a href="../reference/findEntry.html">findEntry()</a></code> debugging function.</li>
+<li>Added <code><a href="../reference/modifyShaders.html">modifyShaders()</a></code> function to edit shaders.</li>
+<li>Added shader for normal textures.</li>
+<li>Added <code><a href="../reference/getTangents.html">getTangents()</a></code> to use MikkTSpace code to assign
+tangents if they are not specified. These can be used in normal
+textures.</li>
 </ul></div>
   </div>
 
@@ -81,7 +88,7 @@ Murdoch</a>.</p>
 
 <div class="pkgdown">
   <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+2.0.2.9000.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.8</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.11</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -99,7 +99,7 @@
       </tr><tr><td>
           <p><code><a href="gltfWidget.html">gltfWidget()</a></code> </p>
         </td>
-        <td><p>Create a widget for an animated glTF display</p></td>
+        <td><p>Create a widget for a glTF display.</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="miscellaneous-utility-functions">Miscellaneous utility functions <a href="#miscellaneous-utility-functions" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>Various functions used for display, debugging and internal use</p>
@@ -109,13 +109,21 @@
         </td>
         <td><p>Extract a texture file from a gltf object</p></td>
       </tr><tr><td>
-          <p><code><a href="findName.html">findName()</a></code> <code><a href="findName.html">findClass()</a></code> </p>
+          <p><code><a href="findEntry.html">findEntry()</a></code> <code><a href="findEntry.html">namePattern()</a></code> <code><a href="findEntry.html">hasClass()</a></code> </p>
         </td>
         <td><p>Find a component of a recursive object</p></td>
+      </tr><tr><td>
+          <p><code><a href="getTangents.html">getTangents()</a></code> </p>
+        </td>
+        <td><p>Use the MikkTSpace code to generate tangent vectors.</p></td>
       </tr><tr><td>
           <p><code><a href="matrixSequence.html">matrixSequence()</a></code> <code><a href="matrixSequence.html">print(<i>&lt;matrixSequence&gt;</i>)</a></code> </p>
         </td>
         <td><p>Print the sequence of matrices affecting an object.</p></td>
+      </tr><tr><td>
+          <p><code><a href="modifyShaders.html">modifyShaders()</a></code> </p>
+        </td>
+        <td><p>Edit shader code</p></td>
       </tr><tr><td>
           <p><code><a href="showtree.html">showtree()</a></code> </p>
         </td>
@@ -148,7 +156,7 @@ Murdoch</a>.</p>
 
 <div class="pkgdown">
   <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+2.0.2.9000.</p>
 </div>
 
       </footer></div>
