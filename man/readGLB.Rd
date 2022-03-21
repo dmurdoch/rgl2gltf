@@ -39,6 +39,7 @@ Duncan Murdoch
 \code{\link{readglTF}}
 }
 \examples{
+
 # This web page has lots of sample files
 
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
@@ -47,8 +48,11 @@ samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/ma
 
 gltf <- readGLB(paste0(samples, "/Avocado/glTF-Binary/Avocado.glb?raw=true"))
 
-if (interactive() || rgl::in_pkgdown_example())
+if (interactive())
   rgl::plot3d(gltf)
+
+if (rgl::in_pkgdown_example())
+  gltfWidget(gltf)
 
 gltf$closeBuffers()
 }
