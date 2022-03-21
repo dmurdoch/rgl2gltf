@@ -12,13 +12,12 @@ namespace rgl2gltf {
 class Mesh {
 
 public:
-  Mesh(int in_draw_mode, int in_n_indices, int in_n_vertices,
-       int* in_indices,
+  Mesh(int in_draw_mode, int in_n_vertices,
        double* in_vertices,
        double* in_normals,
        double* in_texcoords,
        double* in_tangents);
-  int draw_mode, n_indices, n_vertices, *indices;
+  int draw_mode, n_vertices;
   double *vertices, *normals, *texcoords, *tangents;
 };
 

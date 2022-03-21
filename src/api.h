@@ -12,9 +12,7 @@ extern "C" {
 #endif
 
 void get_tangents(int* edges,
-               int* n_indices,
                int* n_vertices,
-               int* indices,
                double* vertices,
                double* normals,
                double* texcoords,

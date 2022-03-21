@@ -12,16 +12,14 @@
 using namespace rgl2gltf;
 
 void rgl2gltf::get_tangents(int* edges,
-                            int* n_indices,
                             int* n_vertices,
-                            int* indices,
                             double* vertices,
                             double* normals,
                             double* texcoords,
                             double* tangents)
 {
   int mode = *edges == 3 ? GL_TRIANGLES : GL_QUADS;
-  Mesh *mesh = new Mesh(mode, *n_indices, *n_vertices, indices,
+  Mesh *mesh = new Mesh(mode, *n_vertices,
                    vertices, normals, texcoords, tangents);
   CalcTangents *calculator = new CalcTangents();
   calculator->calc(mesh);
@@ -35,7 +33,7 @@ extern "C" {
 #define C_DEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 static const R_CMethodDef CEntries[] = {
-  C_DEF(get_tangents, 8),
+  C_DEF(get_tangents, 6),
   {NULL, NULL, 0}
 };
 

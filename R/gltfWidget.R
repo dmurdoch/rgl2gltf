@@ -333,11 +333,10 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           obj$vertices <- obj$vertices[as.integer(indices),]
           obj$normals <- obj$normals[as.integer(indices),]
           obj$texcoords <- obj$texcoords[as.integer(indices),]
-          indices <- seq_len(nrow(obj$vertices))
           obj$indices <- NULL
           obj$centers <- NULL
           tangents <- obj$tangents <-
-            getTangents(edges, indices, obj$vertices,
+            getTangents(edges, obj$vertices,
                         obj$normals,
                         obj$texcoords)
           snew$objects[[i]] <- obj
