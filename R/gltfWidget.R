@@ -330,15 +330,26 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
             edges <- 4
           else
             edges <- NA
-          obj$vertices <- obj$vertices[as.integer(indices),]
-          obj$normals <- obj$normals[as.integer(indices),]
-          obj$texcoords <- obj$texcoords[as.integer(indices),]
-          obj$indices <- NULL
-          obj$centers <- NULL
-          tangents <- obj$tangents <-
-            getTangents(edges, obj$vertices,
-                        obj$normals,
-                        obj$texcoords)
+          indices <- as.integer(obj$indices)
+          vertices <- obj$vertices[indices,]
+          normals <- obj$normals[indices,]
+          texcoords <- obj$texcoords[indices,]
+          tangents <-
+            getTangents(edges, vertices,
+                        normals,
+                        texcoords)
+          if (nrow(obj$colors) > 1)
+            newindices <- reindex(vertices = vertices,
+                            normals = normals,
+                            texcoords = texcoords,
+                            tangents = tangents,
+                            colors = obj$colors[indices,])
+          else
+            newindices <- reindex(vertices = vertices,
+                            normals = normals,
+                            texcoords = texcoords,
+                            tangents = tangents)
+          obj[names(newindices)] <- newindices
           snew$objects[[i]] <- obj
         }
         shaders <- getShaders(id, snew)
@@ -352,7 +363,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         snew <- setUserShaders(id, scene = snew,
                                vertexShader = shaders$vertexShader,
                                fragmentShader = shaders$fragmentShader,
-                               attributes = list(aTangent = tangents),
+                               attributes = list(aTangent = obj$tangents),
                                textures = list(normalTexture = obj$material$normalTexture))
       }
     }
