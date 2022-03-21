@@ -1,27 +1,50 @@
-getTangents <- function(edges, vertices, normals, texcoords) {
-  vertices <- xyz.coords(vertices)
-  vertices <- rbind(vertices$x, vertices$y, vertices$z)
-  nv <- ncol(vertices)
+getTangents <- function(obj) {
+  edges <- switch(obj$type,
+                  triangles = 3,
+                  quads = 4,
+                  NA)
+  if (is.na(edges))
+    stop("only triangles and quads are supported")
 
-  normals <- xyz.coords(normals)
-  normals <- rbind(normals$x, normals$y, normals$z)
-  stopifnot(ncol(normals) == nv)
+  indices <- obj$indices
+  vertices <- obj$vertices
+  nv <- nrow(vertices)
+  if (is.null(indices))
+    indices <- seq_len(nv)
+  else
+    indices <- as.integer(indices)
+  vertices <- vertices[indices,]
 
-  texcoords <- xy.coords(texcoords)
-  texcoords <- rbind(texcoords$x, texcoords$y)
-  stopifnot(ncol(texcoords) == nv)
+  stopifnot(nrow(obj$normals) == nv)
+  normals <- obj$normals[indices,]
+
+  stopifnot(nrow(obj$texcoords) == nv)
+  texcoords <- obj$texcoords[indices,]
+
+  nv <- nrow(vertices)
 
   tangents <- .C(C_get_tangents,
                as.integer(edges),
                as.integer(nv),
-               as.double(vertices),
-               as.double(normals),
-               as.double(texcoords),
+               as.double(t(vertices)),
+               as.double(t(normals)),
+               as.double(t(texcoords)),
                tangents = double(4*nv))$tangents
 
-  result <- matrix(tangents, ncol = 4, nrow = nv, byrow = TRUE,
+  tangents <- matrix(tangents, ncol = 4, nrow = nv, byrow = TRUE,
          dimnames = list(NULL, c("x", "y", "z", "w")))
-  result[,"w"] <- result[,"w"]
 
-  result
+  if (nrow(obj$colors) > 1)
+    newindices <- reindex(vertices = vertices,
+                          normals = normals,
+                          texcoords = texcoords,
+                          tangents = tangents,
+                          colors = obj$colors[indices,])
+  else
+    newindices <- reindex(vertices = vertices,
+                          normals = normals,
+                          texcoords = texcoords,
+                          tangents = tangents)
+  obj[names(newindices)] <- newindices
+  obj
 }

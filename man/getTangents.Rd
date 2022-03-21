@@ -14,30 +14,24 @@ supplemented with a tangent vector and a bitangent vector
 that is their cross product.  The standard recommends
 that if the glTF file doesn't specify tangents, they should
 be generated using the MikkTSpace code.
+
+Note that a comment in \file{mikktspace.h} indicates that
+indexing needs to be recalculated after computing the tangents,
+so this function works on unindexed inputs, and reapplies
+indexing at the end.
 }
 \usage{
-getTangents(edges, indices, vertices, normals, texcoords)
+getTangents(obj)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{edges}{
-How many edges to each face?  Must be 3 or 4 for triangles
-or quads.
-}
-  \item{indices}{
-Indices used for the vertices.
-}
-  \item{vertices, normals}{
-The vertices and normals as 3 column matrices, dataframes or other structures
-handled by \code{\link{xyz.coords}}.
-}
-  \item{texcoords}{
-The texture coordinates as 2 columns handled by \code{\link{xy.coords}}.
+  \item{obj}{
+A triangles or quads object as returned by \code{rgl::scene3d()}.
 }
 }
 \value{
-A three column matrix holding the tangent vectors at each
-vertex.
+A modified copy of the original object, adding a 4 column
+\code{tangents} entry.  The order and number of indices
+may have changed.
 }
 \references{
 The MikkTSpace code was obtained from \url{https://github.com/mmikk/MikkTSpace}.  The interface code is based on
