@@ -4,16 +4,13 @@
 
 using namespace rgl2gltf;
 
-Mesh::Mesh(int in_draw_mode, int in_n_indices, int in_n_vertices,
-           int* in_indices,
+Mesh::Mesh(int in_draw_mode, int in_n_vertices,
            double* in_vertices,
            double* in_normals,
            double* in_texcoords,
            double* in_tangents) {
   draw_mode = in_draw_mode;
-  n_indices = in_n_indices;
   n_vertices = in_n_vertices;
-  indices = in_indices;
   vertices = in_vertices;
   normals = in_normals;
   texcoords = in_texcoords;
@@ -46,7 +43,7 @@ int CalcTangents::calc(Mesh *mesh) {
 int CalcTangents::get_num_faces(const SMikkTSpaceContext *context) {
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
-  int i_size = working_mesh->n_indices;
+  int i_size = working_mesh->n_vertices;
 
   if(working_mesh->draw_mode == GL_TRIANGLES) {
     i_size /= 3;
@@ -132,9 +129,7 @@ void CalcTangents::set_tspace_basic(const SMikkTSpaceContext *context,
                                     const float fSign, const int iFace, const int iVert) {
   Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
-  auto face_size = get_num_vertices_of_face(context, iFace);
-
-  auto index = (iFace * face_size) + iVert;
+  auto index = get_vertex_index(context, iFace, iVert);
   double *tangent = std::addressof(working_mesh->tangents[4*index]);
 
   tangent[0] = tangentu[0];
@@ -149,12 +144,10 @@ void CalcTangents::set_tspace_basic(const SMikkTSpaceContext *context,
 }
 
 int CalcTangents::get_vertex_index(const SMikkTSpaceContext *context, int iFace, int iVert) {
-  Mesh *working_mesh = static_cast<Mesh*> (context->m_pUserData);
 
   auto face_size = get_num_vertices_of_face(context, iFace);
 
-  auto indices_index = (iFace * face_size) + iVert;
+  auto index = (iFace * face_size) + iVert;
 
-  int index = working_mesh->indices[indices_index];
   return index;
 }

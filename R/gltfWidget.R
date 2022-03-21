@@ -321,25 +321,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           !is.null(normalTexture <- material$normalTexture)) {
         id <- obj$id
         normals <- obj$normals
-        if (is.null(tangents <- obj$tangents)) {
-          if (is.null(indices <- obj$indices))
-            indices <- seq_len(nrow(obj$vertices))
-          if (obj$type == "triangles")
-            edges <- 3
-          else if (obj$type == "quads")
-            edges <- 4
-          else
-            edges <- NA
-          obj$vertices <- obj$vertices[as.integer(indices),]
-          obj$normals <- obj$normals[as.integer(indices),]
-          obj$texcoords <- obj$texcoords[as.integer(indices),]
-          indices <- seq_len(nrow(obj$vertices))
-          obj$indices <- NULL
-          obj$centers <- NULL
-          tangents <- obj$tangents <-
-            getTangents(edges, indices, obj$vertices,
-                        obj$normals,
-                        obj$texcoords)
+        if (is.null(obj$tangents)) {
+          obj <- getTangents(obj)
           snew$objects[[i]] <- obj
         }
         shaders <- getShaders(id, snew)
@@ -353,7 +336,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         snew <- setUserShaders(id, scene = snew,
                                vertexShader = shaders$vertexShader,
                                fragmentShader = shaders$fragmentShader,
-                               attributes = list(aTangent = tangents),
+                               attributes = list(aTangent = obj$tangents),
                                textures = list(normalTexture = obj$material$normalTexture))
       }
     }
