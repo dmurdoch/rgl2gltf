@@ -31,8 +31,10 @@ reference:
   desc:  Various functions used for display, debugging and internal use
 - contents:
   - extractTexture
-  - findName
+  - findEntry
+  - getTangents
   - matrixSequence
+  - modifyShaders
   - showtree
   - showTags
 - title: R6 classes used for internal storage
