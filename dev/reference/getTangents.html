@@ -65,7 +65,7 @@ code by Morten S. Mikkelsen.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getTangents</span><span class="op">(</span><span class="va">edges</span>, <span class="va">indices</span>, <span class="va">vertices</span>, <span class="va">normals</span>, <span class="va">texcoords</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getTangents</span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="details">
@@ -76,24 +76,21 @@ supplemented with a tangent vector and a bitangent vector
 that is their cross product.  The standard recommends
 that if the glTF file doesn't specify tangents, they should
 be generated using the MikkTSpace code.</p>
+<p>Note that a comment in <code class="file">mikktspace.h</code> indicates that
+indexing needs to be recalculated after computing the tangents,
+so this function works on unindexed inputs, and reapplies
+indexing at the end.</p>
     </div>
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>edges</dt>
-<dd><p>How many edges to each face?  Must be 3 or 4 for triangles
-or quads.</p></dd>
-<dt>indices</dt>
-<dd><p>Indices used for the vertices.</p></dd>
-<dt>vertices, normals</dt>
-<dd><p>The vertices and normals as 3 column matrices, dataframes or other structures
-handled by <code><a href="https://rdrr.io/r/grDevices/xyz.coords.html" class="external-link">xyz.coords</a></code>.</p></dd>
-<dt>texcoords</dt>
-<dd><p>The texture coordinates as 2 columns handled by <code><a href="https://rdrr.io/r/grDevices/xy.coords.html" class="external-link">xy.coords</a></code>.</p></dd>
+    <dl><dt>obj</dt>
+<dd><p>A triangles or quads object as returned by <code><a href="https://dmurdoch.github.io/rgl/dev/reference/scene3d.html" class="external-link">rgl::scene3d()</a></code>.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A three column matrix holding the tangent vectors at each
-vertex.</p>
+    <p>A modified copy of the original object, adding a 4 column
+<code>tangents</code> entry.  The order and number of indices
+may have changed.</p>
     </div>
     <div id="references">
     <h2>References</h2>
