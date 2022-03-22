@@ -17,8 +17,8 @@ extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE
       if (verbose)
         cat("Extracted ", mime, " file ", outfile, "\n")
       if (mime == "image/jpeg") {
-        if (!requireNamespace("jpeg") ||
-            !requireNamespace("png"))
+        if (!requireNamespace("jpeg", quietly = TRUE) ||
+            !requireNamespace("png", quietly = TRUE))
           stop("JPEG textures require 'png' and 'jpeg' packages for conversion.")
         if (verbose)
           cat("Converting to PNG\n.")
