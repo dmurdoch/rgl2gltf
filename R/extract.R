@@ -1,6 +1,6 @@
 
 extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE) {
-
+  outfile0 <- outfile
   texture <- gltf$getTexture(index)
   if (is.null(texture))
     stop("No such texture.")
@@ -15,7 +15,20 @@ extractTexture <- function(gltf, index = 0, outfile = tempfile(), verbose = TRUE
         outfile <- paste0(outfile, ".", basename(mime))
       writeBin(data, outfile)
       if (verbose)
-        cat("Extracted ", mime, " file ", outfile)
+        cat("Extracted ", mime, " file ", outfile, "\n")
+      if (mime == "image/jpeg") {
+        if (!requireNamespace("jpeg") ||
+            !requireNamespace("png"))
+          stop("JPEG textures require 'png' and 'jpeg' packages for conversion.")
+        if (verbose)
+          cat("Converting to PNG\n.")
+        img <- jpeg::readJPEG(outfile)
+        unlink(outfile)
+        if (!nchar(file_ext(outfile0)))
+          outfile <- paste0(outfile0, ".png")
+        png::writePNG(img, outfile)
+        mime <- "image/png"
+      }
       if (mime != "image/png")
         warning(sprintf("MIME type %s not supported as texture in rgl (texture %d).", mime, index))
       invisible(outfile)
