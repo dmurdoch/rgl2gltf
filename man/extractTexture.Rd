@@ -28,6 +28,12 @@ of the texture.
 Whether to report on success.
 }
 }
+\details{
+Since \pkg{rgl} doesn't support any texture format except
+PNG, this function will attempt to convert JPEG textures to
+PNG.  To do that it needs to have the \pkg{jpeg} and \pkg{png}
+packages available.
+}
 \value{
 Returns the filename that was written, or \code{NULL}
 if the request failed.
