@@ -120,7 +120,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        method = c("shader", "rigid"),
                        add = FALSE, close = !add,
                        verbose = FALSE,
-                       open3dParams = getr3dDefaults(), ...) {
+                       open3dParams = getr3dDefaults(),
+                       usePBR = FALSE, ...) {
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
     stop("gltfWidget requires the manipulateWidget package")
@@ -314,30 +315,44 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   } else
     snew <- s
 
-  if (has_normalTextures) {
+  if (usePBR) {
     for (i in seq_along(snew$objects)) {
       obj <- snew$objects[[i]]
       if (!is.null(material <- obj$material) &&
-          !is.null(normalTexture <- material$normalTexture)) {
-        id <- obj$id
-        normals <- obj$normals
-        if (is.null(obj$tangents)) {
-          obj <- getTangents(obj)
-          snew$objects[[i]] <- obj
+          !is.null(tag <- material$tag) &&
+          !is.null(prim <- getPrim(gltf, tag))) {
+        obj$material <- mergeMaterial(obj$material, snew$material)
+        snew <- setPBRshaders(gltf, prim,
+                      obj$id, scene = snew)
+      }
+    }
+  } else {
+
+    if (has_normalTextures) {
+      for (i in seq_along(snew$objects)) {
+        obj <- snew$objects[[i]]
+        if (!is.null(material <- obj$material) &&
+            !is.null(normalTexture <- material$normalTexture)) {
+          id <- obj$id
+          normals <- obj$normals
+          if (is.null(obj$tangents)) {
+            obj <- getTangents(obj)
+            snew$objects[[i]] <- obj
+          }
+          shaders <- getShaders(id, snew)
+          # cat("Shaders before mod:\n")
+          # cat(shaders$vertexShader, sep= "\n")
+          # cat(shaders$fragmentShader, sep="\n")
+          shaders <- modifyShaders(shaders, "normalTextures")
+          # cat("\nShaders after mod:")
+          # cat(shaders$vertexShader, sep= "\n")
+          # cat(shaders$fragmentShader, sep="\n")
+          snew <- setUserShaders(id, scene = snew,
+                                 vertexShader = shaders$vertexShader,
+                                 fragmentShader = shaders$fragmentShader,
+                                 attributes = list(aTangent = obj$tangents),
+                                 textures = list(normalTexture = obj$material$normalTexture))
         }
-        shaders <- getShaders(id, snew)
-        # cat("Shaders before mod:\n")
-        # cat(shaders$vertexShader, sep= "\n")
-        # cat(shaders$fragmentShader, sep="\n")
-        shaders <- modifyShaders(shaders, "normalTextures")
-        # cat("\nShaders after mod:")
-        # cat(shaders$vertexShader, sep= "\n")
-        # cat(shaders$fragmentShader, sep="\n")
-        snew <- setUserShaders(id, scene = snew,
-                               vertexShader = shaders$vertexShader,
-                               fragmentShader = shaders$fragmentShader,
-                               attributes = list(aTangent = obj$tangents),
-                               textures = list(normalTexture = obj$material$normalTexture))
       }
     }
   }
