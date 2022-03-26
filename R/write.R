@@ -1,8 +1,23 @@
-writeglTF <- function(x, path) {
+writeglTF <- function(x, path, bin = TRUE) {
+  if (bin) {
+    basename <- tools::file_path_sans_ext(path)
+    count <- 0
+    for (i in seq_len(x$listCount("buffers"))) {
+      buffer <- x$getBuffer(i-1)
+      if (is.null(buffer$uri) && !is.null(buffer$bytes)) {
+        buffername <- paste0(basename, count, ".bin")
+        count <- count + 1
+        writeBin(buffer$bytes, buffername)
+        buffer$bytes <- NULL
+        buffer$uri <- buffername
+        x$setBuffer(i-1, buffer)
+      }
+    }
+  }
   jsonlite::write_json(x$as.list(), path,
                        auto_unbox = TRUE,
                        digits = NA)
-  invisible(NULL)
+  invisible(path)
 }
 
 # The glTF format allows for multiple buffers, but this
@@ -58,7 +73,7 @@ writeGLB <- function(x, con) {
   # next create and write the JSON chunk
 
   jsonfile <- tempfile(fileext = ".gltf")
-  writeglTF(x, jsonfile)
+  writeglTF(x, jsonfile, bin = FALSE)
   on.exit(unlink(jsonfile), add = TRUE)
 
   if (is.character(con)) {
