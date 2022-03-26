@@ -11,12 +11,16 @@
 //     https://github.com/KhronosGroup/glTF-Sample-Viewer/#environment-maps
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
-#extension GL_EXT_shader_texture_lod: enable
-#extension GL_OES_standard_derivatives : enable
 
-precision highp float;
+#ifdef GL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+  precision highp float;
+#else
+  precision mediump float;
+#endif
+#endif
 
-uniform vec3 u_LightDirection;
+uniform vec3 lightDir0;
 uniform vec3 u_LightColor;
 
 #ifdef USE_IBL
@@ -26,10 +30,10 @@ uniform sampler2D u_brdfLUT;
 #endif
 
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D u_BaseColorSampler;
+uniform sampler2D uSampler;
 #endif
 #ifdef HAS_NORMALMAP
-uniform sampler2D u_NormalSampler;
+uniform sampler2D normalTexture;
 uniform float u_NormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
@@ -45,24 +49,22 @@ uniform float u_OcclusionStrength;
 #endif
 
 uniform vec2 u_MetallicRoughnessValues;
-uniform vec4 u_BaseColorFactor;
-
-uniform vec3 u_Camera;
+varying vec4 vCol;
 
 // debugging flags used for shader output of intermediate PBR variables
 uniform vec4 u_ScaleDiffBaseMR;
 uniform vec4 u_ScaleFGDSpec;
 uniform vec4 u_ScaleIBLAmbient;
 
-varying vec3 v_Position;
+varying vec4 vPosition;
 
-varying vec2 v_UV;
+varying vec2 vTexcoord;
 
 #ifdef HAS_NORMALS
 #ifdef HAS_TANGENTS
-varying mat3 v_TBN;
+varying mat3 vtbnMatrix;
 #else
-varying vec3 v_Normal;
+varying vec3 vNormal;
 #endif
 #endif
 
@@ -109,14 +111,21 @@ vec3 getNormal()
 {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
-    vec3 pos_dx = dFdx(v_Position);
-    vec3 pos_dy = dFdy(v_Position);
-    vec3 tex_dx = dFdx(vec3(v_UV, 0.0));
-    vec3 tex_dy = dFdy(vec3(v_UV, 0.0));
+#ifdef HAS_EXTENSIONS
+    vec3 pos_dx = dFdx(vPosition.xyz);
+    vec3 pos_dy = dFdy(vPosition.xyz);
+    vec3 tex_dx = dFdx(vec3(vTexcoord, 0.0));
+    vec3 tex_dy = dFdy(vec3(vTexcoord, 0.0));
     vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-
+#else
+    vec3 pos_dx = vec3(1);
+    vec3 pos_dy = vec3(1);
+    vec3 tex_dx = vec3(1);
+    vec3 tex_dy = vec3(1);
+    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
+#endif
 #ifdef HAS_NORMALS
-    vec3 ng = normalize(v_Normal);
+    vec3 ng = normalize(vNormal);
 #else
     vec3 ng = cross(pos_dx, pos_dy);
 #endif
@@ -125,11 +134,11 @@ vec3 getNormal()
     vec3 b = normalize(cross(ng, t));
     mat3 tbn = mat3(t, b, ng);
 #else // HAS_TANGENTS
-    mat3 tbn = v_TBN;
+    mat3 tbn = vtbnMatrix;
 #endif
 
 #ifdef HAS_NORMALMAP
-    vec3 n = texture2D(u_NormalSampler, v_UV).rgb;
+    vec3 n = texture2D(normalTexture, vTexcoord).rgb;
     n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));
 #else
     // The tbn matrix is linearly interpolated, so we need to re-normalize
@@ -166,7 +175,22 @@ vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 
     return diffuse + specular;
 }
+#else
+vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
+{
+    vec3 diffuseLight = vec3(1,1,1);
+    vec3 specularLight = vec3(1,1,1);
+    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;
+    vec3 specular = specularLight * pbrInputs.specularColor;
+
+    // For presentation, this allows us to disable IBL terms
+    diffuse *= u_ScaleIBLAmbient.x;
+    specular *= u_ScaleIBLAmbient.y;
+
+    return diffuse + specular;
+}
 #endif
+
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
@@ -218,7 +242,7 @@ void main()
 #ifdef HAS_METALROUGHNESSMAP
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
     // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
-    vec4 mrSample = texture2D(u_MetallicRoughnessSampler, v_UV);
+    vec4 mrSample = texture2D(u_MetallicRoughnessSampler, vTexcoord);
     perceptualRoughness = mrSample.g * perceptualRoughness;
     metallic = mrSample.b * metallic;
 #endif
@@ -230,9 +254,9 @@ void main()
 
     // The albedo may be defined from a base texture or a flat color
 #ifdef HAS_BASECOLORMAP
-    vec4 baseColor = SRGBtoLINEAR(texture2D(u_BaseColorSampler, v_UV)) * u_BaseColorFactor;
+    vec4 baseColor = SRGBtoLINEAR(texture2D(uSampler, vTexcoord)) * vCol;
 #else
-    vec4 baseColor = u_BaseColorFactor;
+    vec4 baseColor = vCol;
 #endif
 
     vec3 f0 = vec3(0.04);
@@ -250,8 +274,8 @@ void main()
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
     vec3 n = getNormal();                             // normal at surface point
-    vec3 v = normalize(u_Camera - v_Position);        // Vector from surface point to camera
-    vec3 l = normalize(u_LightDirection);             // Vector from surface point to light
+    vec3 v = normalize(- vPosition.xyz);        // Vector from surface point to camera
+    vec3 l = normalize(lightDir0);                    // Vector from surface point to light
     vec3 h = normalize(l+v);                          // Half vector between both l and v
     vec3 reflection = -normalize(reflect(v, n));
 
@@ -288,18 +312,17 @@ void main()
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
 
     // Calculate lighting contribution from image based lighting source (IBL)
-#ifdef USE_IBL
-    color += getIBLContribution(pbrInputs, n, reflection);
-#endif
+
+color += getIBLContribution(pbrInputs, n, reflection);
 
     // Apply optional PBR terms for additional (optional) shading
 #ifdef HAS_OCCLUSIONMAP
-    float ao = texture2D(u_OcclusionSampler, v_UV).r;
+    float ao = texture2D(u_OcclusionSampler, vTexcoord).r;
     color = mix(color, color * ao, u_OcclusionStrength);
 #endif
 
 #ifdef HAS_EMISSIVEMAP
-    vec3 emissive = SRGBtoLINEAR(texture2D(u_EmissiveSampler, v_UV)).rgb * u_EmissiveFactor;
+    vec3 emissive = SRGBtoLINEAR(texture2D(u_EmissiveSampler, vTexcoord)).rgb * u_EmissiveFactor;
     color += emissive;
 #endif
 
