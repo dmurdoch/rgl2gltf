@@ -28,12 +28,10 @@ varying vec3 vNormal;
 #endif
 #endif
 
+void main(void) {
+  // The line above is edited for animations, so don't change it
 
-void main()
-{
   vCol = aCol;
-  vec4 pos = mvMatrix * vec4(aPos, 1);
-  vPosition = pos / pos.w;
 
   #ifdef HAS_NORMALS
   #ifdef HAS_TANGENTS
@@ -52,5 +50,8 @@ void main()
   vTexcoord = vec2(0.,0.);
   #endif
 
-  gl_Position = prMatrix * mvMatrix * vec4(aPos, 1); // needs w for proper perspective correction
+  vPosition = mvMatrix * vec4(aPos, 1); // needs w for proper perspective correction
+
+  gl_Position = prMatrix * vPosition;
+
 }
