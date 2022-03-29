@@ -1,7 +1,6 @@
 setPBRshaders <- function(gltf, prim,
                           id,
-                          scene = scene3d(minimal),
-                          minimal = TRUE) {
+                          scene = scene3d(minimal = TRUE)) {
   defines <- list()
   uniforms <- list()
   attributes <- list()
