@@ -1,6 +1,20 @@
-setPBRshaders <- function(gltf, prim,
+setPBRshaders <- function(gltf, gltfMat,
                           id,
-                          scene = scene3d(minimal = TRUE)) {
+                          scene = scene3d(minimal = TRUE),
+                          useIBL = TRUE,
+                          brdfLUT = system.file("textures/brdfLUT.png", package = "rgl2gltf"),
+                          IBLspecular = system.file("textures/refmap.png", package = "rgl"),
+                          IBLdiffuse = system.file("textures/refmapblur.jpeg", package = "rgl2gltf"),
+                          debugBaseColor = 0,
+                          debugMetallic = 0,
+                          debugRoughness = 0,
+                          debugSpecularReflection = 0,
+                          debugGeometricOcclusion = 0,
+                          debugMicrofacetDistribution = 0,
+                          debugSpecContrib = 0,
+                          debugDiffuseContrib = 0,
+                          debugIBLDiffuse = 1,
+                          debugIBLSpecular = 1) {
   defines <- list()
   uniforms <- list()
   attributes <- list()
@@ -28,12 +42,17 @@ setPBRshaders <- function(gltf, prim,
     uniforms[["u_NormalScale"]] <- 1
   }
 
-  uniforms[["u_ScaleDiffBaseMR"]] <- c(0,0,0,0)
-  uniforms[["u_ScaleFGDSpec"]]    <- c(0,0,0,0)
+  uniforms[["u_ScaleDiffBaseMR"]] <- c(debugDiffuseContrib,
+                                       debugBaseColor,
+                                       debugMetallic,
+                                       debugRoughness)
+  uniforms[["u_ScaleFGDSpec"]]    <- c(debugSpecularReflection,
+                                       debugGeometricOcclusion,
+                                       debugMicrofacetDistribution,
+                                       debugSpecContrib)
 
   uniforms[["u_LightColor"]] <- c(1,1,1)
 
-  gltfMat <- gltf$getMaterial(prim$material)
   rv <- c(1, 1)
   if (!is.null(mr <- gltfMat$pbrMetallicRoughness)) {
     if (!is.null(mf <- mr$metallicFactor))
@@ -47,7 +66,6 @@ setPBRshaders <- function(gltf, prim,
     }
   }
   uniforms[["u_MetallicRoughnessValues"]] <- rv
-  uniforms[["u_ScaleIBLAmbient"]] <- c(10,10)
 
   if (!is.null(ot <- gltfMat$occlusionTexture)) {
     textures[["u_OcclusionSampler"]] <-
@@ -68,6 +86,14 @@ setPBRshaders <- function(gltf, prim,
     defines[["HAS_EMISSIVEMAP"]] <- 1
   }
 
+  if (useIBL) {
+    textures[["u_DiffuseEnvSampler"]] <- IBLdiffuse
+    textures[["u_SpecularEnvSampler"]] <- IBLspecular
+    textures[["u_brdfLUT"]] <- brdfLUT
+    defines[["USE_IBL"]] <- 1
+    uniforms[["u_ScaleIBLAmbient"]] <- c(debugIBLDiffuse,
+                                         debugIBLSpecular)
+  }
   defines[["MANUAL_SRGB"]] <- 1
 
   if (length(defines))
