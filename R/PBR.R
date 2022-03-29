@@ -41,20 +41,34 @@ setPBRshaders <- function(gltf, prim,
     if (!is.null(rf <- mr$roughnessFactor))
       rv[2] <- rf
     if (!is.null(mt <- mr$metallicRoughnessTexture)) {
-      textures[["u_MetallicRoughnessSampler"]] <- extractTexture(gltf, mt$index)
+      textures[["u_MetallicRoughnessSampler"]] <-
+        extractTexture(gltf, mt$index, verbose = FALSE)
       defines[["HAS_METALROUGHNESSMAP"]] <- 1
     }
   }
   uniforms[["u_MetallicRoughnessValues"]] <- rv
-  uniforms[["u_ScaleIBLAmbient"]] <- c(1,1)
+  uniforms[["u_ScaleIBLAmbient"]] <- c(10,10)
 
   if (!is.null(ot <- gltfMat$occlusionTexture)) {
-    textures[["u_OcclusionSampler"]] <- extractTexture(gltf, ot$index)
+    textures[["u_OcclusionSampler"]] <-
+      extractTexture(gltf, ot$index, verbose = FALSE)
     strength <- ot$strength
     if (is.null(strength)) strength <- 1
     uniforms[["u_OcclusionStrength"]] <- strength;
     defines[["HAS_OCCLUSIONMAP"]] <- 1
   }
+
+  if (!is.null(em <- gltfMat$emissiveTexture)) {
+    textures[["u_EmissiveSampler"]] <-
+      extractTexture(gltf, em$index, verbose = FALSE)
+    factor <- unlist(gltfMat$emissiveFactor)
+    if (is.null(factor))
+      factor <- c(0, 0, 0)
+    uniforms[["u_EmissiveFactor"]] <- factor
+    defines[["HAS_EMISSIVEMAP"]] <- 1
+  }
+
+  defines[["MANUAL_SRGB"]] <- 1
 
   if (length(defines))
     defines <- paste("#define", names(defines), unlist(defines))
@@ -65,8 +79,6 @@ setPBRshaders <- function(gltf, prim,
   fshader <- c(defines, readLines(system.file("shaders/pbr-frag.glsl", package = "rgl2gltf")))
 
   scene$objects[[as.character(id)]] <- obj
-
-  # defines[["MANUAL_SRGB"]] <- 1
 
   setUserShaders(id,
                  vertexShader = vshader,
