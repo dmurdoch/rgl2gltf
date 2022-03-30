@@ -86,6 +86,12 @@ asRGLobj <- function(x) {
   list(RGL_obj = x)
 }
 
+mergeMaterial <- function(x, y) {
+  n <- setdiff(names(y), names(x))
+  x[n] <- y[n]
+  x
+}
+
 merge.rglobject <- function(x, y, ...) {
   for (n in setdiff(names(y), names(x)))
     x[[n]] <- y[[n]]

@@ -2,7 +2,8 @@ export(Gltf, extractTexture, readglTF, readGLB, as.gltf, as.mesh3d, as.rglscene,
        showNodes, showTags,
        showtree, playgltf, plot3d, writeglTF, writeGLB, findEntry,
        namePattern, hasClass,
-       matrixSequence, gltfWidget, modifyShaders, getTangents)
+       matrixSequence, gltfWidget, modifyShaders, getTangents,
+       setPBRshaders)
 
 useDynLib(rgl2gltf, .registration = TRUE, .fixes = "C_")
 

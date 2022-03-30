@@ -111,6 +111,13 @@ getChangeTimes <- function(joint, gltf, ani) {
   sort(unique(times))
 }
 
+hasPBRparams <- function(gltf) {
+  mat <- gltf$getMaterial(0)
+  length(mat$pbrMetallicRoughness[c("metallicFactor",
+                                    "roughnessFactor",
+                                    "metallicRoughnessTexture")]) > 0
+}
+
 # Start by modifying playgltf to get it to produce
 # the rglwidget output we want, with extra info so that
 # the animation control can control it
@@ -120,7 +127,9 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                        method = c("shader", "rigid"),
                        add = FALSE, close = !add,
                        verbose = FALSE,
-                       open3dParams = getr3dDefaults(), ...) {
+                       open3dParams = getr3dDefaults(),
+                       usePBR = hasPBRparams(gltf),
+                       PBRargs = list(), ...) {
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
     stop("gltfWidget requires the manipulateWidget package")
@@ -139,18 +148,9 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     }
   }
 
-  has_normalTextures <- FALSE
-  for (i in seq_along(gltf$listCount("materials"))) {
-    material <- gltf$getMaterial(i-1)
-    if (!is.null(material$normalTexture)) {
-      has_normalTextures <- TRUE
-      break
-    }
-  }
-
   has_animations <- !is.na(animation) && gltf$listCount("animations") != 0
 
-  if (!has_normalTextures && !has_animations) {
+  if (!has_animations) {
     s <- as.rglscene(gltf)
     plot3d(s, useNULL = TRUE, add = add,
            silent = !verbose, open3dParams = open3dParams)
@@ -221,8 +221,26 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     # part of the primitive
 
     skeleton <- -1
-    if (method == "shader")
+    if (method == "shader") {
       snew <- scene3d()
+
+      if (usePBR) {
+        for (i in seq_along(snew$objects)) {
+          obj <- snew$objects[[i]]
+          if (!is.null(material <- obj$material) &&
+              !is.null(tag <- material$tag) &&
+              !is.null(prim <- getPrim(gltf, tag))) {
+            obj$material <- mergeMaterial(obj$material, snew$material)
+            snew <- do.call("setPBRshaders",
+                            c(list(gltf,
+                                   gltf$getMaterial(prim$material),
+                                   obj$id,
+                                   scene = snew), PBRargs))
+          }
+        }
+      }
+    }
+
     for (tag in names(containingNodes)) {
       nodes <- containingNodes[[tag]]
       for (i in seq_along(nodes)) {
@@ -302,8 +320,12 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                                    swiz = c("x", "y", "z", "w"), n = n)
           snew <- setUserShaders(id, scene = snew,
                                  vertexShader = shaders$vertexShader,
-                                 attributes = list(aJoint = obj$joints, aWeight = obj$weights),
-                                 uniforms = list(uJointMat = matrix(0, 4*n, 4)))
+                                 attributes = c(list(aJoint = obj$joints, aWeight = obj$weights),
+                                                obj$userAttributes),
+                                 uniforms = c(list(uJointMat = matrix(0, 4*n, 4)),
+                                              obj$userUniforms),
+                                 textures = obj$userTextures)
+
           controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
         }
       }
@@ -314,33 +336,6 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   } else
     snew <- s
 
-  if (has_normalTextures) {
-    for (i in seq_along(snew$objects)) {
-      obj <- snew$objects[[i]]
-      if (!is.null(material <- obj$material) &&
-          !is.null(normalTexture <- material$normalTexture)) {
-        id <- obj$id
-        normals <- obj$normals
-        if (is.null(obj$tangents)) {
-          obj <- getTangents(obj)
-          snew$objects[[i]] <- obj
-        }
-        shaders <- getShaders(id, snew)
-        # cat("Shaders before mod:\n")
-        # cat(shaders$vertexShader, sep= "\n")
-        # cat(shaders$fragmentShader, sep="\n")
-        shaders <- modifyShaders(shaders, "normalTextures")
-        # cat("\nShaders after mod:")
-        # cat(shaders$vertexShader, sep= "\n")
-        # cat(shaders$fragmentShader, sep="\n")
-        snew <- setUserShaders(id, scene = snew,
-                               vertexShader = shaders$vertexShader,
-                               fragmentShader = shaders$fragmentShader,
-                               attributes = list(aTangent = obj$tangents),
-                               textures = list(normalTexture = obj$material$normalTexture))
-      }
-    }
-  }
 
   if (close)
     close3d()
@@ -388,41 +383,6 @@ shaderChanges <- list(
         new = "    skinMat = mat4(mat3(skinMat));
     vNormal = normMatrix * skinMat * vec4(-aNorm, dot(aNorm, pos.xyz/pos.w));"
       )
-    )
-  ),
-  normalTextures = list(
-    vertexShader = list(
-      decls = list(
-        old = "void main(void)",
-        new = "  attribute vec4 aTangent;
-  varying mat3 vtbnMatrix;
-  void main(void) {
-    vec3 tangent = normalize(vec3(mvMatrix * vec4(aTangent.xyz, 0.0)));
-    vec3 normal = normalize(vec3(normMatrix * vec4(aNorm, 0.0)));
-    vec3 bitangent = cross(normal, tangent) * aTangent.w;"),
-      matrix = list(
-        old = "vTexcoord = aTexcoord;",
-        new = "    vTexcoord = aTexcoord;
-    vtbnMatrix = mat3(
-      tangent,
-      bitangent,
-      normal);"),
-      deleteVnormal = list(
-        old = "vNormal",
-        new = character(0))),
-    fragmentShader = list(
-      decls = list(
-        old = "void main(void) {",
-        new = "  varying mat3 vtbnMatrix;
-  uniform sampler2D normalTexture;
-  void main(void) {"),
-      normals = list(
-        old = "vec3 n = normalize(vNormal.xyz);",
-        new = "    vec4 normalColor = texture2D(normalTexture, vTexcoord);
-    vec3 n = normalize(vtbnMatrix * ((normalColor.xyz * 2.0) - 1.0));"),
-      deleteVnormal = list(
-        old = "vNormal",
-        new = character(0))
     )
   )
 )
