@@ -11,4 +11,6 @@
 * Added `getTangents()` to use MikkTSpace code to assign tangents 
 if they are not specified.  These can be used in normal textures.
 * Textures may now be specified in JPEG format, not just PNG.
+* `writeglTF()` now writes the binary part of the file as
+well as the JSON part.
 * Added "physically based rendering" (PBR) methods.
