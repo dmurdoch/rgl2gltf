@@ -4,3 +4,4 @@
 ^inst/localtests
 ^_pkgdown.yml
 ^\.github
+^docs/
