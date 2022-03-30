@@ -1,4 +1,4 @@
-# rgl2gltf 0.1.12
+# rgl2gltf 0.1.14
 
 * Added a `NEWS.md` file to track changes to the package.
 * Added "rigid" method animation to `playgltf()`.
@@ -11,3 +11,4 @@
 * Added `getTangents()` to use MikkTSpace code to assign tangents 
 if they are not specified.  These can be used in normal textures.
 * Textures may now be specified in JPEG format, not just PNG.
+* Added "physically based rendering" (PBR) methods.
