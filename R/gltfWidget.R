@@ -150,7 +150,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
 
   has_animations <- !is.na(animation) && gltf$listCount("animations") != 0
 
-  if (!has_animations) {
+  if (!usePBR && !has_animations) {
     s <- as.rglscene(gltf)
     plot3d(s, useNULL = TRUE, add = add,
            silent = !verbose, open3dParams = open3dParams)
@@ -179,7 +179,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   saveopts <- options(rgl.useNULL = TRUE)
   on.exit(options(saveopts))
 
-  ids <- plot3d(s, useNULL = TRUE, add = add, silent = !verbose, open3dParams = open3dParams)
+  ids <- plot3d(s, useNULL = TRUE, add = FALSE, silent = !verbose, open3dParams = open3dParams)
 
   subscene <- ids[grepl("subscene", names(ids))]
   node <- as.numeric(sub("subscene", "", names(subscene)))
@@ -223,22 +223,6 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     skeleton <- -1
     if (method == "shader") {
       snew <- scene3d()
-
-      if (usePBR) {
-        for (i in seq_along(snew$objects)) {
-          obj <- snew$objects[[i]]
-          if (!is.null(material <- obj$material) &&
-              !is.null(tag <- material$tag) &&
-              !is.null(prim <- getPrim(gltf, tag))) {
-            obj$material <- mergeMaterial(obj$material, snew$material)
-            snew <- do.call("setPBRshaders",
-                            c(list(gltf,
-                                   gltf$getMaterial(prim$material),
-                                   obj$id,
-                                   scene = snew), PBRargs))
-          }
-        }
-      }
     }
 
     for (tag in names(containingNodes)) {
@@ -330,12 +314,28 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
         }
       }
     }
+
     gltf$closeBuffers()
     if (method == "rigid")
       snew <- scene3d()
   } else
     snew <- s
 
+  if (usePBR) {
+    for (i in seq_along(snew$objects)) {
+      obj <- snew$objects[[i]]
+      if (!is.null(material <- obj$material) &&
+          !is.null(tag <- material$tag) &&
+          !is.null(prim <- getPrim(gltf, tag))) {
+        obj$material <- mergeMaterial(obj$material, snew$material)
+        snew <- do.call("setPBRshaders",
+                        c(list(gltf,
+                               gltfMat = gltf$getMaterial(prim$material),
+                               obj$id,
+                               scene = snew), PBRargs))
+      }
+    }
+  }
 
   if (close)
     close3d()
