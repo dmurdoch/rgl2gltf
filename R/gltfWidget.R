@@ -169,6 +169,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
   method <- match.arg(method)
   gltf$closeBuffers()
   gltf <- gltf$clone()
+  on.exit(gltf$closeBuffers())
 
   if (has_animations) {
     time <- start
@@ -177,7 +178,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     s <- as.rglscene(gltf, clone = FALSE, add = add)
 
   saveopts <- options(rgl.useNULL = TRUE)
-  on.exit(options(saveopts))
+  on.exit(options(saveopts), add = TRUE)
 
   ids <- plot3d(s, useNULL = TRUE, add = FALSE, silent = !verbose, open3dParams = open3dParams)
 
