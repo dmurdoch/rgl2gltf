@@ -133,6 +133,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
 
   if (!requireNamespace("manipulateWidget", quietly = TRUE))
     stop("gltfWidget requires the manipulateWidget package")
+
   backward <- NULL
   havenode <- -1
 
@@ -167,6 +168,13 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     cat("Initial plot...\n")
 
   method <- match.arg(method)
+
+  if (usePBR && method != "shader" && verbose)
+    message("Note:  Physically based rendering (PBR) is only used with method = 'shader'")
+
+  if (method != "shader")
+    usePBR <- FALSE
+
   gltf$closeBuffers()
   gltf <- gltf$clone()
   on.exit(gltf$closeBuffers())
@@ -299,18 +307,27 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
           obj$joints <- match(obj$joints, usedjoints) - 1
           dim(obj$joints) <- dim(obj$weights)
           snew$objects[[as.character(id)]] <- obj
-          shaders <- getShaders(id, snew)
           n <- length(usedjoints)
-          shaders <- modifyShaders(shaders, "skins",
+          if (usePBR) {
+            PBR <- list()
+            PBR$defines <- list(HAS_JOINTS = 1,
+                                JOINTMATROWS = 4*n)
+            PBR$attributes <- list(aJoint = obj$joints, aWeight = obj$weights)
+            PBR$uniforms <- list(uJointMat = matrix(0, 4*n, 4))
+            obj$PBR <- PBR
+            snew$objects[[as.character(id)]] <- obj
+          } else {
+            shaders <- getShaders(id, snew)
+            shaders <- modifyShaders(shaders, "skins",
                                    swiz = c("x", "y", "z", "w"), n = n)
-          snew <- setUserShaders(id, scene = snew,
+            snew <- setUserShaders(id, scene = snew,
                                  vertexShader = shaders$vertexShader,
                                  attributes = c(list(aJoint = obj$joints, aWeight = obj$weights),
                                                 obj$userAttributes),
                                  uniforms = c(list(uJointMat = matrix(0, 4*n, 4)),
                                               obj$userUniforms),
                                  textures = obj$userTextures)
-
+          }
           controls <- c(controls, list(shaderControl(id, joints, usedjoints, backward)))
         }
       }
@@ -333,7 +350,8 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
                         c(list(gltf,
                                gltfMat = gltf$getMaterial(prim$material),
                                obj$id,
-                               scene = snew), PBRargs))
+                               scene = snew),
+                          obj$PBR, PBRargs))
       }
     }
   }

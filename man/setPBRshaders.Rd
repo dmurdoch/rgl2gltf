@@ -28,7 +28,11 @@ setPBRshaders(gltf, gltfMat, id,
               debugSpecContrib = 0,
               debugDiffuseContrib = 0,
               debugIBLDiffuse = 1,
-              debugIBLSpecular = 1)
+              debugIBLSpecular = 1,
+              defines = list(),
+              uniforms = list(),
+              attributes = list(),
+              textures = list())
 }
 \arguments{
   \item{gltf, gltfMat}{
@@ -63,6 +67,10 @@ Two more debugging settings.  These should be set to non-negative
 values to control the contribution from each of those components
 to the image based lighting.
 }
+  \item{defines, uniforms, attributes, textures}{
+Values to use in \code{\link{setUserShaders}} in addition
+to the ones determined by this function.
+  }
 }
 \details{
 \pkg{rgl} is designed to work with WebGL version 1, which doesn't
