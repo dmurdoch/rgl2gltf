@@ -82,13 +82,20 @@ If the \code{gltf} object doesn't contain any animations,
 or \code{animation = NA}, this
 will simply display it as a widget with no controls.
 }
+\note{
+Physically based rendering (PBR, controlled by \code{usePBR}) is
+only used with \code{method = "shader"}.
+
+If PBR is not used,
+the \pkg{V8} package is required so that the shaders can be
+modified.
+}
 \value{
 A widget suitable for display or inclusion in an
 R Markdown document.
 }
 \examples{
-if ((interactive() || rgl::in_pkgdown_example()) &&
-    requireNamespace("V8") && requireNamespace("manipulateWidget")) {
+if ((interactive() || rgl::in_pkgdown_example()) && requireNamespace("manipulateWidget")) {
   gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
   gltfWidget(gltf)
 }

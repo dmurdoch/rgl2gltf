@@ -14,11 +14,11 @@ setPBRshaders <- function(gltf, gltfMat,
                           debugSpecContrib = 0,
                           debugDiffuseContrib = 0,
                           debugIBLDiffuse = 1,
-                          debugIBLSpecular = 1) {
-  defines <- list()
-  uniforms <- list()
-  attributes <- list()
-  textures <- list()
+                          debugIBLSpecular = 1,
+                          defines = list(),
+                          uniforms = list(),
+                          attributes = list(),
+                          textures = list()) {
 
   obj <- scene$objects[[as.character(id)]]
   obj$material$lit <- TRUE
