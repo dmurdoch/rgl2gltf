@@ -38,8 +38,5 @@ The MikkTSpace code was obtained from \url{https://github.com/mmikk/MikkTSpace}.
 code from \url{https://www.turais.de/using-mikktspace-in-your-project/} by Johannes Kuehnel.
 }
 \author{
-The MikkTSpace code by Morten S. Mikkelsen was obtained from
-\url{https://github.com/mmikk/MikkTSpace}.  The interface code
-is based on
-code from \url{https://www.turais.de/using-mikktspace-in-your-project/} by Johannes Kuehnel.
+Morten S. Mikkelsen, Johannes Kuehnel and Duncan Murdoch.
 }
