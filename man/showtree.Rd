@@ -3,7 +3,7 @@
 \alias{showtree.gltf}
 \alias{showtree.rglscene}
 \title{
-Show the tree structure of nodes in a gltf object or rglscene
+Show the tree structure of nodes in a glTF object or rglscene
 object.
 }
 \description{
@@ -23,5 +23,5 @@ A \code{"gltf"} or \code{"rglscene"} object.
 }
   \item{transform}{Whether to show the transform associated
   with a subscene.}
-  \item{...}{Additional args, currently unused.}
+  \item{...}{Additional arguments, currently unused.}
 }

@@ -124,7 +124,7 @@ gltf$print(names = "meshes")
 \subsection{Method \code{addAccessor()}}{
 Write values to accessor, including \code{min} and \code{max}.
 
-The GLTF standard requires \code{min} and \code{max} values in
+The glTF standard requires \code{min} and \code{max} values in
 accessors, whereas other uses of buffers may not.
 This function stores in the usual way using the
 \code{\link[=Buffer]{Buffer$addAccessor()}} method, and then adds

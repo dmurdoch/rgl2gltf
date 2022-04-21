@@ -36,7 +36,7 @@ Gltf <- R6Class("gltf",
     #' @description
     #' Write values to accessor, including `min` and `max`.
     #'
-    #' The GLTF standard requires `min` and `max` values in
+    #' The glTF standard requires `min` and `max` values in
     #' accessors, whereas other uses of buffers may not.
     #' This function stores in the usual way using the
     #' [`Buffer$addAccessor()`][Buffer] method, and then adds

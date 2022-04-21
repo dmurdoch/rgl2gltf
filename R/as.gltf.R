@@ -436,7 +436,7 @@ as.gltf.mesh3d <- function(x, ...) {
                   quads = x$ib, ...)
 }
 
-# Convert a shapelist3d object to gltf
+# Convert a shapelist3d object to glTF
 as.gltf.shapelist3d <- function(x, previous = Gltf$new(), newScene = FALSE, ...) {
   for (i in seq_along(x)) {
     previous <- as.gltf(x[[i]],

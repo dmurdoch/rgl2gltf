@@ -2,7 +2,7 @@
 \alias{as.rglscene.gltf}
 \alias{as.mesh3d.gltf}
 \title{
-Convert a gltf object to an rglscene or mesh3d object.
+Convert a glTF object to an rglscene or mesh3d object.
 }
 \description{
 These methods convert a \code{"gltf"} object to
@@ -40,7 +40,7 @@ that information, otherwise include only what standard glTF viewers would displa
   \item{...}{\code{as.mesh3d} passes these arguments to \code{as.rglscene}.}
 }
 \details{
-These functions need to modify the GLTF object, caching
+These functions need to modify the glTF object, caching
 some information to help with the conversion.  By default
 they do this on a cloned copy of it, and the original is
 left unchanged.  If the object has already been cloned

@@ -11,7 +11,7 @@ figures:
       fig.asp: 1
 reference:
 - title: Import/export functions
-  desc:  Read and write gltf and glb files
+  desc:  Read and write glTF and glb files
 - contents:
   - readGLB
   - writeGLB

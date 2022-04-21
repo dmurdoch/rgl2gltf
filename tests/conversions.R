@@ -1,7 +1,7 @@
 library(rgl2gltf)
 library(rgl)
 
-# Tests from R to gltf
+# Tests from R to glTF
 
 x <- cube3d(col="red")
 open3d(); shade3d(x)

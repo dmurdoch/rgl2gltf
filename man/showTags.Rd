@@ -5,7 +5,7 @@ Debugging tool:  show tags for objects in rgl scene
 }
 \description{
 This function uses \code{text3d} to display the tags
-at the centre of the objects they label.
+at the center of the objects they label.
 }
 \usage{
 showTags(tags = NULL, ids = NULL,

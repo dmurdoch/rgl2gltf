@@ -241,7 +241,7 @@ emission respectively.
 - $L_a$, $L_d$ and $L_s$ are the ambient, diffuse and specular
 light values respectively.
 
-Ignoring fog and texture for now, the fragment shader implements the following computation of the color at at particular location: 
+Ignoring fog and texture for now, the fragment shader implements the following computation of the color at a particular location: 
 \[
 C_e + C_aL_a + \chi^+(N \cdot L) C_d L_d + \chi^+(H \cdot N)^s C_sL_s
 \]

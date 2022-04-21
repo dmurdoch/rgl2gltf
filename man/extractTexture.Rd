@@ -1,10 +1,10 @@
 \name{extractTexture}
 \alias{extractTexture}
 \title{
-Extract a texture file from a gltf object
+Extract a texture file from a glTF object
 }
 \description{
-Extracts a texture from a gltf object, and writes it
+Extracts a texture from a glTF object, and writes it
 to a file.
 }
 \usage{
@@ -14,7 +14,7 @@ extractTexture(gltf, index = 0,
 }
 \arguments{
   \item{gltf}{
-The gltf object.
+The glTF object.
 }
   \item{index}{
 The texture number (starting from 0).

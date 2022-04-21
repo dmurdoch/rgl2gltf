@@ -48,12 +48,12 @@ to \code{\link{open3d}}).
   }
 }
 \details{
-GLTF files are animated by time dependent changes to the
+glTF files are animated by time dependent changes to the
 transformations in their nodes.  Those transformations
 correspond to RGL \code{par3d("userMatrix")} settings in
 subscenes and can sometimes be directly imported as such.
 
-However, GLTF files also support "skins", a computer graphics
+However, glTF files also support "skins", a computer graphics
 concept not supported in RGL.  A skin is a way to say that
 different vertices of the same object (typically a triangle mesh)
 respond to different nodes.  This allows shapes to be stretched,

@@ -374,7 +374,7 @@ gltfWidget <- function(gltf, animation = 0, start = times[1],
     widget
 }
 
-# These are the shader edits that GLTF displays
+# These are the shader edits that glTF displays
 # need: "skins" applies skins, "normalTextures" applies
 # normal textures
 
