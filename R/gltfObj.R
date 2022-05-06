@@ -303,7 +303,7 @@ Gltf <- R6Class("gltf",
       if (!is.null(mat$emission))
         material$emissiveFactor <- c(col2rgb(mat$emission)/255)
       if (!is.null(mat$texture))
-        pbrMetallicRoughness$baseColorTexture <- self$addTexture(mat)
+        pbrMetallicRoughness$baseColorTexture <- list(index = self$addTexture(mat))
       if (length(pbrMetallicRoughness))
         material$pbrMetallicRoughness <- pbrMetallicRoughness
 
@@ -370,7 +370,7 @@ Gltf <- R6Class("gltf",
     #' @param coords Data to write, or `NULL`.
     #' @param target Optional target use for data.
     #' @return Accessor number, or `NULL`.
-    writeVectors = function(coords, target = NULL) {
+    writeVectors = function(coords, target = targetArray) {
       if (!is.null(coords)) {
         self$addAccessor(coords, target = target)
       } else
