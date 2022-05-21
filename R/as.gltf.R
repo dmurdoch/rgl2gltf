@@ -41,7 +41,7 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
       col <- matrix(1, nrow = 3, ncol = n)
     if (length(mat$alpha) && any(mat$alpha != 1))
       col <- rbind(col, rep_len(mat$alpha, n))
-    result$writeVectors(col)
+    result$writeVectors(col, types = "float")
   }
 
   makeSphere <- function(sections = 18, segments = 24) {
@@ -217,9 +217,9 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     if (!is.null(texcoords)) {
       texcoords[,2] <- 1-texcoords[,2]
     }
-    attributes <- as.list(c(POSITION = result$writeVectors(vertices),
-                            NORMAL = result$writeVectors(tnonnull(normals)),
-                            TEXCOORD_0 = result$writeVectors(tnonnull(texcoords)),
+    attributes <- as.list(c(POSITION = result$writeVectors(vertices, types = "float"),
+                            NORMAL = result$writeVectors(tnonnull(normals), types = "float"),
+                            TEXCOORD_0 = result$writeVectors(tnonnull(texcoords), types = "float"),
                             COLOR_0 = if (is.multicolored(material)) writeColors(material)
     ))
 

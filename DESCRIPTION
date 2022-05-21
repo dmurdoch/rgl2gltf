@@ -1,7 +1,7 @@
 Package: rgl2gltf
 Type: Package
 Title: Read and Write '.gltf' and '.glb' Files
-Version: 0.1.15
+Version: 0.1.16
 Authors@R: c(person("Duncan", "Murdoch", role = c("aut", "cre"),
                      email = "murdoch.duncan@gmail.com"),
              person("Morten S.", "Mikkelsen", role = c("cph")))
@@ -12,7 +12,7 @@ License: GPL-2
 Encoding: UTF-8
 Depends: R (>= 3.5.0)
 Imports: 
-    jsonlite, rgl (>= 0.108.21), grDevices, R6, base64enc
+    jsonlite, rgl (>= 0.108.43), grDevices, R6, base64enc
 URL: https://github.com/dmurdoch/rgl2gltf
 BugReports: https://github.com/dmurdoch/rgl2gltf/issues
 Suggests: 

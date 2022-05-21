@@ -133,7 +133,7 @@ This function stores in the usual way using the
 The standard also doesn't support signed 4 byte integers
 or double precision values, so we test for those here.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$addAccessor(values, target = NULL, useDouble = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$addAccessor(values, target = NULL, types = "anyGLTF")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -143,7 +143,7 @@ or double precision values, so we test for those here.
 
 \item{\code{target}}{Optional target use for values.}
 
-\item{\code{useDouble}}{Whether to write doubles or singles.}
+\item{\code{types}}{Allowed types (from names of \code{rgl::gltfTypes}), or \code{c("any", "anyGLTF")}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -722,7 +722,7 @@ Material number.
 \subsection{Method \code{writeVectors()}}{
 Write data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$writeVectors(coords, target = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$writeVectors(coords, target = targetArray, types = "anyGLTF")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -731,6 +731,8 @@ Write data.
 \item{\code{coords}}{Data to write, or \code{NULL}.}
 
 \item{\code{target}}{Optional target use for data.}
+
+\item{\code{types}}{A character vector of allowed types, or "any"}
 }
 \if{html}{\out{</div>}}
 }

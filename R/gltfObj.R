@@ -47,12 +47,12 @@ Gltf <- R6Class("gltf",
     #'
     #' @param values Values to write.
     #' @param target Optional target use for values.
-    #' @param useDouble Whether to write doubles or singles.
+    #' @param types Allowed types (from names of `rgl::gltfTypes`), or `c("any", "anyGLTF")`).
     #'
     #' @return New accessor number.
     #'
-    addAccessor = function(values, target = NULL, useDouble = FALSE) {
-      acc <- super$addAccessor(values, target, useDouble)
+    addAccessor = function(values, target = NULL, types = "anyGLTF") {
+      acc <- super$addAccessor(values, target, types)
       accessor <- self$getAccessor(acc)
       if (accessor$componentType %in% c(typeSignedInt, typeDouble))
         stop("Type is not supported in glTF")
@@ -369,10 +369,11 @@ Gltf <- R6Class("gltf",
     #' @description Write data.
     #' @param coords Data to write, or `NULL`.
     #' @param target Optional target use for data.
+    #' @param types A character vector of allowed types, or "any"
     #' @return Accessor number, or `NULL`.
-    writeVectors = function(coords, target = targetArray) {
+    writeVectors = function(coords, target = targetArray, types = "anyGLTF") {
       if (!is.null(coords)) {
-        self$addAccessor(coords, target = target)
+        self$addAccessor(coords, target = target, types = types)
       } else
         NULL
     },
@@ -387,7 +388,7 @@ Gltf <- R6Class("gltf",
     makePrimitive = function(inds, mode = NULL, attributes = NULL, matnum = NULL) {
       indices <- as.integer(inds)
       if (length(indices)) {
-        indices <- self$addAccessor(indices - 1L, targetElementArray)
+        indices <- self$addAccessor(indices - 1L, targetElementArray, "uint")
         primitive <- list(attributes = attributes,
                           material = matnum,
                           mode = mode,
