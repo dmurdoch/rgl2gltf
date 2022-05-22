@@ -36,12 +36,12 @@ as.gltf.default <- function(x, y = NULL, z = NULL, vertices,
     # We know we're multicolored already
     n <- max(length(mat$color), length(mat$alpha))
     if (length(mat$color))
-      col <- col2rgb(rep_len(mat$color, n))/255
+      col <- col2rgb(rep_len(mat$color, n))
     else
-      col <- matrix(1, nrow = 3, ncol = n)
+      col <- matrix(255L, nrow = 3, ncol = n)
     if (length(mat$alpha) && any(mat$alpha != 1))
-      col <- rbind(col, rep_len(mat$alpha, n))
-    result$writeVectors(col, types = "float")
+      col <- rbind(col, rep_len(round(mat$alpha*255), n))
+    result$writeVectors(col, types = "ubyte", normalized = TRUE)
   }
 
   makeSphere <- function(sections = 18, segments = 24) {
