@@ -6,8 +6,8 @@ Authors@R: c(person("Duncan", "Murdoch", role = c("aut", "cre"),
                      email = "murdoch.duncan@gmail.com"),
              person("Morten S.", "Mikkelsen", role = c("cph")))
 Maintainer: Duncan Murdoch <murdoch.duncan@gmail.com>
-Description: 'glTF' is a file format to describe 3D models.  This package adds
- read and write functions to it.
+Description: The 'glTF' file format is used to describe 3D models.  This package 
+ provides read and write functions to work with it.
 License: GPL-2
 Encoding: UTF-8
 Depends: R (>= 3.5.0)

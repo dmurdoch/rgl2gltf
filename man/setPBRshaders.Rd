@@ -10,7 +10,7 @@ parameters of the object map to physical properties such
 as metallicity, roughness, etc.  This function
 replaces the default \pkg{rgl} shaders with PBR shaders
 based on the reference implementation in
-\url{https://github.com/KhronosGroup/glTF-Sample-Viewer/blob/88eda8c5358efe03128b72b6c5f5f6e5b6d023e1/shaders}.
+\url{https://github.com/KhronosGroup/glTF-Sample-Viewer/tree/88eda8c5358efe03128b72b6c5f5f6e5b6d023e1/shaders}.
 }
 \usage{
 setPBRshaders(gltf, gltfMat, id,
