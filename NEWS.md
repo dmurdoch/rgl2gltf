@@ -1,4 +1,4 @@
-# rgl2gltf 0.1.16
+# rgl2gltf 0.1.17
 
 * Added a `NEWS.md` file to track changes to the package.
 * Added "rigid" method animation to `playgltf()`.
@@ -16,3 +16,4 @@ well as the JSON part.
 * Added "physically based rendering" (PBR) methods.
 * Fixed `baseColorTexture` and `bufferView.target` errors (issue #38).
 * Fixed type errors (issue #38).
+* Now writes colors using normalized bytes (issue #40).

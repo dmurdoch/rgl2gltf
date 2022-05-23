@@ -48,11 +48,13 @@ Gltf <- R6Class("gltf",
     #' @param values Values to write.
     #' @param target Optional target use for values.
     #' @param types Allowed types (from names of `rgl::gltfTypes`), or `c("any", "anyGLTF")`).
+    #' @param normalized Are these normalized
+    #' integer values?
     #'
     #' @return New accessor number.
     #'
-    addAccessor = function(values, target = NULL, types = "anyGLTF") {
-      acc <- super$addAccessor(values, target, types)
+    addAccessor = function(values, target = NULL, types = "anyGLTF", normalized = FALSE) {
+      acc <- super$addAccessor(values, target, types, normalized = normalized)
       accessor <- self$getAccessor(acc)
       if (accessor$componentType %in% c(typeSignedInt, typeDouble))
         stop("Type is not supported in glTF")
@@ -369,11 +371,12 @@ Gltf <- R6Class("gltf",
     #' @description Write data.
     #' @param coords Data to write, or `NULL`.
     #' @param target Optional target use for data.
-    #' @param types A character vector of allowed types, or "any"
+    #' @param types A character vector of allowed types, or "any" or "anyGLTF"
+    #' @param normalized Are these integer values representing floats?
     #' @return Accessor number, or `NULL`.
-    writeVectors = function(coords, target = targetArray, types = "anyGLTF") {
+    writeVectors = function(coords, target = targetArray, types = "anyGLTF", normalized = FALSE) {
       if (!is.null(coords)) {
-        self$addAccessor(coords, target = target, types = types)
+        self$addAccessor(coords, target = target, types = types, normalized = normalized)
       } else
         NULL
     },

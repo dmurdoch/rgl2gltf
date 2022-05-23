@@ -133,7 +133,7 @@ This function stores in the usual way using the
 The standard also doesn't support signed 4 byte integers
 or double precision values, so we test for those here.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$addAccessor(values, target = NULL, types = "anyGLTF")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$addAccessor(values, target = NULL, types = "anyGLTF", normalized = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -144,6 +144,9 @@ or double precision values, so we test for those here.
 \item{\code{target}}{Optional target use for values.}
 
 \item{\code{types}}{Allowed types (from names of \code{rgl::gltfTypes}), or \code{c("any", "anyGLTF")}).}
+
+\item{\code{normalized}}{Are these normalized
+integer values?}
 }
 \if{html}{\out{</div>}}
 }
@@ -722,7 +725,12 @@ Material number.
 \subsection{Method \code{writeVectors()}}{
 Write data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Gltf$writeVectors(coords, target = targetArray, types = "anyGLTF")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Gltf$writeVectors(
+  coords,
+  target = targetArray,
+  types = "anyGLTF",
+  normalized = FALSE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -732,7 +740,9 @@ Write data.
 
 \item{\code{target}}{Optional target use for data.}
 
-\item{\code{types}}{A character vector of allowed types, or "any"}
+\item{\code{types}}{A character vector of allowed types, or "any" or "anyGLTF"}
+
+\item{\code{normalized}}{Are these integer values representing floats?}
 }
 \if{html}{\out{</div>}}
 }
