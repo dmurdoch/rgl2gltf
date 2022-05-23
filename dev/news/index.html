@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.11</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.17</span>
       </span>
     </div>
 
@@ -58,7 +58,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.11" id="rgl2gltf-0111">rgl2gltf 0.1.11<a class="anchor" aria-label="anchor" href="#rgl2gltf-0111"></a></h2>
+<h2 class="page-header" data-toc-text="0.1.17" id="rgl2gltf-0117">rgl2gltf 0.1.17<a class="anchor" aria-label="anchor" href="#rgl2gltf-0117"></a></h2>
 <ul><li>Added a <code>NEWS.md</code> file to track changes to the
 package.</li>
 <li>Added “rigid” method animation to <code><a href="../reference/playgltf.html">playgltf()</a></code>.</li>
@@ -71,6 +71,15 @@ package.</li>
 <li>Added <code><a href="../reference/getTangents.html">getTangents()</a></code> to use MikkTSpace code to assign
 tangents if they are not specified. These can be used in normal
 textures.</li>
+<li>Textures may now be specified in JPEG format, not just PNG.</li>
+<li>
+<code><a href="../reference/writeglTF.html">writeglTF()</a></code> now writes the binary part of the file as
+well as the JSON part.</li>
+<li>Added “physically based rendering” (PBR) methods.</li>
+<li>Fixed <code>baseColorTexture</code> and
+<code>bufferView.target</code> errors (issue <a href="https://github.com/dmurdoch/rgl2gltf/issues/38" class="external-link">#38</a>).</li>
+<li>Fixed type errors (issue <a href="https://github.com/dmurdoch/rgl2gltf/issues/38" class="external-link">#38</a>).</li>
+<li>Now writes colors using normalized bytes (issue <a href="https://github.com/dmurdoch/rgl2gltf/issues/40" class="external-link">#40</a>).</li>
 </ul></div>
   </div>
 

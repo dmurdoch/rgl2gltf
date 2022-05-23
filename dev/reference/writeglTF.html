@@ -19,7 +19,7 @@ object to one of these formats.'><meta name="robots" content="noindex"><!-- math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rgl2gltf</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.11</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">0.1.17</span>
       </span>
     </div>
 
@@ -67,7 +67,7 @@ object to one of these formats.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">writeglTF</span><span class="op">(</span><span class="va">x</span>, <span class="va">path</span><span class="op">)</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">writeglTF</span><span class="op">(</span><span class="va">x</span>, <span class="va">path</span>, bin <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu">writeGLB</span><span class="op">(</span><span class="va">x</span>, <span class="va">con</span><span class="op">)</span></code></pre></div>
     </div>
 
@@ -77,12 +77,24 @@ object to one of these formats.</p>
 <dd><p>A <code>"gltf"</code> object, e.g. from <code><a href="as.gltf.html">as.gltf</a></code>.</p></dd>
 <dt>path</dt>
 <dd><p>A filename in which to write the JSON part of the file.</p></dd>
+<dt>bin</dt>
+<dd><p>logical; whether or not to write the binary
+part of the object.</p></dd>
 <dt>con</dt>
 <dd><p>A filename or connection to which to write the GLB file.</p></dd>
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>If <code>bin = TRUE</code> (the default),
+<code>writeglTF</code> will write the binary part of the object
+to one or more separate files with filename constructed by
+concatenating the main part of <code>path</code>, followed by a number
+and the extension <code class="file">.bin</code>.</p>
+    </div>
     <div id="value">
     <h2>Value</h2>
-    <p>Both functions return <code>NULL</code> invisibly.</p>
+    <p><code>writeglTF</code> returns <code>path</code> invisibly.
+<code>writeGLB</code> returns <code>NULL</code> invisibly.</p>
     </div>
     <div id="references">
     <h2>References</h2>
