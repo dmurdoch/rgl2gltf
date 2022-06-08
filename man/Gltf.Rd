@@ -30,79 +30,79 @@ gltf$print(names = "meshes")
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Gltf$new()}}
-\item \href{#method-addAccessor}{\code{Gltf$addAccessor()}}
-\item \href{#method-getScene}{\code{Gltf$getScene()}}
-\item \href{#method-setScene}{\code{Gltf$setScene()}}
-\item \href{#method-addScene}{\code{Gltf$addScene()}}
-\item \href{#method-addToScene}{\code{Gltf$addToScene()}}
-\item \href{#method-defaultScene}{\code{Gltf$defaultScene()}}
-\item \href{#method-getNode}{\code{Gltf$getNode()}}
-\item \href{#method-setNode}{\code{Gltf$setNode()}}
-\item \href{#method-addNode}{\code{Gltf$addNode()}}
-\item \href{#method-addChild}{\code{Gltf$addChild()}}
-\item \href{#method-setParents}{\code{Gltf$setParents()}}
-\item \href{#method-getSkin}{\code{Gltf$getSkin()}}
-\item \href{#method-setSkin}{\code{Gltf$setSkin()}}
-\item \href{#method-getJoint}{\code{Gltf$getJoint()}}
-\item \href{#method-getInverseBindMatrices}{\code{Gltf$getInverseBindMatrices()}}
-\item \href{#method-getForwardBindMatrices}{\code{Gltf$getForwardBindMatrices()}}
-\item \href{#method-getCamera}{\code{Gltf$getCamera()}}
-\item \href{#method-getExtras}{\code{Gltf$getExtras()}}
-\item \href{#method-setExtras}{\code{Gltf$setExtras()}}
-\item \href{#method-getMesh}{\code{Gltf$getMesh()}}
-\item \href{#method-setMesh}{\code{Gltf$setMesh()}}
-\item \href{#method-addMesh}{\code{Gltf$addMesh()}}
-\item \href{#method-getMaterial}{\code{Gltf$getMaterial()}}
-\item \href{#method-getTexture}{\code{Gltf$getTexture()}}
-\item \href{#method-getImage}{\code{Gltf$getImage()}}
-\item \href{#method-addMaterial}{\code{Gltf$addMaterial()}}
-\item \href{#method-addTexture}{\code{Gltf$addTexture()}}
-\item \href{#method-addImage}{\code{Gltf$addImage()}}
-\item \href{#method-addSampler}{\code{Gltf$addSampler()}}
-\item \href{#method-getMaterialNumber}{\code{Gltf$getMaterialNumber()}}
-\item \href{#method-writeVectors}{\code{Gltf$writeVectors()}}
-\item \href{#method-makePrimitive}{\code{Gltf$makePrimitive()}}
-\item \href{#method-getAsset}{\code{Gltf$getAsset()}}
-\item \href{#method-setAsset}{\code{Gltf$setAsset()}}
-\item \href{#method-getTransform}{\code{Gltf$getTransform()}}
-\item \href{#method-getRglMaterial}{\code{Gltf$getRglMaterial()}}
-\item \href{#method-getAnimation}{\code{Gltf$getAnimation()}}
-\item \href{#method-setAnimation}{\code{Gltf$setAnimation()}}
-\item \href{#method-timerange}{\code{Gltf$timerange()}}
-\item \href{#method-initAnimation}{\code{Gltf$initAnimation()}}
-\item \href{#method-settime}{\code{Gltf$settime()}}
-\item \href{#method-print}{\code{Gltf$print()}}
-\item \href{#method-listCount}{\code{Gltf$listCount()}}
-\item \href{#method-clone}{\code{Gltf$clone()}}
+\item \href{#method-gltf-new}{\code{Gltf$new()}}
+\item \href{#method-gltf-addAccessor}{\code{Gltf$addAccessor()}}
+\item \href{#method-gltf-getScene}{\code{Gltf$getScene()}}
+\item \href{#method-gltf-setScene}{\code{Gltf$setScene()}}
+\item \href{#method-gltf-addScene}{\code{Gltf$addScene()}}
+\item \href{#method-gltf-addToScene}{\code{Gltf$addToScene()}}
+\item \href{#method-gltf-defaultScene}{\code{Gltf$defaultScene()}}
+\item \href{#method-gltf-getNode}{\code{Gltf$getNode()}}
+\item \href{#method-gltf-setNode}{\code{Gltf$setNode()}}
+\item \href{#method-gltf-addNode}{\code{Gltf$addNode()}}
+\item \href{#method-gltf-addChild}{\code{Gltf$addChild()}}
+\item \href{#method-gltf-setParents}{\code{Gltf$setParents()}}
+\item \href{#method-gltf-getSkin}{\code{Gltf$getSkin()}}
+\item \href{#method-gltf-setSkin}{\code{Gltf$setSkin()}}
+\item \href{#method-gltf-getJoint}{\code{Gltf$getJoint()}}
+\item \href{#method-gltf-getInverseBindMatrices}{\code{Gltf$getInverseBindMatrices()}}
+\item \href{#method-gltf-getForwardBindMatrices}{\code{Gltf$getForwardBindMatrices()}}
+\item \href{#method-gltf-getCamera}{\code{Gltf$getCamera()}}
+\item \href{#method-gltf-getExtras}{\code{Gltf$getExtras()}}
+\item \href{#method-gltf-setExtras}{\code{Gltf$setExtras()}}
+\item \href{#method-gltf-getMesh}{\code{Gltf$getMesh()}}
+\item \href{#method-gltf-setMesh}{\code{Gltf$setMesh()}}
+\item \href{#method-gltf-addMesh}{\code{Gltf$addMesh()}}
+\item \href{#method-gltf-getMaterial}{\code{Gltf$getMaterial()}}
+\item \href{#method-gltf-getTexture}{\code{Gltf$getTexture()}}
+\item \href{#method-gltf-getImage}{\code{Gltf$getImage()}}
+\item \href{#method-gltf-addMaterial}{\code{Gltf$addMaterial()}}
+\item \href{#method-gltf-addTexture}{\code{Gltf$addTexture()}}
+\item \href{#method-gltf-addImage}{\code{Gltf$addImage()}}
+\item \href{#method-gltf-addSampler}{\code{Gltf$addSampler()}}
+\item \href{#method-gltf-getMaterialNumber}{\code{Gltf$getMaterialNumber()}}
+\item \href{#method-gltf-writeVectors}{\code{Gltf$writeVectors()}}
+\item \href{#method-gltf-makePrimitive}{\code{Gltf$makePrimitive()}}
+\item \href{#method-gltf-getAsset}{\code{Gltf$getAsset()}}
+\item \href{#method-gltf-setAsset}{\code{Gltf$setAsset()}}
+\item \href{#method-gltf-getTransform}{\code{Gltf$getTransform()}}
+\item \href{#method-gltf-getRglMaterial}{\code{Gltf$getRglMaterial()}}
+\item \href{#method-gltf-getAnimation}{\code{Gltf$getAnimation()}}
+\item \href{#method-gltf-setAnimation}{\code{Gltf$setAnimation()}}
+\item \href{#method-gltf-timerange}{\code{Gltf$timerange()}}
+\item \href{#method-gltf-initAnimation}{\code{Gltf$initAnimation()}}
+\item \href{#method-gltf-settime}{\code{Gltf$settime()}}
+\item \href{#method-gltf-print}{\code{Gltf$print()}}
+\item \href{#method-gltf-listCount}{\code{Gltf$listCount()}}
+\item \href{#method-gltf-clone}{\code{Gltf$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="addBufferView">}\href{../../rgl/html/Buffer.html#method-addBufferView}{\code{rgl::Buffer$addBufferView()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="as.list">}\href{../../rgl/html/Buffer.html#method-as.list}{\code{rgl::Buffer$as.list()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffer">}\href{../../rgl/html/Buffer.html#method-closeBuffer}{\code{rgl::Buffer$closeBuffer()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffers">}\href{../../rgl/html/Buffer.html#method-closeBuffers}{\code{rgl::Buffer$closeBuffers()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="dataURI">}\href{../../rgl/html/Buffer.html#method-dataURI}{\code{rgl::Buffer$dataURI()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getAccessor">}\href{../../rgl/html/Buffer.html#method-getAccessor}{\code{rgl::Buffer$getAccessor()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBuffer">}\href{../../rgl/html/Buffer.html#method-getBuffer}{\code{rgl::Buffer$getBuffer()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBufferview">}\href{../../rgl/html/Buffer.html#method-getBufferview}{\code{rgl::Buffer$getBufferview()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="load">}\href{../../rgl/html/Buffer.html#method-load}{\code{rgl::Buffer$load()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBuffer">}\href{../../rgl/html/Buffer.html#method-openBuffer}{\code{rgl::Buffer$openBuffer()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBufferview">}\href{../../rgl/html/Buffer.html#method-openBufferview}{\code{rgl::Buffer$openBufferview()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor">}\href{../../rgl/html/Buffer.html#method-readAccessor}{\code{rgl::Buffer$readAccessor()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="saveOpenBuffer">}\href{../../rgl/html/Buffer.html#method-saveOpenBuffer}{\code{rgl::Buffer$saveOpenBuffer()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setAccessor">}\href{../../rgl/html/Buffer.html#method-setAccessor}{\code{rgl::Buffer$setAccessor()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBuffer">}\href{../../rgl/html/Buffer.html#method-setBuffer}{\code{rgl::Buffer$setBuffer()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBufferview">}\href{../../rgl/html/Buffer.html#method-setBufferview}{\code{rgl::Buffer$setBufferview()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="writeBuffer">}\href{../../rgl/html/Buffer.html#method-writeBuffer}{\code{rgl::Buffer$writeBuffer()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="addBufferView"><a href='../../rgl/html/Buffer.html#method-Buffer-addBufferView'><code>rgl::Buffer$addBufferView()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="as.list"><a href='../../rgl/html/Buffer.html#method-Buffer-as.list'><code>rgl::Buffer$as.list()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffer'><code>rgl::Buffer$closeBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffers"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffers'><code>rgl::Buffer$closeBuffers()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="dataURI"><a href='../../rgl/html/Buffer.html#method-Buffer-dataURI'><code>rgl::Buffer$dataURI()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-getAccessor'><code>rgl::Buffer$getAccessor()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-getBuffer'><code>rgl::Buffer$getBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-getBufferview'><code>rgl::Buffer$getBufferview()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="load"><a href='../../rgl/html/Buffer.html#method-Buffer-load'><code>rgl::Buffer$load()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-openBuffer'><code>rgl::Buffer$openBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-openBufferview'><code>rgl::Buffer$openBufferview()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-readAccessor'><code>rgl::Buffer$readAccessor()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="saveOpenBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-saveOpenBuffer'><code>rgl::Buffer$saveOpenBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-setAccessor'><code>rgl::Buffer$setAccessor()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-setBuffer'><code>rgl::Buffer$setBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-setBufferview'><code>rgl::Buffer$setBufferview()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="writeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-writeBuffer'><code>rgl::Buffer$writeBuffer()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-gltf-new"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Gltf$new(json = NULL, defaultbin = NULL)}\if{html}{\out{</div>}}
@@ -119,8 +119,8 @@ gltf$print(names = "meshes")
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addAccessor"></a>}}
-\if{latex}{\out{\hypertarget{method-addAccessor}{}}}
+\if{html}{\out{<a id="method-gltf-addAccessor"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addAccessor}{}}}
 \subsection{Method \code{addAccessor()}}{
 Write values to accessor, including \code{min} and \code{max}.
 
@@ -155,8 +155,8 @@ New accessor number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getScene"></a>}}
-\if{latex}{\out{\hypertarget{method-getScene}{}}}
+\if{html}{\out{<a id="method-gltf-getScene"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getScene}{}}}
 \subsection{Method \code{getScene()}}{
 Get scene object.
 \subsection{Usage}{
@@ -176,8 +176,8 @@ Scene object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setScene"></a>}}
-\if{latex}{\out{\hypertarget{method-setScene}{}}}
+\if{html}{\out{<a id="method-gltf-setScene"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setScene}{}}}
 \subsection{Method \code{setScene()}}{
 Update scene record.
 \subsection{Usage}{
@@ -195,8 +195,8 @@ Update scene record.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addScene"></a>}}
-\if{latex}{\out{\hypertarget{method-addScene}{}}}
+\if{html}{\out{<a id="method-gltf-addScene"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addScene}{}}}
 \subsection{Method \code{addScene()}}{
 Add a scene object.
 \subsection{Usage}{
@@ -208,8 +208,8 @@ Scene number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addToScene"></a>}}
-\if{latex}{\out{\hypertarget{method-addToScene}{}}}
+\if{html}{\out{<a id="method-gltf-addToScene"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addToScene}{}}}
 \subsection{Method \code{addToScene()}}{
 Add node to scene.
 \subsection{Usage}{
@@ -227,8 +227,8 @@ Add node to scene.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-defaultScene"></a>}}
-\if{latex}{\out{\hypertarget{method-defaultScene}{}}}
+\if{html}{\out{<a id="method-gltf-defaultScene"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-defaultScene}{}}}
 \subsection{Method \code{defaultScene()}}{
 Get default scene, creating it if necessary.
 \subsection{Usage}{
@@ -240,8 +240,8 @@ Scene number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getNode"></a>}}
-\if{latex}{\out{\hypertarget{method-getNode}{}}}
+\if{html}{\out{<a id="method-gltf-getNode"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getNode}{}}}
 \subsection{Method \code{getNode()}}{
 Get node object.
 \subsection{Usage}{
@@ -261,8 +261,8 @@ Node object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setNode"></a>}}
-\if{latex}{\out{\hypertarget{method-setNode}{}}}
+\if{html}{\out{<a id="method-gltf-setNode"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setNode}{}}}
 \subsection{Method \code{setNode()}}{
 Set node object.
 \subsection{Usage}{
@@ -280,8 +280,8 @@ Set node object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addNode"></a>}}
-\if{latex}{\out{\hypertarget{method-addNode}{}}}
+\if{html}{\out{<a id="method-gltf-addNode"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addNode}{}}}
 \subsection{Method \code{addNode()}}{
 Add a node object.
 \subsection{Usage}{
@@ -304,8 +304,8 @@ Node number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addChild"></a>}}
-\if{latex}{\out{\hypertarget{method-addChild}{}}}
+\if{html}{\out{<a id="method-gltf-addChild"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addChild}{}}}
 \subsection{Method \code{addChild()}}{
 Add node as child of another.
 \subsection{Usage}{
@@ -323,8 +323,8 @@ Add node as child of another.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setParents"></a>}}
-\if{latex}{\out{\hypertarget{method-setParents}{}}}
+\if{html}{\out{<a id="method-gltf-setParents"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setParents}{}}}
 \subsection{Method \code{setParents()}}{
 Set parent member for all nodes
 \subsection{Usage}{
@@ -333,8 +333,8 @@ Set parent member for all nodes
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getSkin"></a>}}
-\if{latex}{\out{\hypertarget{method-getSkin}{}}}
+\if{html}{\out{<a id="method-gltf-getSkin"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getSkin}{}}}
 \subsection{Method \code{getSkin()}}{
 Get skin object.
 \subsection{Usage}{
@@ -354,8 +354,8 @@ Skin object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setSkin"></a>}}
-\if{latex}{\out{\hypertarget{method-setSkin}{}}}
+\if{html}{\out{<a id="method-gltf-setSkin"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setSkin}{}}}
 \subsection{Method \code{setSkin()}}{
 Set skin object.
 \subsection{Usage}{
@@ -373,8 +373,8 @@ Set skin object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getJoint"></a>}}
-\if{latex}{\out{\hypertarget{method-getJoint}{}}}
+\if{html}{\out{<a id="method-gltf-getJoint"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getJoint}{}}}
 \subsection{Method \code{getJoint()}}{
 Get joint node.
 \subsection{Usage}{
@@ -395,8 +395,8 @@ Node object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getInverseBindMatrices"></a>}}
-\if{latex}{\out{\hypertarget{method-getInverseBindMatrices}{}}}
+\if{html}{\out{<a id="method-gltf-getInverseBindMatrices"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getInverseBindMatrices}{}}}
 \subsection{Method \code{getInverseBindMatrices()}}{
 Get "inverse bind matrices".
 
@@ -419,8 +419,8 @@ A 4x4xn array of matrices, one per joint.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getForwardBindMatrices"></a>}}
-\if{latex}{\out{\hypertarget{method-getForwardBindMatrices}{}}}
+\if{html}{\out{<a id="method-gltf-getForwardBindMatrices"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getForwardBindMatrices}{}}}
 \subsection{Method \code{getForwardBindMatrices()}}{
 Get "forward bind matrices".
 
@@ -442,8 +442,8 @@ A 4x4xn array of matrices, one per joint.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getCamera"></a>}}
-\if{latex}{\out{\hypertarget{method-getCamera}{}}}
+\if{html}{\out{<a id="method-gltf-getCamera"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getCamera}{}}}
 \subsection{Method \code{getCamera()}}{
 Get camera object.
 \subsection{Usage}{
@@ -463,8 +463,8 @@ Camera object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getExtras"></a>}}
-\if{latex}{\out{\hypertarget{method-getExtras}{}}}
+\if{html}{\out{<a id="method-gltf-getExtras"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getExtras}{}}}
 \subsection{Method \code{getExtras()}}{
 Get top-level extras list.
 \subsection{Usage}{
@@ -476,8 +476,8 @@ Extras list, including rgl objects.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setExtras"></a>}}
-\if{latex}{\out{\hypertarget{method-setExtras}{}}}
+\if{html}{\out{<a id="method-gltf-setExtras"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setExtras}{}}}
 \subsection{Method \code{setExtras()}}{
 Set extras list.
 \subsection{Usage}{
@@ -493,8 +493,8 @@ Set extras list.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getMesh"></a>}}
-\if{latex}{\out{\hypertarget{method-getMesh}{}}}
+\if{html}{\out{<a id="method-gltf-getMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getMesh}{}}}
 \subsection{Method \code{getMesh()}}{
 Get mesh object.
 \subsection{Usage}{
@@ -514,8 +514,8 @@ Mesh object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setMesh"></a>}}
-\if{latex}{\out{\hypertarget{method-setMesh}{}}}
+\if{html}{\out{<a id="method-gltf-setMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setMesh}{}}}
 \subsection{Method \code{setMesh()}}{
 Set mesh object.
 \subsection{Usage}{
@@ -533,8 +533,8 @@ Set mesh object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addMesh"></a>}}
-\if{latex}{\out{\hypertarget{method-addMesh}{}}}
+\if{html}{\out{<a id="method-gltf-addMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addMesh}{}}}
 \subsection{Method \code{addMesh()}}{
 Add a mesh object.
 \subsection{Usage}{
@@ -553,8 +553,8 @@ Mesh number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getMaterial"></a>}}
-\if{latex}{\out{\hypertarget{method-getMaterial}{}}}
+\if{html}{\out{<a id="method-gltf-getMaterial"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getMaterial}{}}}
 \subsection{Method \code{getMaterial()}}{
 Get material object.
 \subsection{Usage}{
@@ -574,8 +574,8 @@ Material object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getTexture"></a>}}
-\if{latex}{\out{\hypertarget{method-getTexture}{}}}
+\if{html}{\out{<a id="method-gltf-getTexture"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getTexture}{}}}
 \subsection{Method \code{getTexture()}}{
 Get texture object.
 \subsection{Usage}{
@@ -595,8 +595,8 @@ Texture object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getImage"></a>}}
-\if{latex}{\out{\hypertarget{method-getImage}{}}}
+\if{html}{\out{<a id="method-gltf-getImage"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getImage}{}}}
 \subsection{Method \code{getImage()}}{
 Get image object.
 \subsection{Usage}{
@@ -616,8 +616,8 @@ Image object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addMaterial"></a>}}
-\if{latex}{\out{\hypertarget{method-addMaterial}{}}}
+\if{html}{\out{<a id="method-gltf-addMaterial"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addMaterial}{}}}
 \subsection{Method \code{addMaterial()}}{
 Construct and possibly add material.
 
@@ -640,8 +640,8 @@ Material number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addTexture"></a>}}
-\if{latex}{\out{\hypertarget{method-addTexture}{}}}
+\if{html}{\out{<a id="method-gltf-addTexture"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addTexture}{}}}
 \subsection{Method \code{addTexture()}}{
 Add a texture.
 \subsection{Usage}{
@@ -660,8 +660,8 @@ Texture number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addImage"></a>}}
-\if{latex}{\out{\hypertarget{method-addImage}{}}}
+\if{html}{\out{<a id="method-gltf-addImage"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addImage}{}}}
 \subsection{Method \code{addImage()}}{
 Add an image for a texture.
 \subsection{Usage}{
@@ -680,8 +680,8 @@ Image number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-addSampler"></a>}}
-\if{latex}{\out{\hypertarget{method-addSampler}{}}}
+\if{html}{\out{<a id="method-gltf-addSampler"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-addSampler}{}}}
 \subsection{Method \code{addSampler()}}{
 Add a sampler.
 \subsection{Usage}{
@@ -700,8 +700,8 @@ Sampler number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getMaterialNumber"></a>}}
-\if{latex}{\out{\hypertarget{method-getMaterialNumber}{}}}
+\if{html}{\out{<a id="method-gltf-getMaterialNumber"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getMaterialNumber}{}}}
 \subsection{Method \code{getMaterialNumber()}}{
 Add or return a material.
 \subsection{Usage}{
@@ -720,8 +720,8 @@ Material number.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-writeVectors"></a>}}
-\if{latex}{\out{\hypertarget{method-writeVectors}{}}}
+\if{html}{\out{<a id="method-gltf-writeVectors"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-writeVectors}{}}}
 \subsection{Method \code{writeVectors()}}{
 Write data.
 \subsection{Usage}{
@@ -751,8 +751,8 @@ Accessor number, or \code{NULL}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-makePrimitive"></a>}}
-\if{latex}{\out{\hypertarget{method-makePrimitive}{}}}
+\if{html}{\out{<a id="method-gltf-makePrimitive"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-makePrimitive}{}}}
 \subsection{Method \code{makePrimitive()}}{
 Create a primitive record.
 \subsection{Usage}{
@@ -778,8 +778,8 @@ Primitive record, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getAsset"></a>}}
-\if{latex}{\out{\hypertarget{method-getAsset}{}}}
+\if{html}{\out{<a id="method-gltf-getAsset"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getAsset}{}}}
 \subsection{Method \code{getAsset()}}{
 Get asset list.
 \subsection{Usage}{
@@ -792,8 +792,8 @@ Asset object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setAsset"></a>}}
-\if{latex}{\out{\hypertarget{method-setAsset}{}}}
+\if{html}{\out{<a id="method-gltf-setAsset"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setAsset}{}}}
 \subsection{Method \code{setAsset()}}{
 Set asset list.
 \subsection{Usage}{
@@ -811,8 +811,8 @@ Set asset list.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getTransform"></a>}}
-\if{latex}{\out{\hypertarget{method-getTransform}{}}}
+\if{html}{\out{<a id="method-gltf-getTransform"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getTransform}{}}}
 \subsection{Method \code{getTransform()}}{
 Get local transform.
 \subsection{Usage}{
@@ -831,8 +831,8 @@ Get local transform.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getRglMaterial"></a>}}
-\if{latex}{\out{\hypertarget{method-getRglMaterial}{}}}
+\if{html}{\out{<a id="method-gltf-getRglMaterial"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getRglMaterial}{}}}
 \subsection{Method \code{getRglMaterial()}}{
 Reconstruct \code{rgl} material.
 \subsection{Usage}{
@@ -851,8 +851,8 @@ Reconstruct \code{rgl} material.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-getAnimation"></a>}}
-\if{latex}{\out{\hypertarget{method-getAnimation}{}}}
+\if{html}{\out{<a id="method-gltf-getAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-getAnimation}{}}}
 \subsection{Method \code{getAnimation()}}{
 Get animation.
 \subsection{Usage}{
@@ -872,8 +872,8 @@ Animation object, documented here:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-setAnimation"></a>}}
-\if{latex}{\out{\hypertarget{method-setAnimation}{}}}
+\if{html}{\out{<a id="method-gltf-setAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-setAnimation}{}}}
 \subsection{Method \code{setAnimation()}}{
 Set animation.
 \subsection{Usage}{
@@ -891,8 +891,8 @@ Set animation.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-timerange"></a>}}
-\if{latex}{\out{\hypertarget{method-timerange}{}}}
+\if{html}{\out{<a id="method-gltf-timerange"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-timerange}{}}}
 \subsection{Method \code{timerange()}}{
 Find time range of an animation
 \subsection{Usage}{
@@ -911,8 +911,8 @@ Min and max times from the samplers in the animation.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-initAnimation"></a>}}
-\if{latex}{\out{\hypertarget{method-initAnimation}{}}}
+\if{html}{\out{<a id="method-gltf-initAnimation"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-initAnimation}{}}}
 \subsection{Method \code{initAnimation()}}{
 Initialize animation.
 
@@ -934,8 +934,8 @@ Modified animation object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-settime"></a>}}
-\if{latex}{\out{\hypertarget{method-settime}{}}}
+\if{html}{\out{<a id="method-gltf-settime"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-settime}{}}}
 \subsection{Method \code{settime()}}{
 Set time for an animation.
 
@@ -959,8 +959,8 @@ Vector of node numbers that were changed.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-gltf-print"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-print}{}}}
 \subsection{Method \code{print()}}{
 Print \code{gltf} objects with various levels of detail.
 \subsection{Usage}{
@@ -993,8 +993,8 @@ gltf$print(names = "meshes")
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-listCount"></a>}}
-\if{latex}{\out{\hypertarget{method-listCount}{}}}
+\if{html}{\out{<a id="method-gltf-listCount"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-listCount}{}}}
 \subsection{Method \code{listCount()}}{
 Get number of items in private list.
 \subsection{Usage}{
@@ -1010,8 +1010,8 @@ Get number of items in private list.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-gltf-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-gltf-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

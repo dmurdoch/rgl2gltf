@@ -23,6 +23,6 @@ Suggests:
     manipulateWidget,
     png,
     jpeg
-VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+VignetteBuilder: knitr, rmarkdown
+RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)

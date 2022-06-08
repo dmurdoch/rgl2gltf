@@ -35,6 +35,7 @@ reference:
   - getTangents
   - matrixSequence
   - modifyShaders
+  - setPBRshaders
   - showtree
   - showTags
 - title: R6 classes used for internal storage
