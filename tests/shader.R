@@ -5,4 +5,4 @@ gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
 
 if (requireNamespace("manipulateWidget"))
   asRow(gltfWidget(gltf, method = "rigid"),
-  gltfWidget(gltf, method = "shader"))
+        gltfWidget(gltf, method = "shader"))
