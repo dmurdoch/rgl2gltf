@@ -3,7 +3,6 @@ library(rgl)
 
 gltf <- readGLB(system.file("glb/RiggedSimple.glb", package = "rgl2gltf"))
 
-asRow(
-gltfWidget(gltf, method = "rigid"),
 if (requireNamespace("manipulateWidget"))
+  asRow(gltfWidget(gltf, method = "rigid"),
   gltfWidget(gltf, method = "shader"))
