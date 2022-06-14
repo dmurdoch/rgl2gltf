@@ -1,4 +1,4 @@
-# rgl2gltf 0.1.17
+# rgl2gltf 0.1.18
 
 * Added a `NEWS.md` file to track changes to the package.
 * Added "rigid" method animation to `playgltf()`.
@@ -17,3 +17,4 @@ well as the JSON part.
 * Fixed `baseColorTexture` and `bufferView.target` errors (issue #38).
 * Fixed type errors (issue #38).
 * Now writes colors using normalized bytes (issue #40).
+* Modified mikktspace.c for C99 compatibility.

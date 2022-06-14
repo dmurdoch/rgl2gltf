@@ -82,4 +82,6 @@ by Ed Mackey and are owned by Analytical Graphics, Inc., licensed under
 CC-BY 4.0 https://creativecommons.org/licenses/by/4.0/.
 
 Files `src/mikktspace.c` and `src/mikktspace.h` are written by Morten
-S. Mikkelsen and used under the permissive license included within them.
+S. Mikkelsen and used under the permissive license included
+within them, with slight modifications for C99
+compatibility.
