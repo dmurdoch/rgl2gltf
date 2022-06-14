@@ -1,6 +1,6 @@
 # This is a mix of the basic and tidyverse workflow
 
-name: CI
+name: CI for many versions
 
 # Controls when the action will run.
 on:
