@@ -6,3 +6,4 @@
 ^\.github
 ^docs/
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
