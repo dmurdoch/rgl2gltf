@@ -14,7 +14,13 @@ something important to you is missing.
 
 A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf/dev/>
 
-To install, run
+To install from CRAN, run
+
+``` r
+install.packages("rgl2gltf")
+```
+
+To install the development version, run
 
 ``` r
 remotes::install_github("dmurdoch/rgl2gltf")

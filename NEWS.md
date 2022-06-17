@@ -1,4 +1,4 @@
-# rgl2gltf 0.1.18
+# rgl2gltf 1.0.0
 
 * Added a `NEWS.md` file to track changes to the package.
 * Added "rigid" method animation to `playgltf()`.

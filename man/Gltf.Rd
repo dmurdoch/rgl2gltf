@@ -13,9 +13,11 @@ object encapsulates most of the data from those files.
 ## Method `Gltf$print`
 ## ------------------------------------------------
 
+\donttest{
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
 gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
 gltf$print(names = "meshes")
+}
 }
 \section{Super class}{
 \code{\link[rgl:Buffer]{rgl::Buffer}} -> \code{gltf}
@@ -983,9 +985,11 @@ character vector of components to print verbosely.}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
+\preformatted{\donttest{
+samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
 gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
 gltf$print(names = "meshes")
+}
 }
 \if{html}{\out{</div>}}
 

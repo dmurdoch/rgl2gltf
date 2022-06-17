@@ -1,3 +1,8 @@
+# version 1.0.0
+
+Wrapped examples that did downloads in `\donttest`, as
+requested by CRAN.
+
 # version 0.1.18
 
 Modified mikktspace.c code for C99 compatibility.
