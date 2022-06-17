@@ -14,7 +14,13 @@ something important to you is missing.
 
 A `pkgdown` website is here: <https://dmurdoch.github.io/rgl2gltf/dev/>
 
-To install, run
+To install from CRAN, run
+
+``` r
+install.packages("rgl2gltf")
+```
+
+To install the development version, run
 
 ``` r
 remotes::install_github("dmurdoch/rgl2gltf")
@@ -64,4 +70,5 @@ Briefly,
     <https://creativecommons.org/licenses/by/4.0/>.
 
 Files `src/mikktspace.c` and `src/mikktspace.h` are written by Morten S.
-Mikkelsen and used under the permissive license included within them.
+Mikkelsen and used under the permissive license included within them,
+with slight modifications for C99 compatibility.

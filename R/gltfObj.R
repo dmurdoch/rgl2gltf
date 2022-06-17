@@ -596,9 +596,11 @@ Gltf <- R6Class("gltf",
     #' @param showExtras Logical:  show extra fields?
     #' @param ... Passed `...` .
     #' @examples
+    #' \donttest{
     #' samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
     #' gltf <- readGLB(paste0(samples, "/2CylinderEngine/glTF-Binary/2CylinderEngine.glb?raw=true"))
     #' gltf$print(names = "meshes")
+    #' }
     print = function(verbose = FALSE, names = FALSE, showExtras = TRUE, ...) {
 
       shownames <- function(sec) {

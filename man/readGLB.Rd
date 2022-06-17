@@ -39,7 +39,7 @@ Duncan Murdoch
 \code{\link{readglTF}}
 }
 \examples{
-
+\donttest{
 # This web page has lots of sample files
 
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
@@ -55,4 +55,5 @@ if (rgl::in_pkgdown_example())
   gltfWidget(gltf)
 
 gltf$closeBuffers()
+}
 }

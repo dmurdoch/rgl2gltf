@@ -93,7 +93,7 @@ others for the original shaders.
 \code{\link{gltfWidget}}
 }
 \examples{
-
+\donttest{
 # This web page has lots of sample files
 
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
@@ -106,4 +106,5 @@ scene <- as.rglscene(gltf)
 id <- scene$objects[[1]]$id
 scene <- setPBRshaders(gltf, gltfMat, id, scene)
 cat(scene$objects[[1]]$userFragmentShader)
+}
 }

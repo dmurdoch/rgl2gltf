@@ -41,6 +41,8 @@ The specification of the glTF format:
 Duncan Murdoch
 }
 \examples{
+\donttest{
+
 # This web page has lots of sample files
 
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
@@ -65,4 +67,6 @@ gltf
 olddir <- setwd(dirname(filename))
 rgl::plot3d(gltf)
 setwd(olddir)
+
+}
 }

@@ -93,6 +93,7 @@ Called for the side effect of drawing the animation.
 }
 
 \examples{
+\donttest{
 if (interactive() && !rgl::in_pkgdown_example()) {
 # This example is fast enough using the "whole" method:
 
@@ -109,5 +110,6 @@ playgltf(gltf1, start = 0, stop = 3, method = "rigid")
 samples <- "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0"
 gltf2 <- readGLB(paste0(samples, "/BrainStem/glTF-Binary/BrainStem.glb?raw=true"))
 playgltf(gltf2, start = 0, stop = 2, speed = 0.25, method = "rigid")
+}
 }
 }
