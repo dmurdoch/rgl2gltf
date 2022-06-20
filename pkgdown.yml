@@ -1,0 +1,10 @@
+pandoc: 2.17.1.1
+pkgdown: 2.0.4.9000
+pkgdown_sha: ~
+articles:
+  shininess: shininess.html
+last_built: 2022-06-20T09:27Z
+urls:
+  reference: https://dmurdoch.github.io/rgl2gltf/reference
+  article: https://dmurdoch.github.io/rgl2gltf/articles
+
