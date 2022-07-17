@@ -1,7 +1,7 @@
 Package: rgl2gltf
 Type: Package
 Title: Read and Write '.gltf' and '.glb' Files
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(person("Duncan", "Murdoch", role = c("aut", "cre"),
                      email = "murdoch.duncan@gmail.com"),
              person("Morten S.", "Mikkelsen", role = c("cph")))

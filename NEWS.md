@@ -1,3 +1,8 @@
+# rgl2gltf 1.0.1
+
+* Added print support for sparse accessors; `rgl` added
+support in its `Buffer` object in version 0.109.11 (issue #8).
+
 # rgl2gltf 1.0.0
 
 * Added a `NEWS.md` file to track changes to the package.

@@ -171,11 +171,25 @@ catsamplers <- function(obj, string) {
     }
   }
 
+catindices <- function(obj, string) {
+  cat(string)
+  catstring(obj$bufferView, "        bufferView: %s\n")
+  catstring(obj$byteOffset, "        byteOffset: %s\n")
+  catcomptype(obj$componentType, "        componentType: %s\n")
+  catstring(obj$extensions, "        extensions %s\n")
+  showExtras <- getOption("rgl2gltf.showExtras", TRUE)
+  if (showExtras)
+    catstring(obj$extras,     "        extras %s\n")
+}
 
-
-catindices <- catvalues <- function(obj, string) {
-  if (!is.null(obj))
-    cat(string, "      not implemented\n")
+catvalues <- function(obj, string) {
+  cat(string)
+  catstring(obj$bufferView, "        bufferView: %s\n")
+  catstring(obj$byteOffset, "        byteOffset: %s\n")
+  catstring(obj$extensions, "        extensions %s\n")
+  showExtras <- getOption("rgl2gltf.showExtras", TRUE)
+  if (showExtras)
+    catstring(obj$extras,     "        extras %s\n")
 }
 
 print.gltfAccessor <- function(x, ...) {
