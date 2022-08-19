@@ -1,3 +1,10 @@
+animationDependency <- makeDependency(name = "gltfAnimate",
+                                                     src = "javascript",
+                                                     script = "gltfAnimate.js",
+                                                     package = "rgl2gltf",
+                                                     debugging = TRUE
+)
+
 animationControl <- function(gltf, ani = 0, value = gltf$timerange(ani)[1], translations) {
 
   # translations should be a list or dataframe with
@@ -23,29 +30,18 @@ animationControl <- function(gltf, ani = 0, value = gltf$timerange(ani)[1], tran
     animation$channels[[i]]$target$node <- subscene
   }
   buffer$closeBuffers()
-  dependency <- makeDependency(name = "gltfAnimate",
-                               src = "javascript",
-                               script = "gltfAnimate.js",
-                               package = "rgl2gltf",
-                               debugging = TRUE
-                               )
+
   structure(list(type = "rgl2gltfAnimation",
                  value = value,
                  animation = animation,
                  buffer = buffer$as.list(),
-                 dependencies = list(dependency)),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
 weightedControl <- function(subid, nodes, weights, translations,
                         backtransform) {
 
-  dependency <- makeDependency(name = "gltfAnimate",
-                               src = "javascript",
-                               script = "gltfAnimate.js",
-                               package = "rgl2gltf",
-                               debugging = TRUE
-  )
   nodes <- translations$subscene[match(nodes, translations$node)]
   backtransforms <- list()
   for (i in seq_len(dim(backtransform)[3]))
@@ -56,34 +52,21 @@ weightedControl <- function(subid, nodes, weights, translations,
                  nodes = unname(nodes),
                  weights = unname(weights),
                  backtransform = backtransforms,
-                 dependencies = list(dependency)),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
 skeletonControl <- function(subid) {
 
-  dependency <- makeDependency(name = "gltfAnimate",
-                               src = "javascript",
-                               script = "gltfAnimate.js",
-                               package = "rgl2gltf",
-                               debugging = TRUE
-  )
-
   structure(list(type = "rgl2gltfSkeleton",
                  value = 0,
                  subid = unname(subid),
-                 dependencies = list(dependency)),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
 shaderControl <- function(id, joints, usedjoints, backtransform) {
 
-  dependency <- makeDependency(name = "gltfAnimate",
-                               src = "javascript",
-                               script = "gltfAnimate.js",
-                               package = "rgl2gltf",
-                               debugging = TRUE
-  )
   backtransforms <- list()
   keep <- usedjoints + 1
   for (i in seq_along(usedjoints))
@@ -93,7 +76,7 @@ shaderControl <- function(id, joints, usedjoints, backtransform) {
                  id = unname(id),
                  joints = unname(joints[keep]),
                  backtransform = backtransforms,
-                 dependencies = list(dependency)),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 

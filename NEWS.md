@@ -1,10 +1,11 @@
-# rgl2gltf 1.0.2
+# rgl2gltf 1.0.3
 
 * Added print support for sparse accessors; `rgl` added
 support in its `Buffer` object in version 0.109.11 (issue #8).
 * Re-ran Roxygen to generate correct HTML for the Gltf
 help topic.
 * Updated link to 'glTF' web page.
+* Fixed write to system dir in the animation control.
 
 # rgl2gltf 1.0.0
 
