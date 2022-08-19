@@ -227,7 +227,7 @@ the appearance.  I've improved the formatting a bit and added extra comments:
   }
 ```
 
-I'll use the same notation as https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#implementation, plus some more:
+I'll use the same notation as https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#implementation, plus some more:
 
 - $V$ is the normalized vector from the shading location to the eye
 - $L$ is the normalized vector from the shading location to the light
@@ -252,7 +252,7 @@ determined by the `fogMode` parameter and the depth in the scene.
 ## PBR rendering in glTF
 
 The glTF specification presents a 
-[sample implementation](https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#implementation), with several comments
+[sample implementation](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#implementation), with several comments
 following to describe possible improvements.
 The simple computation introduces some new notation based
 on the material properties in glTF:

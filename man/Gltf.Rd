@@ -4,7 +4,7 @@
 \alias{Gltf}
 \title{R6 Class for glTF file objects}
 \description{
-The glTF file spec is described here: \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html}.  This
+The glTF file spec is described here: \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html}.  This
 object encapsulates most of the data from those files.
 }
 \examples{
@@ -82,23 +82,24 @@ gltf$print(names = "meshes")
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="addBufferView"><a href='../../rgl/html/Buffer.html#method-Buffer-addBufferView'><code>rgl::Buffer$addBufferView()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="as.list"><a href='../../rgl/html/Buffer.html#method-Buffer-as.list'><code>rgl::Buffer$as.list()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffer'><code>rgl::Buffer$closeBuffer()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffers"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffers'><code>rgl::Buffer$closeBuffers()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="dataURI"><a href='../../rgl/html/Buffer.html#method-Buffer-dataURI'><code>rgl::Buffer$dataURI()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-getAccessor'><code>rgl::Buffer$getAccessor()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-getBuffer'><code>rgl::Buffer$getBuffer()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-getBufferview'><code>rgl::Buffer$getBufferview()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="load"><a href='../../rgl/html/Buffer.html#method-Buffer-load'><code>rgl::Buffer$load()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-openBuffer'><code>rgl::Buffer$openBuffer()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-openBufferview'><code>rgl::Buffer$openBufferview()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-readAccessor'><code>rgl::Buffer$readAccessor()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="saveOpenBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-saveOpenBuffer'><code>rgl::Buffer$saveOpenBuffer()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-setAccessor'><code>rgl::Buffer$setAccessor()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-setBuffer'><code>rgl::Buffer$setBuffer()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-setBufferview'><code>rgl::Buffer$setBufferview()</code></a></li>
-<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="writeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-writeBuffer'><code>rgl::Buffer$writeBuffer()</code></a></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="addBufferView"><a href='../../rgl/html/Buffer.html#method-Buffer-addBufferView'><code>rgl::Buffer$addBufferView()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="as.list"><a href='../../rgl/html/Buffer.html#method-Buffer-as.list'><code>rgl::Buffer$as.list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffer'><code>rgl::Buffer$closeBuffer()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="closeBuffers"><a href='../../rgl/html/Buffer.html#method-Buffer-closeBuffers'><code>rgl::Buffer$closeBuffers()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="dataURI"><a href='../../rgl/html/Buffer.html#method-Buffer-dataURI'><code>rgl::Buffer$dataURI()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-getAccessor'><code>rgl::Buffer$getAccessor()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-getBuffer'><code>rgl::Buffer$getBuffer()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="getBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-getBufferview'><code>rgl::Buffer$getBufferview()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="load"><a href='../../rgl/html/Buffer.html#method-Buffer-load'><code>rgl::Buffer$load()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-openBuffer'><code>rgl::Buffer$openBuffer()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="openBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-openBufferview'><code>rgl::Buffer$openBufferview()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-readAccessor'><code>rgl::Buffer$readAccessor()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="readAccessor0"><a href='../../rgl/html/Buffer.html#method-Buffer-readAccessor0'><code>rgl::Buffer$readAccessor0()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="saveOpenBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-saveOpenBuffer'><code>rgl::Buffer$saveOpenBuffer()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setAccessor"><a href='../../rgl/html/Buffer.html#method-Buffer-setAccessor'><code>rgl::Buffer$setAccessor()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-setBuffer'><code>rgl::Buffer$setBuffer()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="setBufferview"><a href='../../rgl/html/Buffer.html#method-Buffer-setBufferview'><code>rgl::Buffer$setBufferview()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="rgl" data-topic="Buffer" data-id="writeBuffer"><a href='../../rgl/html/Buffer.html#method-Buffer-writeBuffer'><code>rgl::Buffer$writeBuffer()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -174,7 +175,7 @@ Get scene object.
 }
 \subsection{Returns}{
 Scene object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -259,7 +260,7 @@ Get node object.
 }
 \subsection{Returns}{
 Node object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-node}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -352,7 +353,7 @@ Get skin object.
 }
 \subsection{Returns}{
 Skin object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -461,7 +462,7 @@ Get camera object.
 }
 \subsection{Returns}{
 Camera object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -512,7 +513,7 @@ Get mesh object.
 }
 \subsection{Returns}{
 Mesh object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -572,7 +573,7 @@ Get material object.
 }
 \subsection{Returns}{
 Material object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -593,7 +594,7 @@ Get texture object.
 }
 \subsection{Returns}{
 Texture object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -614,7 +615,7 @@ Get image object.
 }
 \subsection{Returns}{
 Image object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-image}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -776,7 +777,7 @@ Create a primitive record.
 }
 \subsection{Returns}{
 Primitive record, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -790,7 +791,7 @@ Get asset list.
 
 \subsection{Returns}{
 Asset object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -870,7 +871,7 @@ Get animation.
 }
 \subsection{Returns}{
 Animation object, documented here:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-animation}.
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-animation}.
 }
 }
 \if{html}{\out{<hr>}}

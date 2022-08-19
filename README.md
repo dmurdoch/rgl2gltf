@@ -5,7 +5,7 @@
 
 This R package contains functions to read, write and display `.gltf` and
 `.glb` files containing 3D models, following the [official spec at
-khronos.org](https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html)
+khronos.org](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html)
 . It also contains functions to convert `rgl` scenes and `mesh3d`
 objects to and from glTF objects.
 

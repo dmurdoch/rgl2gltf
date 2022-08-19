@@ -32,7 +32,7 @@ primToRglobj <- function(prim, skinnum, gltf, defaultmaterial = NULL, id = NULL,
   class(prim) <- "gltfPrimitive"
 
   if (!is.null(prim$targets)) {
-    # These are morph targets (see https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#morph-targets)
+    # These are morph targets (see https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#morph-targets)
     warning("morph targets are not supported")
   }
   mat <- gltf$getRglMaterial(prim$material)
