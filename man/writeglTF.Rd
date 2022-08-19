@@ -39,7 +39,7 @@ and the extension \file{.bin}.
 }
 \references{
 The specification of the glTF format:
-\url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html}
+\url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html}
 }
 \author{
 Duncan Murdoch

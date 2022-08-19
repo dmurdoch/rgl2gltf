@@ -10,7 +10,7 @@ typeDouble <- 5130
 #' @title R6 Class for glTF file objects
 #'
 #' @description
-#' The glTF file spec is described here: \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html}.  This
+#' The glTF file spec is described here: \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html}.  This
 #' object encapsulates most of the data from those files.
 
 Gltf <- R6Class("gltf",
@@ -75,7 +75,7 @@ Gltf <- R6Class("gltf",
     #' @description Get scene object.
     #' @param sc Scene number.
     #' @return Scene object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-scene}.
     getScene = function(sc)
       structure(private$scenes[[sc + 1]], class = "gltfScene"),
 
@@ -114,7 +114,7 @@ Gltf <- R6Class("gltf",
     #' @description Get node object.
     #' @param n Node number.
     #' @return Node object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-node}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-node}.
     getNode = function(n)
       structure(private$nodes[[n + 1]], class = "gltfNode"),
 
@@ -165,7 +165,7 @@ Gltf <- R6Class("gltf",
     #' @description Get skin object.
     #' @param skin Skin number.
     #' @return Skin object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-skin}.
     getSkin = function(skin)
       structure(private$skins[[skin + 1]], class = "gltfSkin"),
 
@@ -221,7 +221,7 @@ Gltf <- R6Class("gltf",
     #' @description Get camera object.
     #' @param cam Camera number.
     #' @return Camera object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-camera}.
     getCamera = function(cam)
       structure(private$cameras[[cam + 1]], class = "gltfCamera"),
 
@@ -238,7 +238,7 @@ Gltf <- R6Class("gltf",
     #' @description Get mesh object.
     #' @param m Mesh number.
     #' @return Mesh object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-mesh}.
     getMesh = function(m)
       structure(private$meshes[[m + 1]], class = "gltfMesh"),
 
@@ -262,21 +262,21 @@ Gltf <- R6Class("gltf",
     #' @description Get material object.
     #' @param m Material number.
     #' @return Material object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-material}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-material}.
     getMaterial = function(m)
       structure(private$materials[[m + 1]], class = "gltfMaterial"),
 
     #' @description Get texture object.
     #' @param tex Texture number.
     #' @return Texture object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-texture}.
     getTexture = function(tex)
       structure(private$textures[[tex + 1]], class = "gltfTexture"),
 
     #' @description Get image object.
     #' @param im Image number.
     #' @return Image object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-image}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-image}.
     getImage = function(im)
       structure(private$images[[im + 1]], class = "gltfImage"),
 
@@ -387,7 +387,7 @@ Gltf <- R6Class("gltf",
     #' @param attributes Primitive attributes.
     #' @param matnum Material number.
     #' @return Primitive record, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-primitive}.
     makePrimitive = function(inds, mode = NULL, attributes = NULL, matnum = NULL) {
       indices <- as.integer(inds)
       if (length(indices)) {
@@ -403,7 +403,7 @@ Gltf <- R6Class("gltf",
 
     #' @description Get asset list.
     #' @return Asset object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-asset}.
     getAsset = function()
       structure(private$asset, class = "gltfAsset"),
 
@@ -483,7 +483,7 @@ Gltf <- R6Class("gltf",
     #' @description Get animation.
     #' @param ani Animation number
     #' @return Animation object, documented here:
-    #' \url{https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#reference-animation}.
+    #' \url{https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#reference-animation}.
     getAnimation = function(ani)
       structure(private$animations[[ani + 1]], class = "gltfAnimation"),
 
