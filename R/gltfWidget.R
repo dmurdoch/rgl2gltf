@@ -1,5 +1,5 @@
 animationDependency <- makeDependency(name = "gltfAnimate",
-                                                     src = "javascript",
+                                                     src = "javascript/gltfAnimate",
                                                      script = "gltfAnimate.js",
                                                      package = "rgl2gltf",
                                                      debugging = TRUE
