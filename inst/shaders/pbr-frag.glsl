@@ -53,6 +53,8 @@ uniform float u_OcclusionStrength;
 uniform vec2 u_MetallicRoughnessValues;
 varying vec4 vCol;
 
+uniform float u_alphaCutoff;
+
 // debugging flags used for shader output of intermediate PBR variables
 uniform vec4 u_ScaleDiffBaseMR;
 uniform vec4 u_ScaleFGDSpec;
@@ -329,5 +331,9 @@ void main()
     color = mix(color, vec3(metallic), u_ScaleDiffBaseMR.z);
     color = mix(color, vec3(perceptualRoughness), u_ScaleDiffBaseMR.w);
 
-    gl_FragColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);
+    float alpha = baseColor.a;
+    if (u_alphaCutoff >= 0.0)
+      alpha = alpha < u_alphaCutoff ? 0.0 : 1.0;
+
+    gl_FragColor = vec4(pow(color,vec3(1.0/2.2)), alpha);
 }
