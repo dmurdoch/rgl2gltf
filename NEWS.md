@@ -1,3 +1,7 @@
+# rgl2gltf 1.0.4
+
+* Support transparency.
+
 # rgl2gltf 1.0.3
 
 * Added print support for sparse accessors; `rgl` added
