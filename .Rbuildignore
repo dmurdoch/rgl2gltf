@@ -3,7 +3,7 @@
 ^README.Rmd$
 ^inst/localtests
 ^_pkgdown.yml
-^\.github
 ^docs/
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^\.github$
