@@ -56,18 +56,18 @@ included in the package tarball.
 
 Briefly,
 
--   `2CylinderEngine.glb` was produced by Okino Computer Graphics.
--   `AntiqueCamera.glb` was produced by Maximilian Kamps and UX3D.
--   `Avocado.glb` was produced by Microsoft.
--   `BarramundiFish.glb` was produced by Microsoft.
--   `BoxAnimated.glb` was produced by Cesium.
--   `BrainStem.glb` was created by Keith Hunter and is owned by Smith
-    Micro Software, Inc. 
--   `DamagedHelmet.glb` was created by theblueturtle\_.
--   `NormalTangentTest.glb` and `NormalTangentMirrorTest.glb` were
-    created by Ed Mackey and are owned by Analytical Graphics, Inc.,
-    licensed under CC-BY 4.0
-    <https://creativecommons.org/licenses/by/4.0/>.
+- `2CylinderEngine.glb` was produced by Okino Computer Graphics.
+- `AlphaBlendModeTest.glb`, `NormalTangentTest.glb` and
+  `NormalTangentMirrorTest.glb` were created by Ed Mackey and are owned
+  by Analytical Graphics, Inc., licensed under CC-BY 4.0
+  <https://creativecommons.org/licenses/by/4.0/>.
+- `AntiqueCamera.glb` was produced by Maximilian Kamps and UX3D.
+- `Avocado.glb` was produced by Microsoft.
+- `BarramundiFish.glb` was produced by Microsoft.
+- `BoxAnimated.glb` and `RiggedSimple.glb` were produced by Cesium.
+- `BrainStem.glb` was created by Keith Hunter and is owned by Smith
+  Micro Software, Inc. 
+- `DamagedHelmet.glb` was created by theblueturtle\_.
 
 Files `src/mikktspace.c` and `src/mikktspace.h` are written by Morten S.
 Mikkelsen and used under the permissive license included within them,

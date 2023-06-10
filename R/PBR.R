@@ -96,6 +96,16 @@ setPBRshaders <- function(gltf, gltfMat,
   }
   defines[["MANUAL_SRGB"]] <- 1
 
+  if (is.null(alphaMode <- gltfMat$alphaMode))
+    alphaMode <- "OPAQUE"
+  if (is.null(alphaCutoff <- gltfMat$alphaCutoff))
+    alphaCutoff <- 0.5
+
+  if (alphaMode != "MASK")
+    alphaCutoff <- -1
+
+  uniforms[["u_alphaCutoff"]] <- alphaCutoff
+
   if (length(defines))
     defines <- paste("#define", names(defines), unlist(defines))
   else
