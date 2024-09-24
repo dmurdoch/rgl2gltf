@@ -43,8 +43,8 @@ Control the updates; see details below.
 Whether to print status updates.
   }
   \item{...}{
-Parameter settings to pass to \code{\link{plot3d.rglscene}} (and hence
-to \code{\link{open3d}}).
+Parameter settings to pass to \code{\link[rgl]{plot3d.rglscene}} (and hence
+to \code{\link[rgl]{open3d}}).
   }
 }
 \details{

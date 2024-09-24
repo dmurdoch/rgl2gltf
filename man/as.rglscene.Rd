@@ -6,7 +6,7 @@ Convert a glTF object to an rglscene or mesh3d object.
 }
 \description{
 These methods convert a \code{"gltf"} object to
-a \code{"rglscene"} object, similar to what \code{\link{scene3d}}
+a \code{"rglscene"} object, similar to what \code{\link[rgl]{scene3d}}
 would produce, or a \code{"mesh3d"} object.
 }
 \usage{
@@ -34,7 +34,7 @@ that information, otherwise include only what standard glTF viewers would displa
   \item{clone}{Whether to clone the \code{gltf} object.  See the Details below.}
   \item{quick}{If \code{TRUE}, \code{\link{plot3d}} will work
   on the result, but it is not sufficiently complete to use
-  as the scene in \code{\link{rglwidget}}.}
+  as the scene in \code{\link[rgl]{rglwidget}}.}
   \item{add}{If \code{quick = FALSE}, the scene will be plotted
   in an existing rgl scene, and both old and new parts will be returned.}
   \item{...}{\code{as.mesh3d} passes these arguments to \code{as.rglscene}.}

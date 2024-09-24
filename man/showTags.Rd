@@ -25,7 +25,7 @@ displayed tags.  The default will put the tag in front of
 everything, so it won't be obscured by other objects.
 }
   \item{\dots}{
-Other arguments to pass to \code{\link{text3d}}.
+Other arguments to pass to \code{\link[rgl]{text3d}}.
 }
 }
 \details{

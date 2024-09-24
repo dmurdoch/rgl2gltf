@@ -42,6 +42,13 @@ S3method("as.gltf", "shapelist3d")
 S3method("as.gltf", "rglobject")
 S3method("as.gltf", "rglscene")
 
+S3method("as.gltf", "rglbackground")
+S3method("as.gltf", "rglbboxdeco")
+S3method("as.gltf", "rglspheres")
+S3method("as.gltf", "rglsprites")
+S3method("as.gltf", "rglsubscene")
+S3method("as.gltf", "rgltext")
+
 S3method("as.rglscene", "gltf")
 
 S3method("merge", "rglobject")

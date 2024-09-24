@@ -12,7 +12,7 @@ modifyShaders(shaders, mod, ...)
 }
 \arguments{
   \item{shaders}{
-A list of shaders, e.g. as produced by \code{\link{getShaders}}.
+A list of shaders, e.g. as produced by \code{\link[rgl]{getShaders}}.
 }
   \item{mod}{
 Either a character value naming a built-in set of mods (currently just \code{"skins"}), or a list of mods as described

@@ -130,7 +130,7 @@ Write values to accessor, including \code{min} and \code{max}.
 The glTF standard requires \code{min} and \code{max} values in
 accessors, whereas other uses of buffers may not.
 This function stores in the usual way using the
-\code{\link[=Buffer]{Buffer$addAccessor()}} method, and then adds
+\code{\link[rgl:Buffer]{Buffer$addAccessor()}} method, and then adds
 \code{min} and \code{max} values.
 
 The standard also doesn't support signed 4 byte integers

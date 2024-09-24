@@ -58,7 +58,7 @@ Give some progress information.
 }
   \item{open3dParams}{
 A list to pass as the \code{params} argument to
-\code{\link{open3d}}.
+\code{\link[rgl]{open3d}}.
   }
   \item{usePBR}{
 Whether to use physically based rendering methods.
@@ -70,7 +70,7 @@ actually contains PBR parameters.
 A list containing optional arguments to the \code{\link{setPBRshaders}} function.
   }
   \item{\dots}{
-Additional parameters which will be passed to \code{rgl::\link{playwidget}}.
+Additional parameters which will be passed to \code{rgl::\link[rgl]{playwidget}}.
 }
 }
 \details{
