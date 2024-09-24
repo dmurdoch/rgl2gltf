@@ -39,7 +39,7 @@ Gltf <- R6Class("gltf",
     #' The glTF standard requires `min` and `max` values in
     #' accessors, whereas other uses of buffers may not.
     #' This function stores in the usual way using the
-    #' [`Buffer$addAccessor()`][Buffer] method, and then adds
+    #' [`Buffer$addAccessor()`][rgl::Buffer] method, and then adds
     #' `min` and `max` values.
     #'
     #' The standard also doesn't support signed 4 byte integers

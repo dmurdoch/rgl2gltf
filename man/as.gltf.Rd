@@ -82,7 +82,7 @@ Rescaling in the enclosing subscene.
 \code{as.gltf} is a generic function.
 
 The method for \code{"rglscene"} objects can handle most
-objects produced by \code{\link{scene3d}}, but not all
+objects produced by \code{\link[rgl]{scene3d}}, but not all
 objects will be handled.  In particular:
 \itemize{
 \item{Lights, text, bounding box decorations and backgrounds are saved in \dQuote{extra} fields, so

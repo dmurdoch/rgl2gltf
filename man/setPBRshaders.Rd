@@ -68,7 +68,7 @@ values to control the contribution from each of those components
 to the image based lighting.
 }
   \item{defines, uniforms, attributes, textures}{
-Values to use in \code{\link{setUserShaders}} in addition
+Values to use in \code{\link[rgl]{setUserShaders}} in addition
 to the ones determined by this function.
   }
 }

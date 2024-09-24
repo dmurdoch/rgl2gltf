@@ -67,7 +67,7 @@ int CalcTangents::get_num_vertices_of_face(const SMikkTSpaceContext *context,
   } else if (working_mesh->draw_mode == GL_QUADS) {
     return 4;
   }
-  error("no vertices with less than 3 and more than 4 supported");
+  Rf_error("no vertices with less than 3 and more than 4 supported");
 }
 
 void CalcTangents::get_position(const SMikkTSpaceContext *context,

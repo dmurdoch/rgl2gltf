@@ -1,6 +1,7 @@
-# rgl2gltf 1.0.4
+# rgl2gltf 1.0.5
 
 * Support transparency.
+* Fix noRemap issue as requested by CRAN.
 
 # rgl2gltf 1.0.3
 
