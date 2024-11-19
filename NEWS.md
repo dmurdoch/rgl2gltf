@@ -1,3 +1,7 @@
+# rgl2gltf 1.0.6
+
+* Avoid writing to library during execution.
+
 # rgl2gltf 1.0.5
 
 * Support transparency.

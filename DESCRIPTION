@@ -1,7 +1,7 @@
 Package: rgl2gltf
 Type: Package
 Title: Read and Write '.gltf' and '.glb' Files
-Version: 1.0.5
+Version: 1.0.6
 Authors@R: c(person("Duncan", "Murdoch", role = c("aut", "cre"),
                      email = "murdoch.duncan@gmail.com"),
              person("Morten S.", "Mikkelsen", role = c("cph")))
@@ -25,4 +25,4 @@ Suggests:
     jpeg
 VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.3.2
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, load = "installed")

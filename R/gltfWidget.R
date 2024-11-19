@@ -1,9 +1,8 @@
-animationDependency <- function() makeDependency(name = "gltfAnimate",
-                                                     src = "javascript/gltfAnimate",
-                                                     script = "gltfAnimate.js",
-                                                     package = "rgl2gltf",
-                                                     debugging = TRUE
-)
+animationDependency <- makeDependency(name = "gltfAnimate",
+                 src = "javascript/gltfAnimate",
+                 script = "gltfAnimate.js",
+                 package = "rgl2gltf",
+                 debugging = isTRUE(as.logical(Sys.getenv("RGL_DEBUGGING", "FALSE"))))
 
 animationControl <- function(gltf, ani = 0, value = gltf$timerange(ani)[1], translations) {
 
@@ -35,7 +34,7 @@ animationControl <- function(gltf, ani = 0, value = gltf$timerange(ani)[1], tran
                  value = value,
                  animation = animation,
                  buffer = buffer$as.list(),
-                 dependencies = list(animationDependency())),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
@@ -52,7 +51,7 @@ weightedControl <- function(subid, nodes, weights, translations,
                  nodes = unname(nodes),
                  weights = unname(weights),
                  backtransform = backtransforms,
-                 dependencies = list(animationDependency())),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
@@ -61,7 +60,7 @@ skeletonControl <- function(subid) {
   structure(list(type = "rgl2gltfSkeleton",
                  value = 0,
                  subid = unname(subid),
-                 dependencies = list(animationDependency())),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
@@ -76,7 +75,7 @@ shaderControl <- function(id, joints, usedjoints, backtransform) {
                  id = unname(id),
                  joints = unname(joints[keep]),
                  backtransform = backtransforms,
-                 dependencies = list(animationDependency())),
+                 dependencies = list(animationDependency)),
             class = "rglControl")
 }
 
