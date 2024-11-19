@@ -1,4 +1,4 @@
-1.0.5:  
+1.0.7:  
 
-Small update to add support for transparency and to avoid NoRemap issues
-as requested by CRAN, and a few other check notes or warnings.
+Small update to fix bug where it was attempting to
+write to the package library, as requested by Tomas.

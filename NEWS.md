@@ -1,4 +1,4 @@
-# rgl2gltf 1.0.6
+# rgl2gltf 1.0.7
 
 * Avoid writing to library during execution.
 
