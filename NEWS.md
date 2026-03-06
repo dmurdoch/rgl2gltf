@@ -1,3 +1,7 @@
+# rgl2gltf 1.0.8
+
+* Improve on 1.0.7 solution.
+
 # rgl2gltf 1.0.7
 
 * Avoid writing to library during execution.
