@@ -1,4 +1,15 @@
-animationDependency <- makeDependency(name = "gltfAnimate",
+
+# Suggestion from Hadley, https://github.com/r-lib/roxygen2/issues/1680#issuecomment-4011801043
+# This detects that the code is being loaded
+# by Roxygen2, not just during package
+# install.
+
+pkgload_is_loading <- function(pkg) {
+  Sys.getenv("DEVTOOLS_LOAD") == pkg
+}
+
+if (!pkgload_is_loading("rgl2gltf"))
+  animationDependency <- makeDependency(name = "gltfAnimate",
                  src = "javascript/gltfAnimate",
                  script = "gltfAnimate.js",
                  package = "rgl2gltf",
